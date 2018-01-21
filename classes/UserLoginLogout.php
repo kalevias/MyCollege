@@ -42,7 +42,7 @@ class UserLoginLogout{
 		//if everything is successful show that the user is logged in with a session variable
 		$_SESSION["userLoggedIn"] = true;
 		//TODO: reditect to user homepage
-		header("Location: index.php");
+		header("Location: ../pages/homepage/index.php");
 
 	}
 
@@ -52,7 +52,7 @@ class UserLoginLogout{
 		unset($_SESSION["userPermission"]);
 		unset($_SESSION["userLoggedIn"]);
 		//TODO: redirect to main public page
-		header("Location: index.php");
+		header("Location: ../pages/homepage/index.php");
 	}
 
 	//search the database for user permissions
