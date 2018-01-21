@@ -1,0 +1,13 @@
+# File management
+/downloads/
+/files/
+
+# Auto-generated files
+/.idea/
+/composer.lock
+
+# Imported libraries
+/vendor/
+/node_modules/
+/resources/jslib/
+/resources/fonts/
