@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 17, 2018 at 06:16 PM
+-- Generation Time: Jan 21, 2018 at 12:35 AM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -21,6 +21,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `mycollege`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblcollege`
+--
+
+DROP TABLE IF EXISTS `tblcollege`;
+CREATE TABLE IF NOT EXISTS `tblcollege` (
+  `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmcollege` varchar(255) NOT NULL,
+  PRIMARY KEY (`pkcollegeid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblcollegerep`
+--
+
+DROP TABLE IF EXISTS `tblcollegerep`;
+CREATE TABLE IF NOT EXISTS `tblcollegerep` (
+  `fkuserid` int(10) NOT NULL,
+  `fkcollegeid` int(10) NOT NULL,
+  KEY `fkuserid` (`fkuserid`),
+  KEY `fkcollegeid` (`fkcollegeid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -87,6 +114,21 @@ CREATE TABLE IF NOT EXISTS `tblprovince` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbltokens`
+--
+
+DROP TABLE IF EXISTS `tbltokens`;
+CREATE TABLE IF NOT EXISTS `tbltokens` (
+  `pktokenid` int(64) NOT NULL AUTO_INCREMENT,
+  `jsonget` json NOT NULL,
+  `dtexpire` timestamp NOT NULL,
+  `txemail` varchar(40) NOT NULL,
+  PRIMARY KEY (`pktokenid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbluser`
 --
 
@@ -97,14 +139,13 @@ CREATE TABLE IF NOT EXISTS `tbluser` (
   `nmlast` varchar(20) NOT NULL,
   `txemail` varchar(40) NOT NULL,
   `txemailalt` varchar(40) DEFAULT NULL,
-  `txstreetaddress` varchar(50) NOT NULL,
-  `txcity` varchar(20) NOT NULL,
-  `fkprovinceid` int(10) NOT NULL,
-  `nzip` int(5) NOT NULL,
-  `nphone` int(10) NOT NULL,
-  `dtgradyear` year(4) NOT NULL,
-  `blsalt` blob NOT NULL,
-  `txhash` varchar(64) NOT NULL,
+  `txstreetaddress` varchar(50) DEFAULT NULL,
+  `txcity` varchar(20) DEFAULT NULL,
+  `fkprovinceid` int(10) DEFAULT NULL,
+  `nzip` int(5) DEFAULT NULL,
+  `nphone` int(10) DEFAULT NULL,
+  `dtgradyear` year(4) DEFAULT NULL,
+  `txhash` varchar(255) NOT NULL,
   `isactive` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`pkuserid`),
   KEY `fkprovinceid` (`fkprovinceid`)
@@ -127,6 +168,13 @@ CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `tblcollegerep`
+--
+ALTER TABLE `tblcollegerep`
+  ADD CONSTRAINT `tblcollegerep_ibfk_1` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblcollegerep_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblnotification`
