@@ -1,11 +1,14 @@
 <?php
+if(session_status() == PHP_SESSION_NONE){
+	session_start();
+}
 /**
  * Created by PhpStorm.
  * User: David
  * Date: 20/01/18
  * Time: 15:01
  */
-
+require_once "DatabaseConnection.php";
 class UserLoginLogout{
 
 	//Login method
@@ -13,7 +16,7 @@ class UserLoginLogout{
 		//connect to database
 		$conn = DatabaseConnection::databaseConnect();
 		//find user
-		$query = $conn->prepare("SELECT pkuserid, txemail, txhash FROM tbluser WHERE txemail = $");
+		$query = $conn->prepare("SELECT pkuserid, txemail, txhash FROM tbluser WHERE txemail = ?");
 		$query->bind_param("s", $userEmail);
 		$query->execute();
 		$result = $query->get_result();
@@ -29,7 +32,7 @@ class UserLoginLogout{
 			die("User not found?");
 		}else{
 			//get values from user in database
-			$user = $result->fetch_row();
+			$user = $result->fetch_assoc();
 		}
 		//verify password to stored hashed password
 		if(password_verify($password, $user["txhash"])){
@@ -44,8 +47,6 @@ class UserLoginLogout{
 		//if everything is successful show that the user is logged in with a session variable
 		$_SESSION["userLoggedIn"] = true;
 		//TODO: reditect to user homepage
-		header("Location: ../pages/homepage/index.php");
-
 	}
 
 
@@ -60,7 +61,7 @@ class UserLoginLogout{
 	//search the database for user permissions
 	private static function getPermissions($userID, $conn){
 		//setup query to join the permissions table and the user-permssions table
-		$query = $conn->prepare("SELECT nmname FROM tblpermission JOIN tbluserpermissions WHERE fkuserid = $");
+		$query = $conn->prepare("SELECT nmname FROM tblpermission JOIN tbluserpermissions WHERE fkuserid = ?");
 		$query->bind_param("s", $userID);
 		$query->execute();
 		$result = $query->get_result();
