@@ -2,16 +2,16 @@
 if(session_status() == PHP_SESSION_NONE){
 	session_start();
 }
-    if(isset($_SESSION["userLoggedIn"])){
-        $loggedIn = true;
-    }else{
-		$loggedIn = false;
-    }
-    if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
-		$loggedIn = false;
-		unset($_SESSION["userPermission"]);
-		unset($_SESSION["userLoggedIn"]);
-    }
+if(isset($_SESSION["userLoggedIn"])){
+	$loggedIn = true;
+}else{
+	$loggedIn = false;
+}
+if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
+	$loggedIn = false;
+	unset($_SESSION["userPermission"]);
+	unset($_SESSION["userLoggedIn"]);
+}
 ?>
 
 <!DOCTYPE html>
@@ -50,26 +50,26 @@ if(session_status() == PHP_SESSION_NONE){
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Events</a>
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">More</a>
         <p class="navbar-right actions">
-        <?php
-            if($loggedIn){
-        ?>
-<!--            <a href="index.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Log Out</a>-->
-            <form action="" method="POST">
-                <input type="hidden" value="logout" name="requestType">
-                <input type="submit" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" value="Log Out">
-            </form>
-        <?php
-            }else{
-        ?>
-            <a href="/mycollege/pages/Register/signup.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Register</a>
-            <a href="/mycollege/pages/Login/login.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Login</a>
-        <?php
-            }
-        ?>
+			<?php
+			if($loggedIn){
+			?>
+        <form action="" method="POST">
+            <input type="hidden" value="logout" name="requestType">
+            <input type="submit" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
+                   value="Log Out">
+        </form>
+		<?php
+		}else{
+			?>
+            <a href="/mycollege/pages/Register/signup.php"
+               class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Register</a>
+            <a href="/mycollege/pages/Login/login.php"
+               class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Login</a>
+			<?php
+		}
+		?>
         </p>
     </div>
-
-
     <body>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -205,10 +205,7 @@ if(session_status() == PHP_SESSION_NONE){
             }
         }
     </style>
-
     </body>
-
-
     <body>
     <style>
         body {
@@ -349,11 +346,6 @@ if(session_status() == PHP_SESSION_NONE){
             }
         }
     </script>
-
-
-    </body>
-
-
     <!-- Navbar on small screens -->
     <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
@@ -361,8 +353,6 @@ if(session_status() == PHP_SESSION_NONE){
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 4</a>
     </div>
-
-
 </div>
 
 <!-- Header -->
@@ -391,7 +381,14 @@ if(session_status() == PHP_SESSION_NONE){
         transform: translateY(-50%);
     }
 </style>
-</head>
+
+<!-- Navbar on small screens -->
+<div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 4</a>
+</div>
 <body>
 
 <div class="container">
@@ -411,7 +408,7 @@ if(session_status() == PHP_SESSION_NONE){
         <div class="carousel-inner" role="listbox">
 
             <div class="item active">
-                <img src="NWUni.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/NWUni.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>North Western University</h3>
                     <p></p>
@@ -419,7 +416,7 @@ if(session_status() == PHP_SESSION_NONE){
             </div>
 
             <div class="item">
-                <img src="WashUni.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/WashUni.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>Washington University</h3>
                     <p></p>
@@ -427,7 +424,7 @@ if(session_status() == PHP_SESSION_NONE){
             </div>
 
             <div class="item">
-                <img src="BrynMawrCollege.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/BrynMawrCollege.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>Bryn Mawr College</h3>
                     <p></p>
@@ -435,7 +432,7 @@ if(session_status() == PHP_SESSION_NONE){
             </div>
 
             <div class="item">
-                <img src="IndianaUni.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/IndianaUni.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>Indiana University</h3>
                     <p></p>
@@ -443,7 +440,7 @@ if(session_status() == PHP_SESSION_NONE){
             </div>
 
             <div class="item">
-                <img src="UniOfChi.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/UniOfChi.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>University of Chicago</h3>
                     <p></p>
@@ -451,87 +448,95 @@ if(session_status() == PHP_SESSION_NONE){
             </div>
 
             <div class="item">
-                <img src="WellesleyCollege.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/WellesleyCollege.jpg" alt="Chania" width="460" height="345">
                 <div class="carousel-caption">
                     <h3>Wellesley College
                         <p></p>
                 </div>
             </div>
+
+                <!-- Left and right controls -->
+                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    <span class="sr-only">Next</span>
+                </a>
         </div>
 
-        <!-- Left and right controls -->
-        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-</div>
+        <!-- First Grid -->
+        <div class="w3-row-padding w3-padding-64 w3-container">
+            <div class="w3-content">
+                <div class="w3-twothird">
+                    <h1>About MyCollege</h1>
+                    <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                        tempor
+                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                        ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
+
+                    <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                        tempor
+                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                        ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
+                        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut
+                        enim ad minim veniam, quis nostrud exercitation ullamco
+                        laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+
+                <div class="w3-third w3-center">
+                    <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
+                </div>
+            </div>
+
+            <!-- Second Grid -->
+            <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
+                <div class="w3-content">
+                    <div class="w3-third w3-center">
+                        <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
+                    </div>
+
+                    <div class="w3-twothird">
+                        <h1>Features We Offer</h1>
+                        <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                            eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                            exercitation
+                            ullamco
+                            laboris nisi ut aliquip ex ea commodo consequat.</h5>
+
+                        <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                            tempor
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                            exercitation
+                            ullamco
+                            laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
+                            occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+                            laborum
+                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+                            aliqua. Ut
+                            enim
+                            ad minim veniam, quis nostrud exercitation ullamco
+                            laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                </div>
+            </div>
 
 
-<!-- First Grid -->
-<div class="w3-row-padding w3-padding-64 w3-container">
-    <div class="w3-content">
-        <div class="w3-twothird">
-            <h1>About My College</h1>
-            <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.</h5>
-
-            <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-                occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-                consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-
-        <div class="w3-third w3-center">
-            <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
-        </div>
-    </div>
-</div>
-
-<!-- Second Grid -->
-<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
-    <div class="w3-content">
-        <div class="w3-third w3-center">
-            <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
-        </div>
-
-        <div class="w3-twothird">
-            <h1>Features We Offer</h1>
-            <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.</h5>
-
-            <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-                occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-                consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-    </div>
-</div>
-
-
-<script>
-    // Used to toggle the menu on small screens when clicking on the menu button
-    function myFunction() {
-        var x = document.getElementById("navDemo");
-        if (x.className.indexOf("w3-show") == -1) {
-            x.className += " w3-show";
-        } else {
-            x.className = x.className.replace(" w3-show", "");
-        }
-    }
-</script>
+            <script>
+                // Used to toggle the menu on small screens when clicking on the menu button
+                function myFunction() {
+                    var x = document.getElementById("navDemo");
+                    if (x.className.indexOf("w3-show") == -1) {
+                        x.className += " w3-show";
+                    } else {
+                        x.className = x.className.replace(" w3-show", "");
+                    }
+                }
+            </script>
 
 </body>
 </html>
