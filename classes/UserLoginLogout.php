@@ -13,10 +13,12 @@ class UserLoginLogout{
 		//connect to database
 		$conn = DatabaseConnection::databaseConnect();
 		//find user
-		$query = "SELECT pkuserid, txemail, txhash FROM tbluser WHERE txemail = " . $userEmail;
-		$result = $conn->query($query);
+		$query = $conn->prepare("SELECT pkuserid, txemail, txhash FROM tbluser WHERE txemail = $");
+		$query->bind_param("s", $userEmail);
+		$query->execute();
+		$result = $query->get_result();
 		//Check for query error
-		if($result == false){
+		if($query == false){
 			die("Failed to query user from database 'mycollege'\nConnect Error: " . $conn->connect_errno . "\nError Message: " . $conn->connect_error);
 		}
 		//check if user exists
@@ -58,10 +60,12 @@ class UserLoginLogout{
 	//search the database for user permissions
 	private static function getPermissions($userID, $conn){
 		//setup query to join the permissions table and the user-permssions table
-		$query = "SELECT nmname FROM tblpermission JOIN tbluserpermissions WHERE fkuserid = " . $userID;
-		$result = $conn->query($query);
+		$query = $conn->prepare("SELECT nmname FROM tblpermission JOIN tbluserpermissions WHERE fkuserid = $");
+		$query->bind_param("s", $userID);
+		$query->execute();
+		$result = $query->get_result();
 		//check if query failed
-		if($result == false){
+		if($query == false){
 			die("Failed to query user permissions from database 'mycollege'\nConnect Error: " . $conn->connect_errno . "\nError Message: " . $conn->connect_error);
 		}
 		//Return the name of the permission that the user has

@@ -14,8 +14,10 @@ class UserRegister{
 		//Open connection to database
 		$conn = DatabaseConnection::databaseConnect();
 		//check if user exists
-		$query = "SELECT pkuserid FROM tbluser WHERE txemail = " . $userEmail;
-		$result = $conn->query($query);
+		$query = $conn->prepare("SELECT pkuserid FROM tbluser WHERE txemail = ?");
+		$query->bind_param("s", $userEmail);
+		$query->execute();
+		$result = $query->get_result();
 		//handle error if can't query database
 		if($result == false){
 			die("Failed to query user from database 'mycollege'\nConnect Error: " . $conn->connect_errno . "\nError Message: " . $conn->connect_error);
@@ -26,10 +28,10 @@ class UserRegister{
 			//redirect back to original page hopefully with all the same data in the fields
 		}
 		//create query from user
-		$query = "INSERT INTO tbluser (nmfirst, nmlast, txemail, txstreetaddress, txcity, nzip, nphone, dtgradyear, txhash) ";
-		$query .= "VALUES ({$userFirstName},{$userLastName},{$userEmail},{$userAddress},{$userCity},";
-		$query .= "{$userZip},{$userPhone},{$userGradYear},{$userHash})";
-		$result = $conn->query($query);
+		$query = $conn->prepare("INSERT INTO tbluser (nmfirst, nmlast, txemail, txstreetaddress, txcity, nzip, nphone, dtgradyear, txhash) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$query->bind_param("sssssss", $userFirstName, $userLastName, $userEmail, $userAddress, $userCity, $userZip, $userPhone, $userGradYear, $userHash);
+		$query->execute();
+		$result = $query->get_result();
 		//check if insert failed
 		if($result == false){
 			//Guess I'll die
