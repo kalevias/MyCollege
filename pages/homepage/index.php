@@ -20,7 +20,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <div class="w3-top">
   <div class="w3-bar w3-red w3-card w3-left-align w3-large">
     <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large w3-white">My College</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large w3-white">MyCollege</a>
     <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Schools</a>
     <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Scholarships</a>
     <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Events</a>
@@ -333,35 +333,19 @@ window.onclick = function(event) {
 </div>
 
 <!-- Header -->
-
-<title>Bootstrap Example</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style>
-  .carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
-      width: 100%;
-      margin: auto;
-  }
-  
-  .carousel-inner>.item {
-    position: relative;
-    max-height: 600px;
-}
-.carousel-caption {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-  </style>
 </head>
 <body>
 
 <div class="container">
-  <br>
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators">
@@ -371,78 +355,89 @@ window.onclick = function(event) {
       <li data-target="#myCarousel" data-slide-to="3"></li>
       <li data-target="#myCarousel" data-slide-to="4"></li>
       <li data-target="#myCarousel" data-slide-to="5"></li>
+      <li data-target="#myCarousel" data-slide-to="6"></li>
     </ol>
 
     <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
-
+    <div class="carousel-inner">
       <div class="item active">
-        <img src="NWUni.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>North Western University</h3>
-          <p></p>
+        <img src="/Images/NWUni.jpg" alt="Los Angeles" style="width:100%;">
+      <div class="carousel-caption">
+          <h3>Northwestern University</h3>
+         
         </div>
       </div>
 
       <div class="item">
-        <img src="WashUni.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>Washington University</h3>
-          <p></p>
-        </div>
-      </div>
-      
-      <div class="item">
-        <img src="BrynMawrCollege.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>Bryn Mawr College</h3>
-          <p></p>
-        </div>
-      </div>
-      
-      <div class="item">
-        <img src="IndianaUni.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
+        <img src="/Images/IndianaUni.jpg" alt="Chicago" style="width:100%;">
+      <div class="carousel-caption">
           <h3>Indiana University</h3>
-          <p></p>
+        
+        </div>
+      </div>
+    
+      <div class="item">
+        <img src="/Images/WashUni.jpg" alt="New york" style="width:100%;">
+      <div class="carousel-caption">
+          <h3>Washington University</h3>
+         
         </div>
       </div>
       
       <div class="item">
-        <img src="UniOfChi.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>University of Chicago</h3>
-          <p></p>
+        <img src="/Images/BrynMawrCollege.jpg" alt="New york" style="width:100%;">
+      <div class="carousel-caption">
+          <h3>Bryn Mawr College</h3>
+        
         </div>
       </div>
       
-      <div class="item">
-        <img src="WellesleyCollege.jpg" alt="Chania" width="460" height="345">
-        <div class="carousel-caption">
-          <h3>Wellesley College
-          <p></p>
+      
+      
+       <div class="item">
+        <img src="/Images/UniOfChi.jpg" alt="New york" style="width:100%;">
+     <div class="carousel-caption">
+          <h3>University Of Chicago</h3>
+     
         </div>
       </div>
+      
+       <div class="item">
+        <img src="/Images/WellesleyCollege.jpg" alt="New york" style="width:100%;">
+      <div class="carousel-caption">
+          <h3>Wellesley College</h3>
+       
+        </div>
+      </div>
+      
+      
+      
     </div>
 
     <!-- Left and right controls -->
-    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left"></span>
       <span class="sr-only">Previous</span>
     </a>
-    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right"></span>
       <span class="sr-only">Next</span>
     </a>
   </div>
 </div>
+
+</body>
+</html>
+
+
+
 
 
 <!-- First Grid -->
 <div class="w3-row-padding w3-padding-64 w3-container">
   <div class="w3-content">
     <div class="w3-twothird">
-      <h1>About My College</h1>
+      <h1>About MyCollege</h1>
       <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
 
       <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
