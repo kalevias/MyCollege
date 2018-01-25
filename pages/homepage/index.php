@@ -16,7 +16,7 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
 
 <!DOCTYPE html>
 <html>
-<title>W3.CSS Template</title>
+<title>MyCollege</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -44,7 +44,7 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
         <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red"
            href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i
                     class="fa fa-bars"></i></a>
-        <a href="#" class="w3-bar-item w3-button w3-padding-large w3-white">My College</a>
+        <a href="#" class="w3-bar-item w3-button w3-padding-large w3-white">MyCollege</a>
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Schools</a>
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Scholarships</a>
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Events</a>
@@ -466,7 +466,7 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
                 </a>
         </div>
 
-<<<<<<< HEAD
+
 
 <!-- First Grid -->
 <div class="w3-row-padding w3-padding-64 w3-container">
@@ -519,65 +519,9 @@ function myFunction() {
     }
 }
 </script>
-=======
-        <!-- First Grid -->
-        <div class="w3-row-padding w3-padding-64 w3-container">
-            <div class="w3-content">
-                <div class="w3-twothird">
-                    <h1>About MyCollege</h1>
-                    <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                        tempor
-                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
 
-                    <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                        tempor
-                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-                        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-                        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut
-                        enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat.</p>
-                </div>
 
-                <div class="w3-third w3-center">
-                    <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
-                </div>
-            </div>
 
-            <!-- Second Grid -->
-            <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
-                <div class="w3-content">
-                    <div class="w3-third w3-center">
-                        <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
-                    </div>
-
-                    <div class="w3-twothird">
-                        <h1>Features We Offer</h1>
-                        <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor
-                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation
-                            ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat.</h5>
-
-                        <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                            tempor
-                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation
-                            ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-                            occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                            laborum
-                            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                            aliqua. Ut
-                            enim
-                            ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    </div>
-                </div>
-            </div>
 
 
             <script>
@@ -591,7 +535,7 @@ function myFunction() {
                     }
                 }
             </script>
->>>>>>> origin/Dev-Account-Management
+
 
 </body>
 </html>
