@@ -355,6 +355,7 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
     </div>
 </div>
 
+
 <!-- Header -->
 
 <title>Bootstrap Example</title>
@@ -369,12 +370,10 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
         width: 100%;
         margin: auto;
     }
-
     .carousel-inner > .item {
         position: relative;
         max-height: 600px;
     }
-
     .carousel-caption {
         position: absolute;
         top: 50%;
@@ -391,8 +390,20 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
 </div>
 <body>
 
+<!-- Header -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
 <div class="container">
-    <br>
     <div id="myCarousel" class="carousel slide" data-ride="carousel">
         <!-- Indicators -->
         <ol class="carousel-indicators">
@@ -402,69 +413,81 @@ if(isset($_POST["requestType"]) && $_POST["requestType"] == "logout"){
             <li data-target="#myCarousel" data-slide-to="3"></li>
             <li data-target="#myCarousel" data-slide-to="4"></li>
             <li data-target="#myCarousel" data-slide-to="5"></li>
+            <li data-target="#myCarousel" data-slide-to="6"></li>
         </ol>
 
         <!-- Wrapper for slides -->
-        <div class="carousel-inner" role="listbox">
-
+        <div class="carousel-inner">
             <div class="item active">
-                <img src="/mycollege/pages/homepage/images/NWUni.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/NWUni.jpg" alt="Los Angeles" style="width:100%;">
                 <div class="carousel-caption">
-                    <h3>North Western University</h3>
-                    <p></p>
+                    <h3>Northwestern University</h3>
+
                 </div>
             </div>
 
             <div class="item">
-                <img src="/mycollege/pages/homepage/images/WashUni.jpg" alt="Chania" width="460" height="345">
-                <div class="carousel-caption">
-                    <h3>Washington University</h3>
-                    <p></p>
-                </div>
-            </div>
-
-            <div class="item">
-                <img src="/mycollege/pages/homepage/images/BrynMawrCollege.jpg" alt="Chania" width="460" height="345">
-                <div class="carousel-caption">
-                    <h3>Bryn Mawr College</h3>
-                    <p></p>
-                </div>
-            </div>
-
-            <div class="item">
-                <img src="/mycollege/pages/homepage/images/IndianaUni.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/IndianaUni.jpg" alt="Chicago" style="width:100%;">
                 <div class="carousel-caption">
                     <h3>Indiana University</h3>
-                    <p></p>
+
                 </div>
             </div>
 
             <div class="item">
-                <img src="/mycollege/pages/homepage/images/UniOfChi.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/WashUni.jpg" alt="New york" style="width:100%;">
                 <div class="carousel-caption">
-                    <h3>University of Chicago</h3>
-                    <p></p>
+                    <h3>Washington University</h3>
+
                 </div>
             </div>
 
             <div class="item">
-                <img src="/mycollege/pages/homepage/images/WellesleyCollege.jpg" alt="Chania" width="460" height="345">
+                <img src="/mycollege/pages/homepage/images/BrynMawrCollege.jpg" alt="New york" style="width:100%;">
                 <div class="carousel-caption">
-                    <h3>Wellesley College
-                        <p></p>
+                    <h3>Bryn Mawr College</h3>
+
                 </div>
             </div>
 
-                <!-- Left and right controls -->
-                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right"></span>
-                    <span class="sr-only">Next</span>
-                </a>
+
+
+            <div class="item">
+                <img src="/mycollege/pages/homepage/images/UniOfChi.jpg" alt="New york" style="width:100%;">
+                <div class="carousel-caption">
+                    <h3>University Of Chicago</h3>
+
+                </div>
+            </div>
+
+            <div class="item">
+                <img src="/mycollege/pages/homepage/images/WellesleyCollege.jpg" alt="New york" style="width:100%;">
+                <div class="carousel-caption">
+                    <h3>Wellesley College</h3>
+
+                </div>
+            </div>
+
+
+
         </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
+
+
 
 
 
