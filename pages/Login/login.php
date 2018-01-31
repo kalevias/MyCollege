@@ -27,15 +27,15 @@
     <style>
     
         *{margin: 0; padding: 0;}
-        body{background: #c1c1c1; font-family: sans-serif;}
+        body{background: #ecf1f4; font-family: sans-serif;}
 
         
-        input{width: 100%; background: none; border: 1px solid #fff; border-radius: 3px; padding: 6px 15px; box-sizing: border-box; margin-bottom: 20px; font-size: 16px; color: #fff;}
+        input{width: 100%; background: none; border: 1px solid #fff; border-radius: 3px; padding: 6px 15px; box-sizing: border-box; margin-bottom: 20px; font-size: 16px; color: #005959;}
         
-        input[type="button"]{ background: #b3fce5; border: 0; cursor: pointer; color: #3e3d3d;}
-        input[type="button"]:hover{ background: #b3fce5; transition: .6s;}
+        input[type="button"]{ background: #ffffff; border: 0; cursor: pointer; color: #3e3d3d;}
+        input[type="button"]:hover{ background: #ffffff; transition: .6s;}
         
-        ::placeholder{color: #b3fce5;}
+        ::placeholder{color: #005959;}
 
 
         .rcorners2 {
