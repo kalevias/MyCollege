@@ -47,9 +47,9 @@
             position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
         }
 
-    
-    </style>
 
+
+    </style>
     <body>
         <div>
             <?php
@@ -64,7 +64,7 @@
             <div class="rcorners2"
             <form action="login.php" method="POST">
                 <h1>Login</h1>
-                <input type="text" placeholder="E-Mail" name="email">
+                <input title="Please enter a valid email address" type="text" placeholder="E-Mail" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                 <input type="password" placeholder="Password" name="password">
                 <input type="hidden" value="login" name="requestType">
                 <input type="submit" value="Enter">

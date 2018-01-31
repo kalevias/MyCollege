@@ -68,13 +68,23 @@
                 <h1>Sign Up</h1>
                 <input type="text" placeholder="First Name" name="firstName">
                 <input type="text" placeholder="Last Name" name="lastName">
-                <input type="email" placeholder="Email Address"name="email">
+
+                <input title="Please enter a valid email address using the '@' symbol" type="email" placeholder="Email Address"name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+
                 <input type="text" placeholder="Street Address" name="streetAddress">
                 <input type="text" placeholder="City" name="city">
                 <input type="text" placeholder="Zip" name="zip">
-                <input type="text" placeholder="Phone Number" name="phoneNumber">
+
+                <input title="Please enter a phone number in the form: XXX-XXX-XXXX" type="text" placeholder="Phone Number" name="phoneNumber" required
+                       pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+
                 <input type="number" min="1900" max="2100" placeholder="Graduation Year" name="gradYear">
-                <input type="password" placeholder="Password" name="password">
+
+
+                <input title="Password must contain at least 6 characters, including UPPER/lowercase and numbers"  type="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                       placeholder="Password" name="password" >
+
+
                 <input type="password" placeholder="Confirm Password" name="passwordconfirm">
                 <input type="hidden" value="register" name="requestType">
                 <input type="submit" value="Sign Up">
