@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 27, 2018 at 02:33 AM
--- Server version: 5.7.14
--- PHP Version: 7.1.4
+-- Host: 127.0.0.1:3306
+-- Generation Time: Feb 01, 2018 at 02:28 AM
+-- Server version: 5.7.19
+-- PHP Version: 5.6.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `mycollege`
+-- Database: `mycollege2`
 --
 
 -- --------------------------------------------------------
@@ -28,10 +28,40 @@ SET time_zone = "+00:00";
 -- Table structure for table `tblcollege`
 --
 
-CREATE TABLE `tblcollege` (
-  `pkcollegeid` int(10) NOT NULL,
-  `nmcollege` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `tblcollege`;
+CREATE TABLE IF NOT EXISTS `tblcollege` (
+  `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmcollege` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entype` enum('2-year','4-year','vocational','online','Grad School') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txstreetaddress` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txcity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fkprovinceid` int(10) NOT NULL,
+  `nzip` int(5) NOT NULL,
+  `ninstate` int(7) NOT NULL,
+  `noutstate` int(7) NOT NULL,
+  `nfinancialave` int(7) DEFAULT NULL,
+  `nacceptrate` float NOT NULL,
+  `nprof` int(5) DEFAULT NULL,
+  `nsize` int(10) DEFAULT NULL,
+  `nwomenratio` int(3) DEFAULT NULL,
+  `nact` int(2) DEFAULT NULL,
+  `nsat` int(4) DEFAULT NULL,
+  `ensetting` enum('Urban','Suburban','Rural','Small Town') COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkcollegeid`),
+  KEY `fkprovinceid` (`fkprovinceid`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblcollege`
+--
+
+INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
+(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
+(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban');
 
 -- --------------------------------------------------------
 
@@ -39,9 +69,51 @@ CREATE TABLE `tblcollege` (
 -- Table structure for table `tblcollegerep`
 --
 
-CREATE TABLE `tblcollegerep` (
+DROP TABLE IF EXISTS `tblcollegerep`;
+CREATE TABLE IF NOT EXISTS `tblcollegerep` (
   `fkuserid` int(10) NOT NULL,
-  `fkcollegeid` int(10) NOT NULL
+  `fkcollegeid` int(10) NOT NULL,
+  KEY `fkuserid` (`fkuserid`),
+  KEY `fkcollegeid` (`fkcollegeid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblcollegescholarship`
+--
+
+DROP TABLE IF EXISTS `tblcollegescholarship`;
+CREATE TABLE IF NOT EXISTS `tblcollegescholarship` (
+  `pkcscholarship` int(10) NOT NULL AUTO_INCREMENT,
+  `fkcollegeid` int(10) NOT NULL,
+  `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entype` enum('Grant','Loan','Merit based') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txrequirements` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `enfield` enum('Liberal Arts','Medical and Life Science','Visual and Performance Arts','Engineering and Technology','Business') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngpa` float DEFAULT NULL,
+  `namount` int(10) NOT NULL,
+  PRIMARY KEY (`pkcscholarship`),
+  KEY `fkcollegeid` (`fkcollegeid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblcollegesports`
+--
+
+DROP TABLE IF EXISTS `tblcollegesports`;
+CREATE TABLE IF NOT EXISTS `tblcollegesports` (
+  `fksportsid` int(10) NOT NULL,
+  `fkcollegeid` int(10) NOT NULL,
+  `iswomen` tinyint(1) NOT NULL DEFAULT '0',
+  `isteam` tinyint(1) NOT NULL DEFAULT '0',
+  `isclub` tinyint(1) NOT NULL DEFAULT '0',
+  `isscholarship` tinyint(1) NOT NULL DEFAULT '0',
+  KEY `fksportsid` (`fksportsid`),
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -50,12 +122,14 @@ CREATE TABLE `tblcollegerep` (
 -- Table structure for table `tblcountry`
 --
 
-CREATE TABLE `tblcountry` (
-  `pkcountryid` int(3) NOT NULL,
+DROP TABLE IF EXISTS `tblcountry`;
+CREATE TABLE IF NOT EXISTS `tblcountry` (
+  `pkcountryid` int(3) NOT NULL AUTO_INCREMENT,
   `idiso` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idphonecode` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `idphonecode` int(5) NOT NULL,
+  PRIMARY KEY (`pkcountryid`)
+) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblcountry`
@@ -318,15 +392,178 @@ INSERT INTO `tblcountry` (`pkcountryid`, `idiso`, `nmname`, `idphonecode`) VALUE
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblmajor`
+--
+
+DROP TABLE IF EXISTS `tblmajor`;
+CREATE TABLE IF NOT EXISTS `tblmajor` (
+  `pkmajorid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkmajorid`)
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblmajor`
+--
+
+INSERT INTO `tblmajor` (`pkmajorid`, `nmname`) VALUES
+(1, 'Accounting'),
+(2, 'Actuarial Science'),
+(3, 'Advertising'),
+(4, 'Agriculture'),
+(5, 'Agricultural and Biological Engineering'),
+(6, 'Agricultural Business Management'),
+(7, 'Agriculture Economics'),
+(8, 'Animal Bioscience'),
+(9, 'Animal Sciences'),
+(10, 'Anthropology'),
+(11, 'Applied Mathematics'),
+(12, 'Archaeology'),
+(13, 'Architectural Engineering'),
+(14, 'Architecture'),
+(15, 'Art History'),
+(16, 'Studio Art'),
+(17, 'Art Education'),
+(18, 'Biobehavioral Health'),
+(19, 'Biochemistry'),
+(20, 'Bioengineering'),
+(21, 'Biology'),
+(22, 'Biophysics'),
+(23, 'Biotechnology'),
+(24, 'Business Administration and Management'),
+(25, 'Business Logistics'),
+(26, 'Chemical Engineering'),
+(27, 'Chemistry'),
+(28, 'Children'),
+(29, 'Civil Engineering'),
+(30, 'Computer Engineering'),
+(31, 'Computer Science'),
+(32, 'Crine, Law, and Justice'),
+(33, 'Dance'),
+(34, 'Earth Sciences'),
+(35, 'Economics'),
+(36, 'Electrical Engineering'),
+(37, 'Elementary and Kindergarten Education'),
+(38, 'Engineering Science'),
+(39, 'English'),
+(40, 'Environmental Systems Engineering'),
+(41, 'Environmental Sciences'),
+(42, 'Enviromantal Resource Management'),
+(43, 'Film and Video'),
+(44, 'Finance'),
+(45, 'Food Science'),
+(46, 'Forest Science'),
+(47, 'Forest Technology'),
+(48, 'General Science'),
+(49, 'Geography'),
+(50, 'Geosciences'),
+(51, 'Graphic Design and Photography'),
+(52, 'Health and Physical Education'),
+(53, 'Health Policy and Administration'),
+(54, 'History'),
+(55, 'Horticulture'),
+(56, 'Human Development and Family Studies'),
+(57, 'Individual and Family Studies'),
+(58, 'Industrial Engineering'),
+(59, 'Information Sciences and Technology'),
+(60, 'Institutional Management'),
+(61, 'Journalism'),
+(62, 'Kinesiology'),
+(63, 'Landscape Architecture'),
+(64, 'Law Enforcement and Correction'),
+(65, 'Marine Biology'),
+(66, 'Marketing'),
+(67, 'Mathematics'),
+(68, 'Mechanical Engineering'),
+(69, 'Media Studies'),
+(70, 'Meteorology'),
+(71, 'Microbiology'),
+(72, 'Mineral Economics'),
+(73, 'Modern Languages'),
+(74, 'Music Education'),
+(75, 'Nuclear Engineering'),
+(76, 'Nursing'),
+(77, 'Nutrition'),
+(78, 'Philosophy'),
+(79, 'Physics'),
+(80, 'Physiology'),
+(81, 'Political Science'),
+(82, 'Pre-Medicine'),
+(83, 'Psychology'),
+(84, 'Public Relations'),
+(85, 'Real Estate'),
+(86, 'Recreation and Parks'),
+(87, 'Rehabilitation Services'),
+(88, 'Religious Studies'),
+(89, 'Secondary Education'),
+(90, 'Primary Education'),
+(91, 'Sociology'),
+(92, 'Social Work'),
+(93, 'Speech Communications'),
+(94, 'Speech Pathology'),
+(95, 'Statistics'),
+(96, 'Telecommunications'),
+(97, 'Theater'),
+(98, 'Wildlife and Fishery Science'),
+(99, 'Wildlife Technology'),
+(100, 'Special Education'),
+(101, 'Womens Studies');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblmajorcollege`
+--
+
+DROP TABLE IF EXISTS `tblmajorcollege`;
+CREATE TABLE IF NOT EXISTS `tblmajorcollege` (
+  `fkmajorid` int(10) NOT NULL,
+  `fkcollegeid` int(10) NOT NULL,
+  `isassociate` tinyint(1) NOT NULL DEFAULT '0',
+  `isbachelor` tinyint(1) NOT NULL DEFAULT '0',
+  `ismaster` tinyint(1) NOT NULL DEFAULT '0',
+  `isdoctoral` tinyint(1) NOT NULL DEFAULT '0',
+  KEY `fkcollegeid` (`fkcollegeid`),
+  KEY `fkmajorid` (`fkmajorid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblnotification`
 --
 
-CREATE TABLE `tblnotification` (
-  `pknotificationid` int(10) NOT NULL,
-  `enlevel` enum('Notification','Warning','Error') CHARACTER SET latin1 NOT NULL,
-  `txdescription` varchar(50) CHARACTER SET latin1 NOT NULL,
+DROP TABLE IF EXISTS `tblnotification`;
+CREATE TABLE IF NOT EXISTS `tblnotification` (
+  `pknotificationid` int(10) NOT NULL AUTO_INCREMENT,
+  `enlevel` enum('Notification','Warning','Error') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txdescription` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fkuserid` int(10) NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '0'
+  `isactive` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`pknotificationid`),
+  KEY `fkuserid` (`fkuserid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblotherscholarship`
+--
+
+DROP TABLE IF EXISTS `tblotherscholarship`;
+CREATE TABLE IF NOT EXISTS `tblotherscholarship` (
+  `pkoscholarship` int(10) NOT NULL AUTO_INCREMENT,
+  `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entype` enum('Scholarship','Grant','Loan','Fellowship','Prize') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nmorganization` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txrequirements` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `enethnicity` enum('Hispanic','Native American','African American','Asian/Pacific Islander') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `enreligion` enum('Jewish','Catholic','Islam/Muslim Faith','Baptist','Brethern','Christain','Deciple of Christ','Eastern Orthodox','Episcopalian','Latter-Day Saints','Methodist','Presbyterian','Protestant') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `enmilitary` enum('Air Force','Army','Navy','Marines','Coast Guard','Air National Guard','Army National Guard') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `endisability` enum('Visual','Hearing','Physical','Learning') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `namount` int(10) NOT NULL,
+  PRIMARY KEY (`pkoscholarship`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -335,11 +572,23 @@ CREATE TABLE `tblnotification` (
 -- Table structure for table `tblpermission`
 --
 
-CREATE TABLE `tblpermission` (
-  `pkpermissionid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblpermission`;
+CREATE TABLE IF NOT EXISTS `tblpermission` (
+  `pkpermissionid` int(10) NOT NULL AUTO_INCREMENT,
   `nmname` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkpermissionid`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblpermission`
+--
+
+INSERT INTO `tblpermission` (`pkpermissionid`, `nmname`, `txdescription`) VALUES
+(1, 'Student', 'This is a student User. They get the basic permissions to use the website  like make their own profile, follow colleges, and other such features'),
+(2, 'Admin', 'This user gets complete control over the website, make/delete new user profiles, college profiles, and have general website maintenence'),
+(3, 'Representative', 'This user is assigned to a specific college by an Admin\'s permission. The are allowed to send notification about the college to the Students profile'),
+(4, 'Parent', 'Parents can create an account that is associated with the Student account');
 
 -- --------------------------------------------------------
 
@@ -347,12 +596,15 @@ CREATE TABLE `tblpermission` (
 -- Table structure for table `tblprovince`
 --
 
-CREATE TABLE `tblprovince` (
-  `pkstateid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblprovince`;
+CREATE TABLE IF NOT EXISTS `tblprovince` (
+  `pkstateid` int(10) NOT NULL AUTO_INCREMENT,
   `idiso` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(192) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fkcountryid` int(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `fkcountryid` int(3) NOT NULL,
+  PRIMARY KEY (`pkstateid`),
+  KEY `fkcountryid` (`fkcountryid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3876 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblprovince`
@@ -4238,14 +4490,548 @@ INSERT INTO `tblprovince` (`pkstateid`, `idiso`, `nmname`, `fkcountryid`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblsatconversion`
+--
+
+DROP TABLE IF EXISTS `tblsatconversion`;
+CREATE TABLE IF NOT EXISTS `tblsatconversion` (
+  `nold` int(10) NOT NULL,
+  `nnew` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblsports`
+--
+
+DROP TABLE IF EXISTS `tblsports`;
+CREATE TABLE IF NOT EXISTS `tblsports` (
+  `pksportsid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmsport` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pksportsid`)
+) ENGINE=InnoDB AUTO_INCREMENT=502 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblsports`
+--
+
+INSERT INTO `tblsports` (`pksportsid`, `nmsport`) VALUES
+(1, 'Aerobatics'),
+(2, 'Air Racing'),
+(3, 'Cluster Ballooning'),
+(4, 'Hopper Ballooning'),
+(5, 'Gliding'),
+(6, 'Hang Gliding'),
+(7, 'Powered Hang Gliding'),
+(8, 'Human Powered Aircraft'),
+(9, 'Model Aircraft'),
+(10, 'Parachuting'),
+(11, 'Banzai Skydiving'),
+(12, 'BASE Jumping'),
+(13, 'Skydiving'),
+(14, 'Skysurfing'),
+(15, 'Windsuit Flying'),
+(16, 'Paragliding'),
+(17, 'Powered Paragliding'),
+(18, 'Paramotoring'),
+(19, 'Ultralight Aviation'),
+(20, 'Archery'),
+(21, 'Field Archery'),
+(22, 'Flight Archery'),
+(23, 'Gungdo'),
+(24, 'Indoor Archery'),
+(25, 'Kyūdō'),
+(26, 'Popinjay'),
+(27, 'Target Archery'),
+(28, 'Badminton'),
+(29, 'Ball Badminton'),
+(30, 'Biribol'),
+(31, 'Bossaball'),
+(32, 'Fistball'),
+(33, 'Footbag Net'),
+(34, 'Football Tennis'),
+(35, 'Footvolley'),
+(36, 'Hooverball'),
+(37, 'Jainzi'),
+(38, 'Padel'),
+(39, 'Peteca'),
+(40, 'Pickleball'),
+(41, 'Platform Tennis'),
+(42, 'Rocball'),
+(43, 'Sepak Takraw'),
+(44, 'Sipa'),
+(45, 'Table Tennis'),
+(46, 'Tennis'),
+(47, 'Throwball'),
+(48, 'Valleyball'),
+(49, 'Beach Volleyball'),
+(50, 'Paralympic Volleyball'),
+(51, 'Water Volleyball'),
+(52, 'Wallyball'),
+(53, 'Basketball'),
+(54, 'Beach Basketball'),
+(55, 'Deaf Basketball'),
+(56, 'Streetball'),
+(57, 'Water Basketball'),
+(58, 'Wheelchair Basketball'),
+(59, 'Cestoball'),
+(60, 'Korfball'),
+(61, 'Netball'),
+(62, 'Fastnet'),
+(63, 'Indoor Netball'),
+(64, 'Ringball'),
+(65, 'Slamball'),
+(66, 'Baseball'),
+(67, 'Softball'),
+(68, 'Slow Pitch Softball'),
+(69, 'Fast Pitch Softball'),
+(70, '16 Inch Softball'),
+(71, 'Bat and Trap'),
+(72, 'British Baseball'),
+(73, 'Brannboll'),
+(74, 'Corkball'),
+(75, 'Cricket'),
+(76, 'Indoor Cricket'),
+(77, 'Limited Overs Cricket'),
+(78, 'One Day International Cricket'),
+(79, 'Test Cricket'),
+(80, 'Twenty20 Cricket'),
+(81, 'Danish Longball'),
+(82, 'Kickball'),
+(83, 'Kilikiti'),
+(84, 'Lapta'),
+(85, 'The Massachusetts Game'),
+(86, 'Matball'),
+(87, 'Oina'),
+(88, 'Old Cat'),
+(89, 'Over the Line'),
+(90, 'Palant'),
+(91, 'Pesapallo'),
+(92, 'Punchball'),
+(93, 'Rounders'),
+(94, 'Scrub Baseball'),
+(95, 'Stickball'),
+(96, 'Stool Ball'),
+(97, 'Tee Ball'),
+(98, 'Town Ball'),
+(99, 'Vigoro'),
+(100, 'Wireball'),
+(101, 'Wiffleball'),
+(102, 'Baton Twirling'),
+(103, 'Competitive Dancing'),
+(104, 'Cheerleading'),
+(105, 'Gymnastics'),
+(106, 'Drum Corps'),
+(107, 'Marching Band'),
+(108, 'Skateboarding'),
+(109, 'Scootering'),
+(110, 'Casterboarding'),
+(111, 'Freeboard'),
+(112, 'Longboarding'),
+(113, 'Streetboarding'),
+(114, 'Streetluge'),
+(115, 'Snowboarding'),
+(116, 'Mountainboarding'),
+(117, 'Sandboarding'),
+(118, 'Snowkiting'),
+(119, 'Surfing'),
+(120, 'Wakesurfing'),
+(121, 'Bodyboarding'),
+(122, 'Riverboarding'),
+(123, 'Skimboarding'),
+(124, 'Windsurfing'),
+(125, 'Kneeboarding'),
+(126, 'Paddleboarding'),
+(127, 'Dodgeball'),
+(128, 'Ga-ga'),
+(129, 'Keep Away'),
+(130, 'Kin Ball'),
+(131, 'Newcomb Ball'),
+(132, 'Quidditch'),
+(133, 'Rundown'),
+(134, 'Yukigassen'),
+(135, 'Abseiling'),
+(136, 'Aid Climbing'),
+(137, 'Ice CLimbing'),
+(138, 'Mixed Climbing'),
+(139, 'Mountaineering'),
+(140, 'Rock Climbing'),
+(141, 'Bouldering'),
+(142, 'Deep Water Soloing'),
+(143, 'Sport Climbing'),
+(144, 'Traditional Climbing'),
+(145, 'Canyoning'),
+(146, 'Coasteering'),
+(147, 'Hiking'),
+(148, 'Rope Climbing'),
+(149, 'Pole Climbing'),
+(150, 'Cycling'),
+(151, 'Artistic Cycling'),
+(152, 'BMX'),
+(153, 'Cyclo-Cross'),
+(154, 'Cross Country Mountain Biking'),
+(155, 'Cycle Polo'),
+(156, 'Cycle Speedway'),
+(157, 'Downhill Mountain Biking'),
+(158, 'Dirt Jumping'),
+(159, 'Freestyle BMX'),
+(160, 'Hardcourt Bike Polo'),
+(161, 'Road Bicycle Racing'),
+(162, 'Track Cycling'),
+(163, 'Underwater Cycling'),
+(164, 'Skibobbing'),
+(165, 'Unicycling'),
+(166, 'Mountain Unicycling'),
+(167, 'Unicycle Basketball'),
+(168, 'Unicycle Hockey'),
+(169, 'Unicycle Trials'),
+(170, 'Grappling'),
+(171, 'Akiki Jujutsu'),
+(172, 'Aikido'),
+(173, 'Jujutsu'),
+(174, 'Judo'),
+(175, 'Brazilian Jiu-Jitsu'),
+(176, 'Sambo'),
+(177, 'Sumo'),
+(178, 'Wrestling'),
+(179, 'Amateur Wrestling'),
+(180, 'Greco-Roman Wrestling'),
+(181, 'Freestyle Wrestling'),
+(182, 'Folk Wrestling'),
+(183, 'Boli Khela'),
+(184, 'Collar and Elbow Wrestling'),
+(185, 'Cornish Wrestling'),
+(186, 'Dumog'),
+(187, 'Glima'),
+(188, 'Gouren'),
+(189, 'Kurash'),
+(190, 'Lancashire Wrestling'),
+(191, 'Catch Wrestling'),
+(192, 'Malla Yuddha'),
+(193, 'Mongolian Wrestling'),
+(194, 'Pehlwani'),
+(195, 'Professional Wrestling'),
+(196, 'Schwingen'),
+(197, 'Shuai Jiao'),
+(198, 'Ssireum'),
+(199, 'Varzesh-e Pahlavani'),
+(200, 'Yagli Gures'),
+(201, 'Greek Wrestling'),
+(202, 'Choi Kwang-Do'),
+(203, 'Cockfighting'),
+(204, 'Boxing'),
+(205, 'Bokator'),
+(206, 'Capoeira'),
+(207, 'Fujian White Crane'),
+(208, 'Karate'),
+(209, 'Kenpo'),
+(210, 'Kickboxing'),
+(211, 'Lethwei'),
+(212, 'Muay Thai'),
+(213, 'Pradal Serey'),
+(214, 'Sanshou'),
+(215, 'Savate'),
+(216, 'Shaolin Kung Fu'),
+(217, 'Sikaran'),
+(218, 'Silat'),
+(219, 'Subak'),
+(220, 'Taekkyeon'),
+(221, 'Taekwondo'),
+(222, 'Taido'),
+(223, 'Tang Soo Do'),
+(224, 'Wing Chun'),
+(225, 'Baguazhang'),
+(226, 'Bando'),
+(227, 'Bartitsu'),
+(228, 'Bujinkan'),
+(229, 'Hapkido'),
+(230, 'Hwa Rang Do'),
+(231, 'Jeet Kune Do'),
+(232, 'Kajukenbo'),
+(233, 'Kalaripayattu'),
+(234, 'Krav Maga'),
+(235, 'Kuk Sool Won'),
+(236, 'Marine Corps Martial Arts Program'),
+(237, 'Mixed Martial Arts'),
+(238, 'Northern Praying Mantis'),
+(239, 'Ninjutsu'),
+(240, 'Pankration'),
+(241, 'Pencak Silat'),
+(242, 'Sanshou'),
+(243, 'Shidokan Karate'),
+(244, 'Shorin-ryu Shidokan'),
+(245, 'Shoot Boxing'),
+(246, 'Shootfighting'),
+(247, 'Shorinji Kempo'),
+(248, 'Systema'),
+(249, 'Tai chi chuan'),
+(250, 'Vajra Mushti'),
+(251, 'Vale Tudo'),
+(252, 'Vovinam'),
+(253, 'Xing Yi Quan'),
+(254, 'Zen Bu Kan Kempo'),
+(255, 'Axe Throwing'),
+(256, 'Battojutsu'),
+(257, 'Boffer Fighting'),
+(258, 'Eskrima'),
+(259, 'Egyptian Stick Fencing'),
+(260, 'Fencing'),
+(261, 'Gatka'),
+(262, 'Hojojutsu'),
+(263, 'Iaido'),
+(264, 'Iaijutsu'),
+(265, 'Jodo'),
+(266, 'Jogo do pau'),
+(267, 'Jukendo'),
+(268, 'Jittejutsu'),
+(269, 'Kendo'),
+(270, 'Kenjutsu'),
+(271, 'Krabi Krabong'),
+(272, 'Kung Fu'),
+(273, 'Kyudo'),
+(274, 'Kyujutsu'),
+(275, 'Modern Arnis'),
+(276, 'Naginatajutsu'),
+(277, 'Nguni Stick Fighting'),
+(278, 'Okinawan Kobudo'),
+(279, 'Shurikenjutsu'),
+(280, 'Silambam'),
+(281, 'Sojutsu'),
+(282, 'Sword Fighting'),
+(283, 'Wushu'),
+(284, 'Kumdo'),
+(285, 'Wing Chun'),
+(286, 'Airsoft'),
+(287, 'Laser Tag'),
+(288, 'Paintball'),
+(289, 'Carom Billiards'),
+(290, 'Three Cusion Billiards'),
+(291, 'Five Pins Billiards'),
+(292, 'Balkline and Straight Rail Billiards'),
+(293, 'Cushion Caroms'),
+(294, 'Four Ball Billiards'),
+(295, 'Artistic Billiards'),
+(296, 'Novuss'),
+(297, 'Pocket Billiards'),
+(298, 'Eight Ball'),
+(299, 'Blackball'),
+(300, 'Nine Ball'),
+(301, 'Straight Pool'),
+(302, 'One Pocket Billiards'),
+(303, 'Three Ball Billiards'),
+(304, 'Seven Ball Billiards'),
+(305, 'Ten Ball Billiards'),
+(306, 'Rotation Billiards'),
+(307, 'Baseball Pocket Billiards'),
+(308, 'Cribbage Pool'),
+(309, 'Bank Pool'),
+(310, 'Artistic Pool'),
+(311, 'Trick Shot'),
+(312, 'Speed Pool'),
+(313, 'Bowlliards'),
+(314, 'Chicago Billiards'),
+(315, 'Kelly Pool'),
+(316, 'Cutthroat'),
+(317, 'Killer Billiards'),
+(318, 'Russian Pyramid'),
+(319, 'Snooker'),
+(320, 'Sinuca Brasileira'),
+(321, 'Six Red Snooker'),
+(322, 'Snooker Plus'),
+(323, 'English Billiards'),
+(324, 'Bottle Pool'),
+(325, 'Cowboy Pool'),
+(326, 'Bagatelle'),
+(327, 'Bar Billiards'),
+(328, 'Bumper Pool'),
+(329, 'Foosball'),
+(330, 'Buzkashi'),
+(331, 'Barrel Racing'),
+(332, 'Campdrafting'),
+(333, 'Cirit'),
+(334, 'Charreada'),
+(335, 'Chilean Rodeo'),
+(336, 'Cross Country'),
+(337, 'Cutting'),
+(338, 'Dressage'),
+(339, 'Endurance Riding'),
+(340, 'English Pleasure'),
+(341, 'Equitation'),
+(342, 'Eventing'),
+(343, 'Equestrain Vaulting'),
+(344, 'Gymkhana'),
+(345, 'Harness Racing'),
+(346, 'Horse Racing'),
+(347, 'Horseball'),
+(348, 'Hunter'),
+(349, 'Hunter Jumpers'),
+(350, 'Jousting'),
+(351, 'Pato'),
+(352, 'Reining'),
+(353, 'Show Jumping'),
+(354, 'Steeplechase'),
+(355, 'Sur Papakh'),
+(356, 'Team Penning'),
+(357, 'Tent Pegging'),
+(358, 'Western Pleasure'),
+(359, 'Fishing'),
+(360, 'Angling'),
+(361, 'Big Game Fishing'),
+(362, 'Casting'),
+(363, 'Noodling'),
+(364, 'Spearfishing'),
+(365, 'Sport Fishing'),
+(366, 'Surf Fishing'),
+(367, 'Rock Fishing'),
+(368, 'Fly Fishing'),
+(369, 'Ice Fishing'),
+(370, 'Beach Ultimate'),
+(371, 'Disc Dog'),
+(372, 'Disc Golf'),
+(373, 'Urban Disc Golf'),
+(374, 'Dodge Disc'),
+(375, 'Double Disc Court'),
+(376, 'Flutterguts'),
+(377, 'Freestyle'),
+(378, 'Freestyle Competition'),
+(379, 'Goalitimate'),
+(380, 'Guts'),
+(381, 'Hot Box'),
+(382, 'Ultimate'),
+(383, 'Chinlone'),
+(384, 'Cuju'),
+(385, 'Episkyros'),
+(386, 'Harpastum'),
+(387, 'Kemari'),
+(388, 'Ki O Rahi'),
+(389, 'Marn Grook'),
+(390, 'Woggabaliri'),
+(391, 'Yubi Lakpi'),
+(392, 'Ba Game'),
+(393, 'Caid'),
+(394, 'Calcio Fiorentino'),
+(395, 'Camping Football'),
+(396, 'Chester le Street'),
+(397, 'Cnapan'),
+(398, 'Cornish Hurling'),
+(399, 'Haxey Hood'),
+(400, 'Knattleikr'),
+(401, 'La Soule'),
+(402, 'Lelo Burti'),
+(403, 'Mob Football'),
+(404, 'Royal Shrovetide Football'),
+(405, 'Uppies and Downies'),
+(406, 'Association Football'),
+(407, 'Jorkyball'),
+(408, 'Paralympic Football'),
+(409, 'Powerchair Football'),
+(410, 'Five-a-side Football'),
+(411, 'Beach Soccer'),
+(412, 'Futebol de Salao'),
+(413, 'Futsal'),
+(414, 'Papi Fut'),
+(415, 'Indoor Soccer'),
+(416, 'Masters Football'),
+(417, 'Street Football'),
+(418, 'Freestyle Football'),
+(419, 'Keepie Uppie'),
+(420, 'Swamp Football'),
+(421, 'Three Sided Football'),
+(422, 'Australian Football'),
+(423, 'Nine-a-side Footy'),
+(424, 'Rec Footy'),
+(425, 'Metro Footy'),
+(426, 'Eton College Field Game'),
+(427, 'Eton College Wall Game'),
+(428, 'Harrow Football'),
+(429, 'Gaelic Football'),
+(430, 'Gridiron Football'),
+(431, 'American Football'),
+(432, 'Eight-man Football'),
+(433, 'Flag Football'),
+(434, 'Indoor Football'),
+(435, 'Arena Football'),
+(436, 'Nine-man Football'),
+(437, 'Six-man Football'),
+(438, 'Sprint Football'),
+(439, 'Touch Football'),
+(440, 'Canadian Football'),
+(441, 'Street Football'),
+(442, 'Rugby'),
+(443, 'Beach Rugby'),
+(444, 'Rugby League'),
+(445, 'Masters Rugby League'),
+(446, 'Mod League'),
+(447, 'Rugby League Nines'),
+(448, 'Rugby League Sevens'),
+(449, 'Tag Rugby'),
+(450, 'Touch Football'),
+(451, 'Wheelchair Rugby League'),
+(452, 'Rugby Union'),
+(453, 'American Flag Rugby'),
+(454, 'Mini Rugby'),
+(455, 'Rugby Sevens'),
+(456, 'Tag Rugby'),
+(457, 'Touch Rugby'),
+(458, 'Rugby Tens'),
+(459, 'Snow Rugby'),
+(460, 'Austus'),
+(461, 'Eton Wall Game'),
+(462, 'International Rules Football'),
+(463, 'Samoa Rules Football'),
+(464, 'Speedball'),
+(465, 'Universal Football'),
+(466, 'Volata'),
+(467, 'Golf'),
+(468, 'Miniature Golf'),
+(469, 'Match Play Golf'),
+(470, 'Skins Game Golf'),
+(471, 'Speed Golf'),
+(472, 'Stroke Play Golf'),
+(473, 'Team Play Golf'),
+(474, 'Shotgun Start Golf'),
+(475, 'Gymnastics'),
+(476, 'Acrobatic Gymnastics'),
+(477, 'Aerobic Gymnastics'),
+(478, 'Artistic Gymnastics'),
+(479, 'Balance Beam Gymnastics'),
+(480, 'Floor Gymnastics'),
+(481, 'High Bar Gymnastics'),
+(482, 'Parallel Bars Gymnastics'),
+(483, 'Pommel Horse Gymnastics'),
+(484, 'Still Rings Gymnastics'),
+(485, 'Uneven Bars Gymnastics'),
+(486, 'Juggling'),
+(487, 'Rhythmic Gymnastics'),
+(488, 'Ball Gymnastics'),
+(489, 'Club Gymnastics'),
+(490, 'Hoop Gymnastics'),
+(491, 'Ribbon Gymnastics'),
+(492, 'Rope Gymnastics'),
+(493, 'Rope Jumping'),
+(494, 'Slacklining'),
+(495, 'Trampolining'),
+(496, 'Trapeze'),
+(497, 'Flying Trapeze'),
+(498, 'Static Trapeze'),
+(499, 'Tumbling Gymnastics'),
+(500, 'Goalball'),
+(501, 'Tchoukball');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbltokens`
 --
 
-CREATE TABLE `tbltokens` (
-  `pktokenid` int(64) NOT NULL,
+DROP TABLE IF EXISTS `tbltokens`;
+CREATE TABLE IF NOT EXISTS `tbltokens` (
+  `pktokenid` int(64) NOT NULL AUTO_INCREMENT,
   `jsonget` json NOT NULL,
   `dtexpire` timestamp NOT NULL,
-  `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
+  `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pktokenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -4254,8 +5040,9 @@ CREATE TABLE `tbltokens` (
 -- Table structure for table `tbluser`
 --
 
-CREATE TABLE `tbluser` (
-  `pkuserid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tbluser`;
+CREATE TABLE IF NOT EXISTS `tbluser` (
+  `pkuserid` int(10) NOT NULL AUTO_INCREMENT,
   `nmfirst` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmlast` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4267,7 +5054,9 @@ CREATE TABLE `tbluser` (
   `nphone` int(10) DEFAULT NULL,
   `dtgradyear` year(4) DEFAULT NULL,
   `txhash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '1'
+  `isactive` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`pkuserid`),
+  KEY `fkprovinceid` (`fkprovinceid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -4276,116 +5065,23 @@ CREATE TABLE `tbluser` (
 -- Table structure for table `tbluserpermissions`
 --
 
-CREATE TABLE `tbluserpermissions` (
+DROP TABLE IF EXISTS `tbluserpermissions`;
+CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
   `fkpermissionid` int(10) NOT NULL,
-  `fkuserid` int(10) NOT NULL
+  `fkuserid` int(10) NOT NULL,
+  KEY `fkpermissionid` (`fkpermissionid`),
+  KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Indexes for dumped tables
---
-
---
--- Indexes for table `tblcollege`
---
-ALTER TABLE `tblcollege`
-  ADD PRIMARY KEY (`pkcollegeid`);
-
---
--- Indexes for table `tblcollegerep`
---
-ALTER TABLE `tblcollegerep`
-  ADD KEY `fkuserid` (`fkuserid`),
-  ADD KEY `fkcollegeid` (`fkcollegeid`);
-
---
--- Indexes for table `tblcountry`
---
-ALTER TABLE `tblcountry`
-  ADD PRIMARY KEY (`pkcountryid`);
-
---
--- Indexes for table `tblnotification`
---
-ALTER TABLE `tblnotification`
-  ADD PRIMARY KEY (`pknotificationid`),
-  ADD KEY `fkuserid` (`fkuserid`);
-
---
--- Indexes for table `tblpermission`
---
-ALTER TABLE `tblpermission`
-  ADD PRIMARY KEY (`pkpermissionid`);
-
---
--- Indexes for table `tblprovince`
---
-ALTER TABLE `tblprovince`
-  ADD PRIMARY KEY (`pkstateid`),
-  ADD KEY `fkcountryid` (`fkcountryid`);
-
---
--- Indexes for table `tbltokens`
---
-ALTER TABLE `tbltokens`
-  ADD PRIMARY KEY (`pktokenid`);
-
---
--- Indexes for table `tbluser`
---
-ALTER TABLE `tbluser`
-  ADD PRIMARY KEY (`pkuserid`),
-  ADD KEY `fkprovinceid` (`fkprovinceid`);
-
---
--- Indexes for table `tbluserpermissions`
---
-ALTER TABLE `tbluserpermissions`
-  ADD KEY `fkpermissionid` (`fkpermissionid`),
-  ADD KEY `fkuserid` (`fkuserid`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `tblcollege`
---
-ALTER TABLE `tblcollege`
-  MODIFY `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblcountry`
---
-ALTER TABLE `tblcountry`
-  MODIFY `pkcountryid` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=254;
---
--- AUTO_INCREMENT for table `tblnotification`
---
-ALTER TABLE `tblnotification`
-  MODIFY `pknotificationid` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblpermission`
---
-ALTER TABLE `tblpermission`
-  MODIFY `pkpermissionid` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblprovince`
---
-ALTER TABLE `tblprovince`
-  MODIFY `pkstateid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3876;
---
--- AUTO_INCREMENT for table `tbltokens`
---
-ALTER TABLE `tbltokens`
-  MODIFY `pktokenid` int(64) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tbluser`
---
-ALTER TABLE `tbluser`
-  MODIFY `pkuserid` int(10) NOT NULL AUTO_INCREMENT;
---
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `tblcollege`
+--
+ALTER TABLE `tblcollege`
+  ADD CONSTRAINT `tblcollege_ibfk_1` FOREIGN KEY (`fkprovinceid`) REFERENCES `tblprovince` (`pkstateid`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblcollegerep`
@@ -4393,6 +5089,26 @@ ALTER TABLE `tbluser`
 ALTER TABLE `tblcollegerep`
   ADD CONSTRAINT `tblcollegerep_ibfk_1` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `tblcollegerep_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblcollegescholarship`
+--
+ALTER TABLE `tblcollegescholarship`
+  ADD CONSTRAINT `tblcollegescholarship_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblcollegesports`
+--
+ALTER TABLE `tblcollegesports`
+  ADD CONSTRAINT `tblcollegesports_ibfk_1` FOREIGN KEY (`fksportsid`) REFERENCES `tblsports` (`pksportsid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblcollegesports_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblmajorcollege`
+--
+ALTER TABLE `tblmajorcollege`
+  ADD CONSTRAINT `tblmajorcollege_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblmajorcollege_ibfk_2` FOREIGN KEY (`fkmajorid`) REFERENCES `tblmajor` (`pkmajorid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblnotification`
