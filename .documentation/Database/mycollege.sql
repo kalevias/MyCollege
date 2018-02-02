@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 02, 2018 at 06:31 PM
+-- Generation Time: Feb 02, 2018 at 07:06 PM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
   `txcity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fkprovinceid` int(10) NOT NULL,
   `nzip` int(5) NOT NULL,
+  `nPhone` int(10) DEFAULT NULL,
   `ninstate` int(7) NOT NULL,
   `noutstate` int(7) NOT NULL,
   `nfinancialave` int(7) DEFAULT NULL,
@@ -55,16 +56,16 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
 -- Dumping data for table `tblcollege`
 --
 
-INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
-(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
-(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
-(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
-(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
-(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
-(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban'),
-(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, 12510, 23670, 13708, 0.72, 1162, 19923, 57, 23, NULL, 'Small Town'),
-(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, 12120, 27711, 8785, 0.73, 1356, 17541, 59, NULL, NULL, 'Suburban'),
-(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, 14074, 45082, 24323, 0.28, 3434, 28983, 50, NULL, NULL, 'Urban');
+INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nPhone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
+(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
+(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban'),
+(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 57, 23, NULL, 'Small Town'),
+(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 59, NULL, NULL, 'Suburban'),
+(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 50, NULL, NULL, 'Urban');
 
 -- --------------------------------------------------------
 
