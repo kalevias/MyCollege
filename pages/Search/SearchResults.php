@@ -59,7 +59,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <ul class="nav navbar-nav navbar-left">
-                <li><a href="#" class="navbar-nav navbar-default">MyCollege</a></li>
+                <li><a href="/MyCollege/pages/homepage/index.php" class="navbar-nav navbar-default">MyCollege</a></li>
                 <li><a href="/MyCollege/pages/Search/SearchResults.php" class="navbar-nav navbar-default">Schools</a>
                 </li>
                 <li><a href="#" class="navbar-nav navbar-default">Scholarships</a></li>
