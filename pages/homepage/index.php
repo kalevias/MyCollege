@@ -84,8 +84,8 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
                         Register
                         <span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="registermenu">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mycollege/pages/Register/signup.php">Students</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mycollege/pages/Register/signup.php">College Reps</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mycollege/pages/Register/Studentsignup.php">Students</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mycollege/pages/Register/CRSignup.php">College Reps</a></li>
                     </ul>
                     </span></li>
 
@@ -109,11 +109,11 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
 
 
     <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal" id="myModal" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
-            <div class="modal-content">
+            <div class="modal2-content">
                 <br>
 
                 <form action="/MyCollege/pages/Search/SearchResults.php" class="form-horizontal" role="form">

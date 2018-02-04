@@ -30,38 +30,13 @@
 ?>
 <!DOCTYPE html>
 <html>
-
+<link rel="stylesheet" href="css/signup.css" type="text/css">
     
     <head>
-        <title>Sign Up</title>
+        <title>Student Sign Up</title>
     </head>
     
-    <style>
-    
-        *{margin: 0; padding: 0;}
-        body{background: #ecf1f4; font-family: sans-serif;}
 
-
-
-        input{width: 100%; background: none; border: 1px solid #fff; border-radius: 3px; padding: 6px 15px; box-sizing: border-box; margin-bottom: 20px; font-size: 16px; color: #005959;}
-
-        input[type="button"]{ background: #ffffff; border: 0; cursor: pointer; color: #3e3d3d;}
-        input[type="button"]:hover{ background: #ffffff; transition: .6s;}
-        
-        ::placeholder{color: #005959;}
-
-
-        .rcorners2 {
-            border-radius: 25px;
-            border: 2px solid #73AD21;
-            padding: 40px;
-            width: 320px;
-            height: 575px;
-            position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-        }
-
-
-    </style>
 
     <body>
         <div>
@@ -75,7 +50,7 @@
         </div>
         <div class="rcorners2">
             <form action="" method="POST">
-                <h1>Sign Up</h1>
+                <h1>Student Sign Up</h1>
                 <input type="text" placeholder="First Name" name="firstName">
                 <input type="text" placeholder="Last Name" name="lastName">
 
