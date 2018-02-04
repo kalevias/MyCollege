@@ -9,53 +9,7 @@ body, h1, h2, h3, h4, h5, h6 {
 }
 
 .fa-anchor, .fa-coffee {
-  font-size: 600px
-}
-
-.navbar {
-  margin-bottom: 0;
-  background-color: #003366;
-  border: 0;
-  font-size: 12px !important;
-  letter-spacing: 5px;
-  opacity: 0.9;
-}
-
-/* Add a gray color to all navbar links */
-.navbar li a, .navbar .navbar-brand {
-  color: #003366 !important;
-}
-
-/* On hover, the links will turn white */
-.navbar-nav li a:hover {
-  color: #666666 !important;
-}
-
-/* The active link */
-.navbar-nav li.active a {
-  color: #fff !important;
-  background-color: #29292c !important;
-}
-
-/* Remove border color from the collapsible button */
-.navbar-default .navbar-toggle {
-  border-color: transparent;
-}
-
-/* Dropdown */
-.open .dropdown-toggle {
-  color: #fff;
-  background-color: #555 !important;
-}
-
-/* Dropdown links */
-.dropdown-menu li a {
-  color: #000 !important;
-}
-
-/* On hover, the dropdown links will turn red */
-.dropdown-menu li a:hover {
-  background-color: #95afff !important;
+  font-size: 150px
 }
 
 .carousel-inner > .item > img,
@@ -76,7 +30,7 @@ body, h1, h2, h3, h4, h5, h6 {
 }
 
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 * {
@@ -131,32 +85,6 @@ button:hover {
 .container {
   padding: 16px;
   width: auto;
-}
-
-/* The Modal (background) */
-.modal2 {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: #474e5d;
-  padding-top: 50px;
-  padding-right: 200px;
-  padding-left: 200px;
-
-}
-
-/* Modal Content/Box */
-.modal2-content {
-  background-color: #71a0b8;
-  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
-  border: 1px solid #888;
-  width: 410px; /* Could be more or less, depending on screen size */
-  height: 150px;
 }
 
 /* Style the horizontal ruler */

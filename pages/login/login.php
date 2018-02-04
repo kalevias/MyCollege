@@ -1,38 +1,36 @@
 <?php
-    if(session_status() == PHP_SESSION_NONE){
-        session_start();
-    }
-    include "../../classes/UserLoginLogout.php";
-    //check if $_POST is empty
-    if(!empty($_POST)){
-        //checks if the request type is login
-        if(isset($_POST["requestType"]) && $_POST["requestType"] == "login"){
-            UserLoginLogout::userLogin($_POST["email"], $_POST["password"]);
-            if($_SESSION["userLoggedIn"] == true){
-				header("Location: ../../index.php");
-            }else{
-                $loginFail = true;
-            }
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+$homedir = "../../";
+include $homedir . "classes/UserLoginLogout.php";
+//check if $_POST is empty
+if (!empty($_POST)) {
+    //checks if the request type is login
+    if (isset($_POST["requestType"]) && $_POST["requestType"] == "login") {
+        UserLoginLogout::userLogin($_POST["email"], $_POST["password"]);
+        if ($_SESSION["userLoggedIn"] == true) {
+            header("Location: " . $homedir . "index.php");
+        } else {
+            $loginFail = true;
         }
     }
+}
 ?>
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="css/login.css" type="text/css">
-    
+    <link rel="stylesheet" href="<?php echo $homedir; ?>pages/login/css/login.min.css" type="text/css">
     <head>
         <title>Login</title>
     </head>
-    
-
     <body>
         <div>
             <?php
-                if(isset($loginFail)){
-            ?>
+            if (isset($loginFail)) {
+                ?>
                 <h2>Password or E-Mail is incorrect. Please try again.</h2>
-            <?php
-                }
+                <?php
+            }
             ?>
         </div>
         <div class="form-wrap">
@@ -46,6 +44,5 @@
                 <input type="button" value="Forgot Password?">
             </form>
         </div>
-    </div>
     </body>
 </html>

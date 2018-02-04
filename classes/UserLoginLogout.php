@@ -11,7 +11,7 @@ if(session_status() == PHP_SESSION_NONE){
 require_once "DatabaseConnection.php";
 class UserLoginLogout{
 
-	//Login method
+	//login method
 	public static function userLogin($userEmail, $password){
 		//connect to database
 		$conn = DatabaseConnection::databaseConnect();
