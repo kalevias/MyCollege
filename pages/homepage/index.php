@@ -8,11 +8,6 @@ if (isset($_SESSION["userLoggedIn"])) {
 } else {
     $loggedIn = false;
 }
-if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
-    $loggedIn = false;
-    unset($_SESSION["userPermission"]);
-    unset($_SESSION["userLoggedIn"]);
-}
 ?>
 <!DOCTYPE html>
 <html>

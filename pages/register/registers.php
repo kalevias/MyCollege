@@ -3,17 +3,16 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 $homedir = "../../";
-include_once $homedir."classes/UserRegister.php";
-include_once $homedir."classes/UserLoginLogout.php";
+include_once $homedir . "classes/Authenticator.php";
 //check if $_POST is empty
 if (!empty($_POST)) {
     //checks if the request type is login
     if (isset($_POST["requestType"]) && $_POST["requestType"] == "register") {
         if ($_POST["password"] == $_POST["passwordconfirm"]) {
             //register user
-            $result = UserRegister::register($_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["streetAddress"], $_POST["city"], null, $_POST["zip"], $_POST["phoneNumber"], $_POST["gradYear"], $_POST["password"]);
+            $result = Authenticator::register($_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["streetAddress"], $_POST["city"], null, $_POST["zip"], $_POST["phoneNumber"], $_POST["gradYear"], $_POST["password"]);
             if ($result) {
-                UserLoginLogout::userLogin($_POST["email"], $_POST["password"]);
+                Authenticator::login($_POST["email"], $_POST["password"]);
             } else {
                 $registerFail = true;
             }
@@ -22,7 +21,7 @@ if (!empty($_POST)) {
             $registerFail = true;
         }
         if (isset($_SESSION["userLoggedIn"])) {
-            header("Location: ../../index.php");
+            header("Location: $homedir");
         } else {
             $registerFail = true;
         }

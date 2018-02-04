@@ -5,6 +5,12 @@
  * Date: 2/4/2018
  * Time: 2:39 PM
  */
+
+include_once $homedir."classes/Authenticator.php";
+if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
+    $loggedIn = false;
+    Authenticator::logout();
+}
 ?>
 
 <!-- Navbar -->
@@ -31,10 +37,12 @@
                 <?php
                 if ($loggedIn) {
                     ?>
-                    <form action="" method="POST">
-                        <input type="hidden" value="logout" name="requestType">
-                        <input type="submit" class="navbar-nav navbar-default" value="Log Out">
-                    </form>
+                    <li>
+                        <form action="" method="POST">
+                            <input type="hidden" value="logout" name="requestType">
+                            <input type="submit" class="navbar-nav navbar-default" value="Log Out">
+                        </form>
+                    </li>
                     <li>
                         <a href="#myModal" data-toggle="modal" data-target="#myModal">
                             <span class="glyphicon glyphicon-search"></span>

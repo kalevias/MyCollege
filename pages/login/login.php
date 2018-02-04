@@ -3,14 +3,14 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 $homedir = "../../";
-include $homedir . "classes/UserLoginLogout.php";
+include $homedir . "classes/Authenticator.php";
 //check if $_POST is empty
 if (!empty($_POST)) {
     //checks if the request type is login
     if (isset($_POST["requestType"]) && $_POST["requestType"] == "login") {
-        UserLoginLogout::userLogin($_POST["email"], $_POST["password"]);
+        Authenticator::login($_POST["email"], $_POST["password"]);
         if ($_SESSION["userLoggedIn"] == true) {
-            header("Location: " . $homedir . "index.php");
+            header("Location: " . $homedir);
         } else {
             $loginFail = true;
         }
@@ -35,7 +35,7 @@ if (!empty($_POST)) {
         </div>
         <div class="form-wrap">
             <div class="rcorners2"
-            <form action="login.php" method="POST">
+            <form action="" method="POST">
                 <h1>Login</h1>
                 <input title="Please enter a valid email address" type="text" placeholder="E-Mail" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                 <input type="password" placeholder="Password" name="password">
