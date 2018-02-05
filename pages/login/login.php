@@ -5,15 +5,10 @@ if (session_status() == PHP_SESSION_NONE) {
 $homedir = "../../";
 include $homedir . "classes/Authenticator.php";
 //check if $_POST is empty
-if (!empty($_POST)) {
-    //checks if the request type is login
-    if (isset($_POST["requestType"]) && $_POST["requestType"] == "login") {
-        Authenticator::login($_POST["email"], $_POST["password"]);
-        if ($_SESSION["userLoggedIn"] == true) {
-            header("Location: " . $homedir);
-        } else {
-            $loginFail = true;
-        }
+if (isset($_POST["requestType"]) && $_POST["requestType"] == "login") {
+    Authenticator::login($_POST["email"], $_POST["password"]);
+    if ($_SESSION["userLoggedIn"] != true) {
+        $loginFail = true;
     }
 }
 ?>
@@ -24,25 +19,26 @@ if (!empty($_POST)) {
         <title>Login</title>
     </head>
     <body>
-        <div>
-            <?php
-            if (isset($loginFail)) {
-                ?>
-                <h2>Password or E-Mail is incorrect. Please try again.</h2>
-                <?php
-            }
+        <?php
+        if (isset($loginFail)) {
             ?>
-        </div>
+            <div>
+                <h2>Password or E-Mail is incorrect. Please try again.</h2>
+            </div>
+            <?php
+        }
+        ?>
         <div class="form-wrap">
-            <div class="rcorners2"
-            <form action="" method="POST">
+            <div class="rcorners2">
                 <h1>Login</h1>
-                <input title="Please enter a valid email address" type="text" placeholder="E-Mail" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
-                <input type="password" placeholder="Password" name="password">
-                <input type="hidden" value="login" name="requestType">
-                <input type="submit" value="Enter">
+                <form action="#" method="POST">
+                    <input title="Please enter a valid email address" type="text" placeholder="E-Mail" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+                    <input type="password" placeholder="Password" name="password">
+                    <input type="hidden" value="login" name="requestType">
+                    <input type="submit" value="Enter">
+                </form>
                 <input type="button" value="Forgot Password?">
-            </form>
+            </div>
         </div>
     </body>
 </html>

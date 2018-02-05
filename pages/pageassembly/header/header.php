@@ -23,7 +23,7 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
                     <a href="<?php echo $homedir; ?>" class="navbar-nav navbar-default">MyCollege</a>
                 </li>
                 <li>
-                    <a href="<?php echo $homedir; ?>pages/search/search.php?q=" class="navbar-nav navbar-default">Schools</a>
+                    <a href="<?php echo $homedir; ?>pages/search/search.php" class="navbar-nav navbar-default">Schools</a>
                 </li>
                 <li>
                     <a href="#" class="navbar-nav navbar-default">Scholarships</a>

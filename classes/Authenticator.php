@@ -1,14 +1,14 @@
 <?php
-if(session_status() == PHP_SESSION_NONE){
-	session_start();
-}
 /**
  * Created by PhpStorm.
  * User: David
  * Date: 20/01/18
  * Time: 15:01
  */
-require_once "DatabaseConnection.php";
+if(session_status() == PHP_SESSION_NONE){
+    session_start();
+}
+require_once $homedir . "classes/DatabaseConnection.php";
 class Authenticator{
 
     /**
