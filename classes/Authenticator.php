@@ -19,8 +19,6 @@ class Authenticator
      */
     public static function login($email, $password): bool
     {
-        global $homedir;
-        //connect to database
         if (Controller::isUserLoggedIn()) {
             return false;
         } else {
@@ -101,7 +99,7 @@ class Authenticator
 
     public static function registerStudent($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, $confirmPassword)
     {
-        if($password === $confirmPassword) {
+        if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
             $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
             try {
@@ -120,21 +118,30 @@ class Authenticator
         }
     }
 
-    public static function resetPassword($email, $password, $confirmPassword){
-    	//check if password matches
-    	if($password != $confirmPassword){
-    		return false;
-		}
-    	$user = User::load($email);
-    	if($user == null){
-    		return false;
-		}
-		//add the new password to the current user
-		$user->updatePassword($password);
-    	//commit to database
-		$result = $user->updateToDatabase();
-		return $result;
-	}
+    /**
+     * @param $email
+     * @param $password
+     * @param $confirmPassword
+     * @return bool
+     */
+    public static function resetPassword($email, $password, $confirmPassword): bool
+    {
+        //check if password matches
+        if ($password == $confirmPassword) {
+            $user = User::load($email);
+            if ($user != null) {
+                //add the new password to the current user
+                $user->updatePassword($password);
+                //commit to database
+                $result = $user->updateToDatabase();
+                return $result;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Checks whether the given user is registered in the system.

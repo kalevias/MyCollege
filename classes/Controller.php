@@ -1,5 +1,4 @@
 <?php
-require_once "PHPMailerAutoload.php";
 /**
  * Created by PhpStorm.
  * User: Jacob
@@ -304,13 +303,6 @@ class Controller
     /**
      * @return string
      */
-    public function getWindowsHomeDir(): string {
-        return str_replace("\\", "/", $this->getHomeDir());
-    }
-
-    /**
-     * @return string
-     */
     public function getModuleDir(): string
     {
         return $this->moduleDir;
@@ -322,6 +314,14 @@ class Controller
     public function getTabIncrement(): int
     {
         return $this->tabIncrement;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWindowsHomeDir(): string
+    {
+        return str_replace("\\", "/", $this->getHomeDir());
     }
 
     /**
@@ -494,39 +494,44 @@ class Controller
                 $_SESSION["logoutFail"] = !$success;
                 break;
 
-			case "sentResetEmail":
-				$email = scrubbed["email"];
-				//check if user exists
-				if(User::load($email) == null){
-					$_SESSION["resetFail"] = true;
-					break;
-				}
-				//send email to user
-				try{
-					$mail = new PHPMailer();
-					$mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
-					$mail->addAddress($email);
-					$mail->isHTML(true);
-					$mail->Subject = "MyCollege Password Reset";
-					//TODO: add fancy html link in body
-					$mail->Body = "Congrats on losing your password, here is your second chance don't screw it up this time. INSERT LINK HERE.";
-					if($mail->send() == false){
-						$success = false;
-					}else{
-						$success = true;
-					}
-				}catch(phpmailerException $e){
-					$success = false;
-				}
-				$_SESSION["resetFail"] = !$success;
-				break;
-			case "resetPassword":
-				$args = [
-					$this->scrubbed["password"],
-					$this->scrubbed["confirmPassword"]
-				];
-				$success = call_user_func_array("Authenticator::resetPassword", $args);
-				$_SESSION["logoutFail"] = !$success;
+            /**
+             * Required POST variables for this case:
+             *     requestType : "sentResetEmail"
+             *           email : string (email format)
+             */
+            case "sentResetEmail":
+                $email = $this->scrubbed["email"];
+                //check if user exists
+                if (User::load($email) == null) {
+                    $_SESSION["resetFail"] = true;
+                    break;
+                }
+                //send email to user
+                try {
+                    $mail = new PHPMailer();
+                    $mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
+                    $mail->addAddress($email);
+                    $mail->isHTML(true);
+                    $mail->Subject = "MyCollege Password Reset";
+                    //TODO: add fancy html link in body
+                    $mail->Body = "Congrats on losing your password, here is your second chance don't screw it up this time. INSERT LINK HERE.";
+                    if ($mail->send() == false) {
+                        $success = false;
+                    } else {
+                        $success = true;
+                    }
+                } catch (phpmailerException $e) {
+                    $success = false;
+                }
+                $_SESSION["resetFail"] = !$success;
+                break;
+            case "resetPassword":
+                $args = [
+                    $this->scrubbed["password"],
+                    $this->scrubbed["confirmPassword"]
+                ];
+                $success = call_user_func_array("Authenticator::resetPassword", $args);
+                $_SESSION["resetPasswordFail"] = !$success;
         }
         return true; //temporary return value
     }
