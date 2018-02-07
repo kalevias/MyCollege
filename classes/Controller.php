@@ -1,4 +1,5 @@
 <?php
+require_once "PHPMailerAutoload.php";
 /**
  * Created by PhpStorm.
  * User: Jacob
@@ -492,6 +493,40 @@ class Controller
                 $success = Authenticator::logout();
                 $_SESSION["logoutFail"] = !$success;
                 break;
+
+			case "sentResetEmail":
+				$email = scrubbed["email"];
+				//check if user exists
+				if(User::load($email) == null){
+					$_SESSION["resetFail"] = true;
+					break;
+				}
+				//send email to user
+				try{
+					$mail = new PHPMailer();
+					$mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
+					$mail->addAddress($email);
+					$mail->isHTML(true);
+					$mail->Subject = "MyCollege Password Reset";
+					//TODO: add fancy html link in body
+					$mail->Body = "Congrats on losing your password, here is your second chance don't screw it up this time. INSERT LINK HERE.";
+					if($mail->send() == false){
+						$success = false;
+					}else{
+						$success = true;
+					}
+				}catch(phpmailerException $e){
+					$success = false;
+				}
+				$_SESSION["resetFail"] = !$success;
+				break;
+			case "resetPassword":
+				$args = [
+					$this->scrubbed["password"],
+					$this->scrubbed["confirmPassword"]
+				];
+				$success = call_user_func_array("Authenticator::resetPassword", $args);
+				$_SESSION["logoutFail"] = !$success;
         }
         return true; //temporary return value
     }

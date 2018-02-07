@@ -120,6 +120,22 @@ class Authenticator
         }
     }
 
+    public static function resetPassword($email, $password, $confirmPassword){
+    	//check if password matches
+    	if($password != $confirmPassword){
+    		return false;
+		}
+    	$user = User::load($email);
+    	if($user == null){
+    		return false;
+		}
+		//add the new password to the current user
+		$user->updatePassword($password);
+    	//commit to database
+		$result = $user->updateToDatabase();
+		return $result;
+	}
+
     /**
      * Checks whether the given user is registered in the system.
      * Returns true if the user is registered, false otherwise.
