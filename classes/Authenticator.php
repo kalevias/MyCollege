@@ -5,92 +5,131 @@
  * Date: 20/01/18
  * Time: 15:01
  */
-if(session_status() == PHP_SESSION_NONE){
-    session_start();
-}
-require_once $homedir . "classes/DatabaseConnection.php";
-class Authenticator{
+
+class Authenticator
+{
 
     /**
      * Logs the user into the website
      *
-     * @param $userEmail
+     * @param $email
      * @param $password
+     * @throws Exception
+     * @return bool
      */
-	public static function login($userEmail, $password){
-	    global $homedir;
-		//connect to database
-		$dbc = new DatabaseConnection();
-		//find user
-        $userExists = $dbc->query("exists", "SELECT pkuserid FROM tbluser WHERE txemail = ?", ["s", $userEmail]);
-		//check if user exists
-		if(!$userExists){
-			//TODO: make message somehow?
-			//Guess I'll die
-			die("User not found");
-		}else{
-			//get values from user in database
-			$user = $dbc->query("select", "SELECT pkuserid, txemail, txhash FROM tbluser WHERE txemail = ?", ["s", $userEmail]);
-		}
-		//verify password to stored hashed password
-		if(password_verify($password, $user["txhash"])){
-			//User has valid password and now permissions will be set
-			$_SESSION["userPermission"] = self::getPermissions($user["pkuserid"]);
-		}else{
-			//TODO: make incorrect password message
-			//Guess I'll die
-			die("User not found?");
-		}
-		//if everything is successful show that the user is logged in with a session variable
-		$_SESSION["userLoggedIn"] = true;
-        header("Location: ".$homedir);
-	}
+    public static function login($email, $password): bool
+    {
+        global $homedir;
+        //connect to database
+        if (Controller::isUserLoggedIn()) {
+            return false;
+        } else {
+            /*
+             * Determines whether the client connected to the current session should be locked out
+             * of logging in to the system due to too many repeated log in attempts. This helps to
+             * prevent dictionary attacks against the system by forcing a 60 second wait period after
+             * 5 failed attempts to log in by the client.
+             */
+            if (Controller::getLoginLockout() !== false) {
+                if (time() - Controller::getLoginLockout() >= 60) {
+                    Controller::setLoginFails();
+                    Controller::setLoginLockout();
+                } else {
+                    throw new Exception("Authenticator::login($email,$password) - Login failed too many times; wait 60 seconds to try again");
+                }
+            }
+            $user = User::load($email);
+            if (isset($user)) {
+                $goodPass = Hasher::verifyCryptographicHash($password, $user->getHash());
+
+                if ($goodPass) {
+                    Controller::setLoggedInUser($user);
+                    Controller::setLoginLockout();
+                    Controller::setLoginFails();
+                    $controller = $_SESSION["controller"];
+                    header("Location: " . $controller->getHomeDir());
+                    return true;
+                } else {
+                    if (Controller::getLoginFails() !== false) {
+                        if (Controller::getLoginFails() > 5) {
+                            Controller::setLoginLockout(time());
+                        } else {
+                            Controller::setLoginFails(Controller::getLoginFails() + 1);
+                        }
+                    } else {
+                        Controller::setLoginFails(1);
+                    }
+                    throw new Exception("Authenticator:login($email,$password) - User credentials incorrect; bad password");
+                }
+            } else {
+                throw new Exception("Authenticator::login($email,$password) - User credentials incorrect; unable to find email address");
+            }
+        }
+    }
 
     /**
      * Logs the user out of the website
      */
-	public static function logout(){
-	    global $homedir;
-		unset($_SESSION["userPermission"]);
-		unset($_SESSION["userLoggedIn"]);
-		header("Location: ".$homedir);
-	}
-
-    public static function register($fName, $lName, $email, $address, $city, $province, $zip, $phone, $gradYear, $password){
-        //hash and unset passowrd field as soon as possible
-        $userHash = password_hash($password, PASSWORD_DEFAULT);
-        //Open connection to database
-        $dbc = new DatabaseConnection();
-        $userExists = $dbc->query("exists", "SELECT pkuserid FROM tbluser WHERE txemail = ?", ["s", $email]);
-        if($userExists){
-            //TODO: spit out message asking user try a different email
-            //TODO: redirect back to original page hopefully with all the same data in the fields
+    public static function logout(): bool
+    {
+        if (Controller::isUserLoggedIn()) {
+            Controller::setLoggedInUser();
+            $controller = $_SESSION["controller"];
+            header("Location: " . $controller->getHomeDir());
+            return true;
+        } else {
             return false;
         }
-        //create query from user
-        $params = ["sssssiis", $fName, $lName, $email, $address, $city, $zip, $gradYear, $userHash];
-        $insert = $dbc->query("insert", "INSERT INTO tbluser (nmfirst, nmlast, txemail, txstreetaddress, txcity, fkprovinceid, nzip, nphone, dtgradyear, txhash) VALUES (?, ?, ?, ?, ?, 1, ?, 1234567890, ?, ?)", $params);
-        if(!$insert){
-            //Guess I'll die
-            //TODO: redirect to error page
-            die("Unable to insert new user into the database");
-        }else{
+    }
+
+    public static function registerRepresentative($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password)
+    {
+        //TODO: upon implementing email verification, the "true" below should be changed to false
+        $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
+        try {
+            $user->addPermission(new Permission(Permission::PERMISSION_REPRESENTATIVE));
+        } catch (Exception $e) {
+            return false;
+        }
+        if (self::userExists($user)) {
+            return false;
+        } else {
+            $user->updateToDatabase();
             return true;
         }
-        //TODO: send confirmation message and redirect user to login screen
+    }
+
+    public static function registerStudent($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, $confirmPassword)
+    {
+        if($password === $confirmPassword) {
+            //TODO: upon implementing email verification, the "true" below should be changed to false
+            $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
+            try {
+                $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
+            } catch (Exception $e) {
+                return false;
+            }
+            if (self::userExists($user)) {
+                return false;
+            } else {
+                $user->updateToDatabase();
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
-     * Gets the permissions assigned to a user
+     * Checks whether the given user is registered in the system.
+     * Returns true if the user is registered, false otherwise.
      *
-     * @param $userID
-     * @return mixed
+     * @param User $user
+     * @return bool
      */
-	private static function getPermissions($userID){
-		//setup query to join the permissions table and the user-permssions table
-        $dbc = new DatabaseConnection();
-        $params = ["s", $userID];
-		$permissions = $dbc->query("select", "SELECT nmname FROM tblpermission JOIN tbluserpermissions ON tblpermission.pkpermissionid = tbluserpermissions.fkpermissionid WHERE fkuserid = ?", $params);
-		return $permissions["nmname"];
-	}
+    public static function userExists(User $user): bool
+    {
+        $loadedUser = User::load($user->getEmail());
+        return isset($loadedUser);
+    }
 }

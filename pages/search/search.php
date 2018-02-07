@@ -1,14 +1,9 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-$homedir = "../../";
-if (isset($_SESSION["userLoggedIn"])) {
-    $loggedIn = true;
-} else {
-    $loggedIn = false;
-}
-include $homedir . "classes/DatabaseConnection.php";
+include "../../autoload.php";
+
+$controller = $_SESSION["controller"] = new Controller("Search");
+$controller->initModuleDir();
+$controller->processREQUEST();
 
 $q = isset($_GET["q"]) ? "%" . $_GET["q"] . "%" : "%%";
 $size = isset($_GET["s"]) ? $_GET["s"] : 70000;
@@ -54,14 +49,14 @@ $schools = $dbc->query("select multiple", $query, $params);
             <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
             <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
             <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-            <link rel="stylesheet" href="<?php echo $homedir; ?>pages/search/css/search.min.css" type="text/css">
+            <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/search/css/search.min.css" type="text/css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         </head>
         <body>
-            <?php include $homedir . "pages/pageassembly/header/header.php"; ?>
+            <?php include $controller->getHomeDir() . "pages/pageassembly/header/header.php"; ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-3 sidebar">
@@ -113,7 +108,7 @@ $schools = $dbc->query("select multiple", $query, $params);
                                     output3.innerHTML = this.value;
                                 }
                             </script>
-                            <?php if ($loggedIn) { ?>
+                            <?php if ($controller::isUserLoggedIn()) { ?>
                                 <br>
                                 <div class="slidecontainer">
                                     <label for="myRange4">Distance From Home:</label>
@@ -173,7 +168,7 @@ $schools = $dbc->query("select multiple", $query, $params);
                         if ($schools) {
                             $styles = " background-size: cover; background-repeat: no-repeat; background-position: center;";
                             foreach ($schools as $school) { ?>
-                                <div class="placeholders" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.6) 100%), url('<?php echo $homedir . "files/" . $school["pkcollegeid"] . ".jpg"; ?>');<?php echo $styles; ?>">
+                                <div class="placeholders" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.6) 100%), url('<?php echo $controller->getWindowsHomeDir() . "files/" . $school["pkcollegeid"] . ".jpg"; ?>');<?php echo $styles; ?>">
                                     <div style="opacity: 1">
                                         <h3 data-id="<?php echo $school["pkcollegeid"]; ?>"><?php echo $school["nmcollege"]; ?></h3>
                                         <dl>

@@ -235,6 +235,10 @@ class DatabaseConnection
      * array, where each element is an associative array, like in a result returned
      * from when $type is "select single". These arrays are indexed numerically.
      *
+     * If $type is "isset", "exist", or "exists", the function will return true or
+     * false, indicating if at least one row from was returned from the database or
+     * not.
+     *
      * @param string $type
      * @param string $query
      * @param mixed[]|null $parameters

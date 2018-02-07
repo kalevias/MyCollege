@@ -1,26 +1,23 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-$homedir = "../../";
-include $homedir . "classes/Authenticator.php";
-//check if $_POST is empty
-if (isset($_POST["requestType"]) && $_POST["requestType"] == "login") {
-    Authenticator::login($_POST["email"], $_POST["password"]);
-    if ($_SESSION["userLoggedIn"] != true) {
-        $loginFail = true;
-    }
-}
+
+include "../../autoload.php";
+
+$controller = $_SESSION["controller"] = new Controller("Login");
+$controller->initModuleDir();
+$controller->processREQUEST();
+
+$loginFail = isset($_SESSION["loginFail"]) ? $_SESSION["loginFail"] : false;
+
 ?>
 <!DOCTYPE html>
 <html>
-    <link rel="stylesheet" href="<?php echo $homedir; ?>pages/login/css/login.min.css" type="text/css">
+    <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/login.min.css" type="text/css">
     <head>
         <title>Login</title>
     </head>
     <body>
         <?php
-        if (isset($loginFail)) {
+        if (isset($loginFail) and $loginFail) {
             ?>
             <div>
                 <h2>Password or E-Mail is incorrect. Please try again.</h2>
