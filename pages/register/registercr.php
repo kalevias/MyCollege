@@ -1,16 +1,17 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-$homedir = "../../";
-include_once $homedir . "classes/Authenticator.php";
+include "../../autoload.php";
+
+$controller = $_SESSION["controller"] = new Controller("Representative Registration");
+$controller->initModuleDir();
+//$controller->processREQUEST();
+
 //check if $_POST is empty
 if (!empty($_POST)) {
     //checks if the request type is login
     if (isset($_POST["requestType"]) && $_POST["requestType"] == "register") {
-        if ($_POST["password"] == $_POST["passwordconfirm"]) {
+        if ($_POST["password"] == $_POST["confirmPassword"]) {
             //register user
-            $result = Authenticator::register($_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["streetAddress"], $_POST["city"], null, $_POST["zip"], $_POST["phoneNumber"], $_POST["gradYear"], $_POST["password"]);
+            $result = Authenticator::registerRepresentative($_POST["firstName"], $_POST["lastName"], $_POST["email"], $_POST["streetAddress"], $_POST["city"], null, $_POST["zip"], $_POST["phoneNumber"], $_POST["gradYear"], $_POST["password"]);
             if ($result) {
                 Authenticator::login($_POST["email"], $_POST["password"]);
             } else {
@@ -32,7 +33,7 @@ if (!empty($_POST)) {
 <html>
     <head>
         <title>College Rep Sign Up</title>
-        <link rel="stylesheet" href="<?php echo $homedir ?>pages/register/css/register.min.css" type="text/css">
+        <link rel="stylesheet" href="<?php echo $controller->getHomeDir() ?>pages/register/css/register.min.css" type="text/css">
     </head>
     <body>
         <div>
@@ -52,8 +53,8 @@ if (!empty($_POST)) {
                 <input title="Please enter a valid email address using the '@' symbol" type="email" placeholder="Email Address" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                 <input title="Please enter a phone number in the form: XXX-XXX-XXXX" type="text" placeholder="Phone Number" name="phoneNumber" required pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
                 <input title="Password must contain at least 6 characters, including UPPER/lowercase and numbers" type="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" placeholder="Password" name="password">
-                <input type="password" placeholder="Confirm Password" name="passwordconfirm">
-                <input type="hidden" value="register" name="requestType">
+                <input type="password" placeholder="Confirm Password" name="confirmPassword">
+                <input type="hidden" value="registerRepresentative" name="requestType">
                 <input type="submit" value="Sign Up">
             </form>
         </div>

@@ -5,25 +5,19 @@
  * Date: 2/4/2018
  * Time: 2:39 PM
  */
-
-include_once $homedir."classes/Authenticator.php";
-if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
-    $loggedIn = false;
-    Authenticator::logout();
-}
 ?>
 
 <!-- Navbar -->
-<link rel="stylesheet" href="<?php echo $homedir; ?>pages/pageassembly/header/css/header.min.css" type="text/css">
+<link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/pageassembly/header/css/header.min.css" type="text/css">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <ul class="nav navbar-nav navbar-left">
                 <li>
-                    <a href="<?php echo $homedir; ?>" class="navbar-nav navbar-default">MyCollege</a>
+                    <a href="<?php echo $controller->getHomeDir(); ?>" class="navbar-nav navbar-default">MyCollege</a>
                 </li>
                 <li>
-                    <a href="<?php echo $homedir; ?>pages/search/search.php" class="navbar-nav navbar-default">Schools</a>
+                    <a href="<?php echo $controller->getHomeDir(); ?>pages/search/search.php" class="navbar-nav navbar-default">Schools</a>
                 </li>
                 <li>
                     <a href="#" class="navbar-nav navbar-default">Scholarships</a>
@@ -35,7 +29,7 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
                     <a href="#" class="navbar-nav navbar-default">More</a>
                 </li>
                 <?php
-                if ($loggedIn) {
+                if ($controller::isUserLoggedIn()) {
                     ?>
                     <li>
                         <form action="" method="POST">
@@ -52,7 +46,7 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
                 } else {
                 ?>
                 <li>
-                    <a href="<?php echo $homedir; ?>pages/login/login.php" class="navbar-nav navbar-default">Login</a>
+                    <a href="<?php echo $controller->getHomeDir(); ?>pages/login/login.php" class="navbar-nav navbar-default">Login</a>
                 </li>
                 <li>
                     <div class="navbar-nav navbar-default dropdown">
@@ -62,10 +56,10 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="registermenu">
                             <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="<?php echo $homedir; ?>pages/register/registers.php">Students</a>
+                                <a role="menuitem" tabindex="-1" href="<?php echo $controller->getHomeDir(); ?>pages/register/registers.php">Students</a>
                             </li>
                             <li role="presentation">
-                                <a role="menuitem" tabindex="-1" href="<?php echo $homedir; ?>pages/register/registercr.php">College
+                                <a role="menuitem" tabindex="-1" href="<?php echo $controller->getHomeDir(); ?>pages/register/registercr.php">College
                                     Reps</a>
                             </li>
                         </ul>
@@ -84,7 +78,6 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
     </div>
 </nav>
 
-
 <!--Modal: Subscription From-->
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -95,7 +88,7 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
 
         <div class="modal-content">
 
-            <form action="<?php echo $homedir; ?>pages/search/search.php" class="form-horizontal" role="form">
+            <form action="<?php echo $controller->getHomeDir(); ?>pages/search/search.php" class="form-horizontal" role="form">
 
             <!--Header-->
 
@@ -122,8 +115,6 @@ if (isset($_POST["requestType"]) && $_POST["requestType"] == "logout") {
 
 
                     <input type="text" id="form27" class="form-control">
-
-
 
                 </div>
 
