@@ -2,11 +2,10 @@
 
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("login");
+$controller = $_SESSION["controller"] = new Controller("Login");
 
 $controller->initModuleDir();
 $controller->processREQUEST();
-$loginFail = isset($_SESSION["loginFail"]) ? $_SESSION["loginFail"] : false;
 ?>
 <!DOCTYPE html>
 <html>

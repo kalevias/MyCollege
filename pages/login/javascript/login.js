@@ -19,19 +19,19 @@ function post(path, parameters, method) {
     form.submit();
 }
 
-$("#login").on("click", function() {
+$(document).on("click", "#login", function() {
     var params = {
-        email:$("#email").value(),
-        password:$("#password").value(),
+        email:$("#email").val(),
+        password:$("#password").val(),
         requestType:"login"
     };
-    post("",params);
+    post("#",params);
 });
 
-$("#reset").on("click", function() {
+$(document).on("click", "#reset", function() {
     var params = {
-        email:$("#email").value(),
+        email:$("#email").val(),
         requestType:"sentResetEmail"
     };
-    post("",params);
+    post("#",params);
 });

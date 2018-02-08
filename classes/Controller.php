@@ -546,7 +546,7 @@ class Controller
         $path = explode("/", dirname($_SERVER["SCRIPT_NAME"]));
         $homeDir = "";
         foreach ($path as $dir) {
-            if ($dir != "" and $dir != rtrim(AutoLoader::PROJECT_DIR, DIRECTORY_SEPARATOR)) {
+            if ($dir != "" and $dir != rtrim(AutoLoader::PROJECT_DIR(), DIRECTORY_SEPARATOR)) {
                 $homeDir .= ".." . DIRECTORY_SEPARATOR;
             }
         }
