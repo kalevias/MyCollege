@@ -6,8 +6,9 @@
  * Time: 9:23 PM
  */
 
-define("CLASSES_DIR", $_SERVER["DOCUMENT_ROOT"] . "/" . AutoLoader::PROJECT_DIR . "classes/");
-define("ENTITIES_DIR", $_SERVER["DOCUMENT_ROOT"] . "/" . AutoLoader::PROJECT_DIR . "classes/entities/");
+$OS_WIN = strtoupper(substr(php_uname("s"), 0, 3)) === "WIN";
+define("CLASSES_DIR", $_SERVER["DOCUMENT_ROOT"] . "/" . ($OS_WIN ? AutoLoader::PROJECT_DIR : AutoLoader::PROJECT_DIR_MAC) . "classes/");
+define("ENTITIES_DIR", $_SERVER["DOCUMENT_ROOT"] . "/" . ($OS_WIN ? AutoLoader::PROJECT_DIR : AutoLoader::PROJECT_DIR_MAC) . "classes/entities/");
 define("TMP_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../tmp/");
 define("SECURE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../secure/");
 
@@ -22,6 +23,7 @@ define("SECURE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../secure/");
 class AutoLoader
 {
     const PROJECT_DIR = "mycollege" . DIRECTORY_SEPARATOR;
+    const PROJECT_DIR_MAC = DIRECTORY_SEPARATOR;
 
     protected static $paths = [
         CLASSES_DIR,
