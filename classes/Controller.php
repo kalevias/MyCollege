@@ -229,60 +229,73 @@ class Controller
         return trim($value);
     }
 
-//    /**
-//     * TODO: convert functions from procedural to OOP
-//     * This function (enum2options) retrieves an enum field from a table and echoes
-//     * the possible values for that enum field as options for an HTML select
-//     * element.
-//     *
-//     * The second function, field2options, does the same as enum2options, but
-//     * instead of getting all possible values of enums, it retrieves all of values
-//     * of a given field stored in a given table. This may be useful for foreign
-//     * key constraints requiring select elements.
-//     */
-//    function enum2options($table, $field)
-//    {
-//
-//        $q1 = "SHOW COLUMNS FROM `$table` WHERE FIELD = '$field'";
-//
-//        $column = query("select", $q1);
-//
-//        if ($column) {
-//
-//            $enum = $column["Type"];
-//
-//            if (startsWith($enum, "enum")) {
-//                preg_match_all("~\'(.*)\'~U", $enum, $values);
-//                $values = $values[1];
-//
-//                foreach ($values as $value) {
-//                    echo "<option value='$value'>$value</option>\n";
-//                }
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
-//
-//    function field2options($table, $field)
-//    {
-//
-//        $q1 = "SELECT `$field` FROM `$table`";
-//
-//        $columns = query("select multiple", $q1);
-//
-//        if ($columns) {
-//
-//            foreach ($columns as $column) {
-//                $value = $column[$field];
-//                echo "<option value='$value'>$value</option>";
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
+    /**
+     * This function (enum2options) retrieves an enum field from a table and echoes
+     * the possible values for that enum field as options for an HTML select
+     * element.
+     *
+     * Warning: this function uses direct SQL injection with its function parameters,
+     * so you MUST ensure user data never gets passed to this function.
+     *
+     * @param $table
+     * @param $field
+     * @return bool|string false on failure; string otherwise
+     */
+    function enum2Options($table, $field)
+    {
+        $column = $this->dbc->query("select", "SHOW COLUMNS FROM `$table` WHERE FIELD = '$field'");
+
+        if ($column) {
+
+            $enum = $column["Type"];
+
+            if (substr($enum, 0, 4) == "enum") {
+                preg_match_all("~\'(.*)\'~U", $enum, $values);
+                $values = $values[1];
+
+                $output = "";
+                foreach ($values as $value) {
+                    $output .= "<option value='$value'>$value</option>\n";
+                }
+                return $output;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * field2options, does the same as enum2options, but
+     * instead of getting all possible values of enums, it retrieves all of values
+     * of a given field stored in a given table. This may be useful for foreign
+     * key constraints requiring select elements.
+     *
+     * Warning: this function uses direct SQL injection with its function parameters,
+     * so you MUST ensure user data never gets passed to this function.
+     *
+     * @param $table
+     * @param $field
+     * @return bool|string false on failure; string otherwise
+     */
+    function field2Options($table, $field)
+    {
+
+        $columns = $this->dbc->query("select multiple", "SELECT `$field` FROM `$table`");
+
+        if ($columns) {
+
+            $output = "";
+            foreach ($columns as $column) {
+                $value = $column[$field];
+                $output .= "<option value='$value'>$value</option>";
+            }
+            return $output;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @return string
