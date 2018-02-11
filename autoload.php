@@ -22,7 +22,7 @@ define("SECURE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../secure/");
 class AutoLoader
 {
     private const PROJECT_DIR = "mycollege" . DIRECTORY_SEPARATOR;
-    private const PROJECT_DIR_MAC = DIRECTORY_SEPARATOR;
+    private const PROJECT_DIR_MAC = "";
 
     protected static $paths = [
         CLASSES_DIR,
