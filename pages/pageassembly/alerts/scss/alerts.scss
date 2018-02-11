@@ -1,0 +1,99 @@
+@mixin transition($property, $duration) {
+  -moz-transition: $property $duration;
+  -webkit-transition: $property $duration;
+  transition: $property $duration;
+}
+@mixin linear-gradient($direction, $colors...) {
+  background: nth($colors, 1);
+  background: -webkit-linear-gradient($direction, $colors);
+  background: -o-linear-gradient($direction, $colors);
+  background: -moz-linear-gradient($direction, $colors);
+  background: linear-gradient($direction, $colors);
+}
+@mixin ui-font($fontsize) {
+  font-size: $fontsize + 0px;
+  line-height: (($fontsize + 1) / 10) + 0em;
+}
+
+/*====================================*/
+/*==========|    Classes   |==========*/
+/*====================================*/
+
+.flash {
+  background: #ffffff;
+}
+
+/*====================================*/
+/*==========|     ID's     |==========*/
+/*====================================*/
+
+#alerts {
+
+  @include transition(background, 0.2s);
+
+  #errors {
+    @include linear-gradient(to right, #e03616, #ff5535, #e03616);
+  }
+  #warnings {
+    @include linear-gradient(to right, #ffe500, #fff177, #ffe500);
+  }
+  #notifications {
+    @include linear-gradient(to right, #1e69d3, #4a95ff, #1e69d3);
+  }
+
+  & > div {
+    text-align: center;
+    font-weight: bold;
+    color: #eee;
+
+    & div {
+      height: 28px;
+      padding-top: 4px;
+      @include ui-font(14);
+      text-shadow: 1px 1px 2px #111;
+      overflow: hidden;
+
+      &::-moz-selection {
+        color: #222;
+        background: #efefef;
+        text-shadow: none;
+      }
+      &::selection {
+        color: #222;
+        background: #efefef;
+        text-shadow: none;
+      }
+    }
+
+    & span {
+      cursor: pointer;
+      position: absolute;
+      right: 0;
+    }
+
+    & img {
+      height: 24px;
+      width: 24px;
+      vertical-align: middle;
+      margin-right: 10px;
+      filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+    }
+
+    & a {
+      text-decoration: none;
+      &:visited {
+        color: inherit;
+      }
+      &::-moz-selection {
+        color: #222;
+        background: #efefef;
+        text-shadow: none;
+      }
+      &::selection {
+        color: #222;
+        background: #efefef;
+        text-shadow: none;
+      }
+    }
+  }
+}

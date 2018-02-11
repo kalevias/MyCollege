@@ -99,33 +99,25 @@ class User extends DataBasedEntity
      */
     public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, string $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active)
     {
-        $dbc = new DatabaseConnection();
-        $params = ["s", $province];
-        $provinceResult = $dbc->query("select", "SELECT `pkstateid` FROM `tblprovince` WHERE `idiso`=?", $params);
-        if ($provinceResult) {
-
-            $result = [
-                $this->setFirstName($firstName),
-                $this->setLastName($lastName),
-                $this->setEmail($email),
-                $this->setAltEmail($altEmail),
-                $this->setStreetAddress($streetAddress),
-                $this->setCity($city),
-                $this->setProvince(new Province($provinceResult["pkstateid"], Province::MODE_DbID)),
-                $this->setPostalCode($postalCode),
-                $this->setPhone($phone),
-                $this->setGradYear($gradYear),
-                $this->updatePassword($password),
-                $this->setActive($active),
-            ];
-            if (in_array(false, $result, true)) {
-                throw new Exception("User->__construct13($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
-            }
-            $this->permissions = [];
-            $this->inDatabase = false;
-        } else {
-            throw new InvalidArgumentException("User->__construct13($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; Invalid province");
+        $result = [
+            $this->setFirstName($firstName),
+            $this->setLastName($lastName),
+            $this->setEmail($email),
+            $this->setAltEmail($altEmail),
+            $this->setStreetAddress($streetAddress),
+            $this->setCity($city),
+            $this->setProvince(new Province($province, Province::MODE_ISO)),
+            $this->setPostalCode($postalCode),
+            $this->setPhone($phone),
+            $this->setGradYear($gradYear),
+            $this->updatePassword($password),
+            $this->setActive($active),
+        ];
+        if (in_array(false, $result, true)) {
+            throw new Exception("User->__construct13($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
+        $this->permissions = [];
+        $this->inDatabase = false;
     }
 
     /**
@@ -167,11 +159,11 @@ class User extends DataBasedEntity
             }
             $this->inDatabase = true;
             $this->removeAllPermissions();
-            $params = ["i", $user["pkUserID"]];
+            $params = ["i", $user["pkuserid"]];
             $permissions = $dbc->query("select multiple", "SELECT `fkpermissionid` FROM `tbluserpermissions` WHERE `fkuserid` = ?", $params);
             if ($permissions) {
                 foreach ($permissions as $permission) {
-                    $this->addPermission(new Permission($permission["fkPermissionID"]));
+                    $this->addPermission(new Permission($permission["fkpermissionid"]));
                 }
             }
             $this->synced = true;
@@ -589,6 +581,7 @@ class User extends DataBasedEntity
                 $params = ["ii", $permission->getPkID(), $this->getPkID()];
                 $result = ($result and $dbc->query("insert", "INSERT INTO `tbluserpermissions` (`fkpermissionid`,`fkuserid`) VALUES (?,?)", $params));
             }
+            $this->synced = $result;
         } else {
             $params = [
                 "ssssssisiisi",
@@ -598,7 +591,7 @@ class User extends DataBasedEntity
                 $this->getAltEmail(),
                 $this->getStreetAddress(),
                 $this->getCity(),
-                $this->getProvince(),
+                $this->getProvince()->getPkID(),
                 $this->getPostalCode(),
                 $this->getPhone(),
                 $this->getGradYear(),
@@ -614,7 +607,7 @@ class User extends DataBasedEntity
             $params = ["s", $this->getEmail()];
             $result2 = $dbc->query("select", "SELECT `pkuserid` FROM `tbluser` WHERE `txemail`=?", $params);
 
-            $this->setPkID($result2["pkUserID"]);
+            $this->setPkID($result2["pkuserid"]);
 
             foreach ($this->getPermissions() as $permission) {
                 $params = ["ii", $permission->getPkID(), $this->getPkID()];

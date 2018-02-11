@@ -91,7 +91,7 @@ class Permission
     public function setDescription(string $description): bool
     {
         $dbc = new DatabaseConnection();
-        if (strlen($description) <= $dbc->getMaximumLength("permission", "txDescription")) {
+        if (strlen($description) <= $dbc->getMaximumLength("tblpermission", "txdescription")) {
             $this->description = $description;
             return true;
         } else {
@@ -107,7 +107,7 @@ class Permission
     {
         $dbc = new DatabaseConnection();
         $params = ["s", $name];
-        if ($dbc->query("exists", "SELECT * FROM `permission` WHERE `nmName`=?", $params)) {
+        if ($dbc->query("exists", "SELECT * FROM `tblpermission` WHERE `nmname`=?", $params)) {
             $this->name = $name;
             return true;
         } else {
@@ -116,12 +116,12 @@ class Permission
     }
 
     /**
-     * @param int $permissionID
+     * @param int $pkID
      * @return bool
      */
-    private function setPkID(int $permissionID): bool
+    private function setPkID(int $pkID): bool
     {
-        $this->permissionID = $permissionID;
+        $this->pkID = $pkID;
         return true;
     }
 

@@ -33,9 +33,10 @@ if (!empty($_POST)) {
 <html>
     <head>
         <title>College Rep Sign Up</title>
-        <link rel="stylesheet" href="<?php echo $controller->getHomeDir() ?>pages/register/css/register.min.css" type="text/css">
+        <link rel="stylesheet" href="css/register.min.css" type="text/css">
     </head>
     <body>
+        <img class="bg-image" src="css/UniOfChi.jpg">
         <div>
             <?php
             if (isset($registerFail)) {

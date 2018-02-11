@@ -6,7 +6,6 @@
  * Time: 1:22 PM
  */
 
-//TODO: finish conversion of class
 class Token extends DataBasedEntity
 {
     /**
@@ -71,6 +70,7 @@ class Token extends DataBasedEntity
                 throw new Exception("Token->__construct1($tokenID) - Unable to construct Token object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
             $this->inDatabase = true;
+            $this->synced = true;
         } else {
             throw new Exception("Token->__construct1($tokenID) - Unable to select from database");
         }
@@ -115,6 +115,7 @@ class Token extends DataBasedEntity
             throw new Exception("Token->__construct2($purpose, $data, $printableExpiration, $user) - Unable to construct Token object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
         $this->inDatabase = false;
+        $this->synced = false;
     }
 
     /**
@@ -125,7 +126,7 @@ class Token extends DataBasedEntity
      * @param User $user
      * @return mixed|bool
      */
-    public function getDataIfValid(string $purpose, User $user): mixed
+    public function getDataIfValid(string $purpose, User $user)
     {
         if ($this->getPurpose() === $purpose and $this->getUser()->getEmail() === $user->getEmail()) {
             return $this->getData();
@@ -135,9 +136,9 @@ class Token extends DataBasedEntity
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getExpiration(): DateTime
+    public function getExpiration()
     {
         return $this->expiration;
     }
@@ -154,25 +155,25 @@ class Token extends DataBasedEntity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPurpose(): string
+    public function getPurpose()
     {
         return $this->purpose;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTokenID(): string
+    public function getTokenID()
     {
         return $this->tokenID;
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getUser(): User
+    public function getUser()
     {
         return $this->user;
     }
@@ -183,7 +184,7 @@ class Token extends DataBasedEntity
      */
     public function setData($data): bool
     {
-        $this->data = $data;
+        $this->syncHandler($this->data, $this->getData(), $data);
         return true;
     }
 
@@ -195,16 +196,16 @@ class Token extends DataBasedEntity
     {
         if (isset($expiration)) {
             if (gettype($expiration) == "object") {
-                $this->expiration = $expiration;
+                $this->syncHandler($this->expiration, $this->getExpiration(), $expiration);
             } else if (gettype($expiration) == "int") {
-                $this->expiration = new DateTime(date('Y-m-d H:i:s', $expiration));
+                $this->syncHandler($this->expiration, $this->getExpiration(), new DateTime(date('Y-m-d H:i:s', $expiration)));
             } else if (gettype($expiration) == "string") {
-                $this->expiration = new DateTime($expiration);
+                $this->syncHandler($this->expiration, $this->getExpiration(), new DateTime($expiration));
             } else {
                 return false;
             }
         } else {
-            $this->expiration = new DateTime();
+            $this->syncHandler($this->expiration, $this->getExpiration(), new DateTime());
         }
         return true;
     }
@@ -215,7 +216,7 @@ class Token extends DataBasedEntity
      */
     public function setPurpose(string $purpose): bool
     {
-        $this->purpose = $purpose;
+        $this->syncHandler($this->purpose, $this->getPurpose(), $purpose);
         return true;
     }
 
@@ -225,12 +226,12 @@ class Token extends DataBasedEntity
      */
     public function setTokenID(string $tokenID = null): bool
     {
-        if($this->isInDatabase()) {
+        if ($this->isInDatabase()) {
             return false;
         } else {
-            if(isset($tokenID)) {
+            if (isset($tokenID)) {
                 $dbc = new DatabaseConnection();
-                if (strlen($tokenID) == $dbc->getMaximumLength("token", "pkTokenID")) {
+                if (strlen($tokenID) <= $dbc->getMaximumLength("tbltokens", "pktokenid")) {
                     $this->tokenID = $tokenID;
                     return true;
                 } else {
@@ -249,7 +250,7 @@ class Token extends DataBasedEntity
      */
     public function setUser(User $user): bool
     {
-        $this->user = $user;
+        $this->syncHandler($this->user, $this->getUser(), $user);
         return true;
     }
 
@@ -262,7 +263,11 @@ class Token extends DataBasedEntity
     public function updateFromDatabase(): bool
     {
         if ($this->isInDatabase()) {
-            $this->__construct1($this->getTokenID());
+            try {
+                $this->__construct1($this->getTokenID());
+            } catch (Exception $e) {
+                return false;
+            }
             return true;
         } else {
             return false;
@@ -286,7 +291,7 @@ class Token extends DataBasedEntity
                 $this->getUser()->getEmail(),
                 $this->getTokenID()
             ];
-            $result = $dbc->query("update", "UPDATE `token` SET `blGet` = ?, `dtExpire` = ?, `txEmail` = ? WHERE `pkTokenID` = ?", $params);
+            $result = $dbc->query("update", "UPDATE `tbltokens` SET `jsonget` = ?, `dtexpire` = ?, `txemail` = ? WHERE `pktokenid` = ?", $params);
         } else {
             $params = [
                 "ssss",
@@ -295,15 +300,16 @@ class Token extends DataBasedEntity
                 $this->getExpiration()->format("Y-m-d H:i:s"),
                 $this->getUser()->getEmail()
             ];
-            $result = $dbc->query("insert", "INSERT INTO `token` (`pkTokenID`, `blGet`, `dtExpire`, `txEmail`) VALUES (?,?,?,?)", $params);
+            $result = $dbc->query("insert", "INSERT INTO `tbltokens` (`pktokenid`, `jsonget`, `dtexpire`, `txemail`) VALUES (?,?,?,?)", $params);
         }
+        $this->inDatabase = $this->synced = (bool)$result;
         return (bool)$result;
     }
 
     /**
-     * @return mixed
+     * @return mixed|null
      */
-    private function getData(): mixed
+    private function getData()
     {
         return $this->data;
     }

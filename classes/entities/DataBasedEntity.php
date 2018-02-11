@@ -79,7 +79,7 @@ abstract class DataBasedEntity
     /**
      * @return mixed
      */
-    public function getPkID(): mixed {
+    public function getPkID() {
         return $this->pkID;
     }
 

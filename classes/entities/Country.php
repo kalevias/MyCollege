@@ -156,6 +156,13 @@ class Country
     }
 
     /**
+     * @return Province[]
+     */
+    public function getProvinces() {
+        return $this->provinces;
+    }
+
+    /**
      * @return bool
      */
     private function setProvinces(): bool
@@ -167,7 +174,7 @@ class Country
         if($provinces) {
             foreach ($provinces as $province) {
                 try {
-                    $provinceObjects[] = new Province($province, Province::MODE_DbID);
+                    $provinceObjects[] = new Province($province["pkstateid"], Province::MODE_DbID);
                 } catch(Exception $e) {
                     return false;
                 }

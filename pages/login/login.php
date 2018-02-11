@@ -12,6 +12,7 @@ $controller->processREQUEST();
     <head>
         <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/login.min.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
         <script src="javascript/login.js"></script>
         <title>Login</title>
     </head>

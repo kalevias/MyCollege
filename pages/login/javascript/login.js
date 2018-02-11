@@ -1,24 +1,3 @@
-function post(path, parameters, method) {
-    var form = $('<form></form>');
-    method = method || "POST";
-
-    form.attr("method", method);
-    form.attr("action", path);
-
-    $.each(parameters, function(key, value) {
-        var field = $('<input></input>');
-
-        field.attr("type", "hidden");
-        field.attr("name", key);
-        field.attr("value", value);
-
-        form.append(field);
-    });
-
-    $(document.body).append(form);
-    form.submit();
-}
-
 $(document).on("click", "#login", function() {
     var params = {
         email:$("#email").val(),
@@ -34,4 +13,13 @@ $(document).on("click", "#reset", function() {
         requestType:"sentResetEmail"
     };
     post("#",params);
+});
+
+$(document).on("keyup", "#password", function (e) {
+    var key = e.which;
+    if(key === 13)  // the enter key code
+    {
+        $('#login').click();
+        return false;
+    }
 });

@@ -41,12 +41,16 @@ class Authenticator
                 $goodPass = Hasher::verifyCryptographicHash($password, $user->getHash());
 
                 if ($goodPass) {
-                    Controller::setLoggedInUser($user);
-                    Controller::setLoginLockout();
-                    Controller::setLoginFails();
-                    $controller = $_SESSION["controller"];
-                    header("Location: " . $controller->getHomeDir());
-                    return true;
+                    if($user->isActive()) {
+                        Controller::setLoggedInUser($user);
+                        Controller::setLoginLockout();
+                        Controller::setLoginFails();
+                        $controller = $_SESSION["controller"];
+                        header("Location: " . $controller->getHomeDir());
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
                     if (Controller::getLoginFails() !== false) {
                         if (Controller::getLoginFails() > 5) {
@@ -111,6 +115,12 @@ class Authenticator
                 return false;
             } else {
                 $user->updateToDatabase();
+                try {
+                    self::login($user->getEmail(), $password);
+                } catch (Exception $e) {
+                    $controller = $_SESSION["controller"];
+                    header("Location: " . $controller->getHomeDir());
+                }
                 return true;
             }
         } else {
