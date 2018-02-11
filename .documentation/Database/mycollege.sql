@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Feb 07, 2018 at 04:15 AM
--- Server version: 5.7.14
--- PHP Version: 7.1.4
+-- Host: 127.0.0.1:3306
+-- Generation Time: Feb 11, 2018 at 03:42 AM
+-- Server version: 5.7.19
+-- PHP Version: 5.6.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `mycollege`
+-- Database: `college`
 --
 
 -- --------------------------------------------------------
@@ -28,8 +28,9 @@ SET time_zone = "+00:00";
 -- Table structure for table `tblcollege`
 --
 
-CREATE TABLE `tblcollege` (
-  `pkcollegeid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblcollege`;
+CREATE TABLE IF NOT EXISTS `tblcollege` (
+  `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT,
   `nmcollege` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('2-year','4-year','vocational','online','Grad School') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txstreetaddress` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -46,8 +47,10 @@ CREATE TABLE `tblcollege` (
   `nwomenratio` int(3) DEFAULT NULL,
   `nact` int(2) DEFAULT NULL,
   `nsat` int(4) DEFAULT NULL,
-  `ensetting` enum('Urban','Suburban','Rural','Small Town') COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `ensetting` enum('Urban','Suburban','Rural','Small Town') COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkcollegeid`),
+  KEY `fkprovinceid` (`fkprovinceid`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblcollege`
@@ -70,9 +73,12 @@ INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress
 -- Table structure for table `tblcollegerep`
 --
 
-CREATE TABLE `tblcollegerep` (
+DROP TABLE IF EXISTS `tblcollegerep`;
+CREATE TABLE IF NOT EXISTS `tblcollegerep` (
   `fkuserid` int(10) NOT NULL,
-  `fkcollegeid` int(10) NOT NULL
+  `fkcollegeid` int(10) NOT NULL,
+  KEY `fkuserid` (`fkuserid`),
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -81,8 +87,9 @@ CREATE TABLE `tblcollegerep` (
 -- Table structure for table `tblcollegescholarship`
 --
 
-CREATE TABLE `tblcollegescholarship` (
-  `pkcscholarship` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblcollegescholarship`;
+CREATE TABLE IF NOT EXISTS `tblcollegescholarship` (
+  `pkcscholarship` int(10) NOT NULL AUTO_INCREMENT,
   `fkcollegeid` int(10) NOT NULL,
   `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('Grant','Loan','Merit based') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -90,7 +97,9 @@ CREATE TABLE `tblcollegescholarship` (
   `txrequirements` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enfield` enum('Liberal Arts','Medical and Life Science','Visual and Performance Arts','Engineering and Technology','Business') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ngpa` float DEFAULT NULL,
-  `namount` int(10) NOT NULL
+  `namount` int(10) NOT NULL,
+  PRIMARY KEY (`pkcscholarship`),
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -99,14 +108,70 @@ CREATE TABLE `tblcollegescholarship` (
 -- Table structure for table `tblcollegesports`
 --
 
-CREATE TABLE `tblcollegesports` (
+DROP TABLE IF EXISTS `tblcollegesports`;
+CREATE TABLE IF NOT EXISTS `tblcollegesports` (
   `fksportsid` int(10) NOT NULL,
   `fkcollegeid` int(10) NOT NULL,
   `iswomen` tinyint(1) NOT NULL DEFAULT '0',
   `isteam` tinyint(1) NOT NULL DEFAULT '0',
   `isclub` tinyint(1) NOT NULL DEFAULT '0',
-  `isscholarship` tinyint(1) NOT NULL DEFAULT '0'
+  `isscholarship` tinyint(1) NOT NULL DEFAULT '0',
+  KEY `fksportsid` (`fksportsid`),
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblcollegesports`
+--
+
+INSERT INTO `tblcollegesports` (`fksportsid`, `fkcollegeid`, `iswomen`, `isteam`, `isclub`, `isscholarship`) VALUES
+(66, 1, 0, 1, 0, 1),
+(28, 1, 0, 0, 1, 0),
+(53, 1, 0, 1, 1, 1),
+(467, 1, 0, 1, 1, 1),
+(140, 1, 0, 0, 1, 0),
+(140, 1, 1, 0, 1, 0),
+(467, 1, 1, 0, 1, 1),
+(67, 1, 1, 1, 1, 1),
+(336, 1, 1, 1, 0, 1),
+(53, 1, 1, 1, 1, 1),
+(260, 1, 1, 1, 0, 1),
+(519, 3, 0, 1, 0, 0),
+(431, 3, 0, 1, 0, 1),
+(467, 3, 0, 1, 0, 1),
+(618, 3, 0, 1, 0, 0),
+(604, 3, 0, 1, 0, 1),
+(519, 3, 0, 1, 0, 1),
+(585, 3, 0, 1, 0, 1),
+(519, 3, 1, 1, 0, 1),
+(619, 3, 1, 0, 1, 0),
+(580, 3, 1, 1, 0, 1),
+(67, 3, 1, 1, 0, 1),
+(53, 3, 1, 1, 1, 1),
+(53, 4, 0, 1, 0, 0),
+(691, 4, 0, 1, 0, 0),
+(585, 4, 0, 1, 0, 0),
+(178, 4, 0, 1, 0, 0),
+(519, 4, 0, 1, 1, 0),
+(66, 4, 0, 1, 0, 0),
+(53, 4, 1, 1, 1, 0),
+(336, 4, 1, 1, 0, 0),
+(519, 4, 1, 1, 0, 0),
+(67, 4, 1, 1, 0, 0),
+(343, 7, 0, 0, 1, 0),
+(626, 7, 0, 0, 1, 0),
+(467, 7, 0, 0, 1, 0),
+(431, 7, 0, 1, 1, 1),
+(105, 7, 0, 0, 1, 0),
+(507, 7, 0, 0, 1, 0),
+(178, 7, 0, 1, 1, 1),
+(585, 7, 1, 0, 1, 0),
+(574, 7, 1, 0, 1, 0),
+(105, 7, 1, 1, 1, 1),
+(626, 7, 1, 0, 1, 0),
+(67, 7, 1, 1, 1, 1),
+(691, 7, 1, 1, 1, 1),
+(178, 7, 1, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -114,12 +179,14 @@ CREATE TABLE `tblcollegesports` (
 -- Table structure for table `tblcountry`
 --
 
-CREATE TABLE `tblcountry` (
-  `pkcountryid` int(3) NOT NULL,
+DROP TABLE IF EXISTS `tblcountry`;
+CREATE TABLE IF NOT EXISTS `tblcountry` (
+  `pkcountryid` int(3) NOT NULL AUTO_INCREMENT,
   `idiso` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idphonecode` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `idphonecode` int(5) NOT NULL,
+  PRIMARY KEY (`pkcountryid`)
+) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblcountry`
@@ -382,13 +449,53 @@ INSERT INTO `tblcountry` (`pkcountryid`, `idiso`, `nmname`, `idphonecode`) VALUE
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbleduprofileid`
+--
+
+DROP TABLE IF EXISTS `tbleduprofileid`;
+CREATE TABLE IF NOT EXISTS `tbleduprofileid` (
+  `pkEduProfileID` int(10) NOT NULL AUTO_INCREMENT,
+  `fkuserid` int(10) NOT NULL,
+  `fkmajorid` int(10) NOT NULL,
+  `fkmajora` int(10) DEFAULT NULL,
+  `fkmajorb` int(10) DEFAULT NULL,
+  `fkmajorc` int(10) DEFAULT NULL,
+  `ngpa` float NOT NULL DEFAULT '0',
+  `nact` int(2) DEFAULT NULL,
+  `nsat` int(2) DEFAULT NULL,
+  `hadap` tinyint(1) NOT NULL DEFAULT '0',
+  `fkresumeid` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nhouseincome` int(10) NOT NULL,
+  `dtentry` year(4) NOT NULL,
+  `ncollegelength` int(2) NOT NULL,
+  PRIMARY KEY (`pkEduProfileID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblfile`
+--
+
+DROP TABLE IF EXISTS `tblfile`;
+CREATE TABLE IF NOT EXISTS `tblfile` (
+  `pkfileid` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nmtitle` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isactive` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblmajor`
 --
 
-CREATE TABLE `tblmajor` (
-  `pkmajorid` int(10) NOT NULL,
-  `nmname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `tblmajor`;
+CREATE TABLE IF NOT EXISTS `tblmajor` (
+  `pkmajorid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkmajorid`)
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblmajor`
@@ -594,13 +701,16 @@ INSERT INTO `tblmajor` (`pkmajorid`, `nmname`) VALUES
 -- Table structure for table `tblmajorcollege`
 --
 
-CREATE TABLE `tblmajorcollege` (
+DROP TABLE IF EXISTS `tblmajorcollege`;
+CREATE TABLE IF NOT EXISTS `tblmajorcollege` (
   `fkmajorid` int(10) NOT NULL,
   `fkcollegeid` int(10) NOT NULL,
   `isassociate` tinyint(1) NOT NULL DEFAULT '0',
   `isbachelor` tinyint(1) NOT NULL DEFAULT '0',
   `ismaster` tinyint(1) DEFAULT '0',
-  `isdoctoral` tinyint(1) DEFAULT '0'
+  `isdoctoral` tinyint(1) DEFAULT '0',
+  KEY `fkcollegeid` (`fkcollegeid`),
+  KEY `fkmajorid` (`fkmajorid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1053,12 +1163,15 @@ INSERT INTO `tblmajorcollege` (`fkmajorid`, `fkcollegeid`, `isassociate`, `isbac
 -- Table structure for table `tblnotification`
 --
 
-CREATE TABLE `tblnotification` (
-  `pknotificationid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblnotification`;
+CREATE TABLE IF NOT EXISTS `tblnotification` (
+  `pknotificationid` int(10) NOT NULL AUTO_INCREMENT,
   `enlevel` enum('Notification','Warning','Error') COLLATE utf8mb4_unicode_ci NOT NULL,
   `txdescription` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fkuserid` int(10) NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '0'
+  `isactive` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`pknotificationid`),
+  KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1067,8 +1180,9 @@ CREATE TABLE `tblnotification` (
 -- Table structure for table `tblotherscholarship`
 --
 
-CREATE TABLE `tblotherscholarship` (
-  `pkoscholarship` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblotherscholarship`;
+CREATE TABLE IF NOT EXISTS `tblotherscholarship` (
+  `pkoscholarship` int(10) NOT NULL AUTO_INCREMENT,
   `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('Scholarship','Grant','Loan','Fellowship','Prize') COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmorganization` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1078,7 +1192,8 @@ CREATE TABLE `tblotherscholarship` (
   `enreligion` enum('Jewish','Catholic','Islam/Muslim Faith','Baptist','Brethern','Christain','Deciple of Christ','Eastern Orthodox','Episcopalian','Latter-Day Saints','Methodist','Presbyterian','Protestant') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `enmilitary` enum('Air Force','Army','Navy','Marines','Coast Guard','Air National Guard','Army National Guard') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `endisability` enum('Visual','Hearing','Physical','Learning') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `namount` int(10) NOT NULL
+  `namount` int(10) NOT NULL,
+  PRIMARY KEY (`pkoscholarship`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1087,11 +1202,13 @@ CREATE TABLE `tblotherscholarship` (
 -- Table structure for table `tblpermission`
 --
 
-CREATE TABLE `tblpermission` (
-  `pkpermissionid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblpermission`;
+CREATE TABLE IF NOT EXISTS `tblpermission` (
+  `pkpermissionid` int(10) NOT NULL AUTO_INCREMENT,
   `nmname` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pkpermissionid`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblpermission`
@@ -1106,15 +1223,33 @@ INSERT INTO `tblpermission` (`pkpermissionid`, `nmname`, `txdescription`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblprofileanswers`
+--
+
+DROP TABLE IF EXISTS `tblprofileanswers`;
+CREATE TABLE IF NOT EXISTS `tblprofileanswers` (
+  `fkeduprofileid` int(10) NOT NULL,
+  `fkquestionid` int(10) NOT NULL,
+  `txanswer` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nanswer` int(10) DEFAULT NULL,
+  `enimportant` enum('Irrelavent','Less','Average','Very') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Irrelavent'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblprovince`
 --
 
-CREATE TABLE `tblprovince` (
-  `pkstateid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tblprovince`;
+CREATE TABLE IF NOT EXISTS `tblprovince` (
+  `pkstateid` int(10) NOT NULL AUTO_INCREMENT,
   `idiso` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(192) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fkcountryid` int(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `fkcountryid` int(3) NOT NULL,
+  PRIMARY KEY (`pkstateid`),
+  KEY `fkcountryid` (`fkcountryid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3876 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblprovince`
@@ -5000,10 +5135,52 @@ INSERT INTO `tblprovince` (`pkstateid`, `idiso`, `nmname`, `fkcountryid`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblquestions`
+--
+
+DROP TABLE IF EXISTS `tblquestions`;
+CREATE TABLE IF NOT EXISTS `tblquestions` (
+  `pkquestionid` int(10) NOT NULL AUTO_INCREMENT,
+  `txquestion` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entype` enum('number','multiple choice','freeform') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txanswer1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txanswer2` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txanswer3` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txanswer4` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txanswer5` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `txanswer6` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`pkquestionid`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblquestions`
+--
+
+INSERT INTO `tblquestions` (`pkquestionid`, `txquestion`, `entype`, `txanswer1`, `txanswer2`, `txanswer3`, `txanswer4`, `txanswer5`, `txanswer6`) VALUES
+(1, 'Would you rather commute or live on campus?', 'multiple choice', 'Commute', 'Live on Campus', NULL, NULL, NULL, NULL),
+(2, 'How long would you be willing to drive when commuting?', 'multiple choice', '5 minutes', '10 minutes', '20 minutes', '30 minutes', '40 minutes', '60 minutes'),
+(3, 'Where would you like to live on campus?', 'multiple choice', 'Dorm ', 'Apartment', 'Home', 'Close to Campus', NULL, NULL),
+(4, 'Would you like to have roommates or live by yourself?', 'multiple choice', 'Roommates', 'Live By Myself', NULL, NULL, NULL, NULL),
+(5, 'How much would you be willing to spend on housing?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 'If the college offered money to stay on campus, would you accept? ', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(7, 'What is the most important thing about housing?', 'multiple choice', 'Cost', 'Furnishing', 'Location', 'Roommates/Suitemates', NULL, NULL),
+(8, 'Would you like the option to choose your roommate?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(9, 'Are you looking to push yourself in Academia?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(10, 'If the college offered money for high grades, would you accept?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(11, 'Are you interested in a fraternity or sorority?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(12, 'Which is the most important part of college, Education or Freedom?', 'multiple choice', 'Education', 'Freedom', NULL, NULL, NULL, NULL),
+(13, 'Are you interested in playing sports?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(14, 'Are you interested in playing in a college sports team?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(15, 'Are you interested in joining clubs?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblsatconversion`
 --
 
-CREATE TABLE `tblsatconversion` (
+DROP TABLE IF EXISTS `tblsatconversion`;
+CREATE TABLE IF NOT EXISTS `tblsatconversion` (
   `nold` int(10) NOT NULL,
   `nnew` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5014,10 +5191,12 @@ CREATE TABLE `tblsatconversion` (
 -- Table structure for table `tblsports`
 --
 
-CREATE TABLE `tblsports` (
-  `pksportsid` int(10) NOT NULL,
-  `nmsport` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `tblsports`;
+CREATE TABLE IF NOT EXISTS `tblsports` (
+  `pksportsid` int(10) NOT NULL AUTO_INCREMENT,
+  `nmsport` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pksportsid`)
+) ENGINE=InnoDB AUTO_INCREMENT=702 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblsports`
@@ -5732,11 +5911,13 @@ INSERT INTO `tblsports` (`pksportsid`, `nmsport`) VALUES
 -- Table structure for table `tbltokens`
 --
 
-CREATE TABLE `tbltokens` (
-  `pktokenid` int(64) NOT NULL,
+DROP TABLE IF EXISTS `tbltokens`;
+CREATE TABLE IF NOT EXISTS `tbltokens` (
+  `pktokenid` int(64) NOT NULL AUTO_INCREMENT,
   `jsonget` json NOT NULL,
   `dtexpire` timestamp NOT NULL,
-  `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
+  `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`pktokenid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -5745,8 +5926,9 @@ CREATE TABLE `tbltokens` (
 -- Table structure for table `tbluser`
 --
 
-CREATE TABLE `tbluser` (
-  `pkuserid` int(10) NOT NULL,
+DROP TABLE IF EXISTS `tbluser`;
+CREATE TABLE IF NOT EXISTS `tbluser` (
+  `pkuserid` int(10) NOT NULL AUTO_INCREMENT,
   `nmfirst` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmlast` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -5758,8 +5940,11 @@ CREATE TABLE `tbluser` (
   `nphone` bigint(15) DEFAULT NULL,
   `dtgradyear` year(4) DEFAULT NULL,
   `txhash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `isactive` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`pkuserid`),
+  UNIQUE KEY `txemail` (`txemail`),
+  KEY `fkprovinceid` (`fkprovinceid`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tbluser`
@@ -5774,174 +5959,14 @@ INSERT INTO `tbluser` (`pkuserid`, `nmfirst`, `nmlast`, `txemail`, `txemailalt`,
 -- Table structure for table `tbluserpermissions`
 --
 
-CREATE TABLE `tbluserpermissions` (
+DROP TABLE IF EXISTS `tbluserpermissions`;
+CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
   `fkpermissionid` int(10) NOT NULL,
-  `fkuserid` int(10) NOT NULL
+  `fkuserid` int(10) NOT NULL,
+  KEY `fkpermissionid` (`fkpermissionid`),
+  KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `tblcollege`
---
-ALTER TABLE `tblcollege`
-  ADD PRIMARY KEY (`pkcollegeid`),
-  ADD KEY `fkprovinceid` (`fkprovinceid`);
-
---
--- Indexes for table `tblcollegerep`
---
-ALTER TABLE `tblcollegerep`
-  ADD KEY `fkuserid` (`fkuserid`),
-  ADD KEY `fkcollegeid` (`fkcollegeid`);
-
---
--- Indexes for table `tblcollegescholarship`
---
-ALTER TABLE `tblcollegescholarship`
-  ADD PRIMARY KEY (`pkcscholarship`),
-  ADD KEY `fkcollegeid` (`fkcollegeid`);
-
---
--- Indexes for table `tblcollegesports`
---
-ALTER TABLE `tblcollegesports`
-  ADD KEY `fksportsid` (`fksportsid`),
-  ADD KEY `fkcollegeid` (`fkcollegeid`);
-
---
--- Indexes for table `tblcountry`
---
-ALTER TABLE `tblcountry`
-  ADD PRIMARY KEY (`pkcountryid`);
-
---
--- Indexes for table `tblmajor`
---
-ALTER TABLE `tblmajor`
-  ADD PRIMARY KEY (`pkmajorid`);
-
---
--- Indexes for table `tblmajorcollege`
---
-ALTER TABLE `tblmajorcollege`
-  ADD KEY `fkcollegeid` (`fkcollegeid`),
-  ADD KEY `fkmajorid` (`fkmajorid`);
-
---
--- Indexes for table `tblnotification`
---
-ALTER TABLE `tblnotification`
-  ADD PRIMARY KEY (`pknotificationid`),
-  ADD KEY `fkuserid` (`fkuserid`);
-
---
--- Indexes for table `tblotherscholarship`
---
-ALTER TABLE `tblotherscholarship`
-  ADD PRIMARY KEY (`pkoscholarship`);
-
---
--- Indexes for table `tblpermission`
---
-ALTER TABLE `tblpermission`
-  ADD PRIMARY KEY (`pkpermissionid`);
-
---
--- Indexes for table `tblprovince`
---
-ALTER TABLE `tblprovince`
-  ADD PRIMARY KEY (`pkstateid`),
-  ADD KEY `fkcountryid` (`fkcountryid`);
-
---
--- Indexes for table `tblsports`
---
-ALTER TABLE `tblsports`
-  ADD PRIMARY KEY (`pksportsid`);
-
---
--- Indexes for table `tbltokens`
---
-ALTER TABLE `tbltokens`
-  ADD PRIMARY KEY (`pktokenid`);
-
---
--- Indexes for table `tbluser`
---
-ALTER TABLE `tbluser`
-  ADD PRIMARY KEY (`pkuserid`),
-  ADD UNIQUE KEY `txemail` (`txemail`),
-  ADD KEY `fkprovinceid` (`fkprovinceid`);
-
---
--- Indexes for table `tbluserpermissions`
---
-ALTER TABLE `tbluserpermissions`
-  ADD KEY `fkpermissionid` (`fkpermissionid`),
-  ADD KEY `fkuserid` (`fkuserid`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `tblcollege`
---
-ALTER TABLE `tblcollege`
-  MODIFY `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
---
--- AUTO_INCREMENT for table `tblcollegescholarship`
---
-ALTER TABLE `tblcollegescholarship`
-  MODIFY `pkcscholarship` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblcountry`
---
-ALTER TABLE `tblcountry`
-  MODIFY `pkcountryid` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=254;
---
--- AUTO_INCREMENT for table `tblmajor`
---
-ALTER TABLE `tblmajor`
-  MODIFY `pkmajorid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
---
--- AUTO_INCREMENT for table `tblnotification`
---
-ALTER TABLE `tblnotification`
-  MODIFY `pknotificationid` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblotherscholarship`
---
-ALTER TABLE `tblotherscholarship`
-  MODIFY `pkoscholarship` int(10) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tblpermission`
---
-ALTER TABLE `tblpermission`
-  MODIFY `pkpermissionid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `tblprovince`
---
-ALTER TABLE `tblprovince`
-  MODIFY `pkstateid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3876;
---
--- AUTO_INCREMENT for table `tblsports`
---
-ALTER TABLE `tblsports`
-  MODIFY `pksportsid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=702;
---
--- AUTO_INCREMENT for table `tbltokens`
---
-ALTER TABLE `tbltokens`
-  MODIFY `pktokenid` int(64) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `tbluser`
---
-ALTER TABLE `tbluser`
-  MODIFY `pkuserid` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- Constraints for dumped tables
 --
