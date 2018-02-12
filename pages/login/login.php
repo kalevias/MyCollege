@@ -3,28 +3,21 @@
 include "../../autoload.php";
 
 $controller = $_SESSION["controller"] = new Controller("Login");
-
 $controller->initModuleDir();
 $controller->processREQUEST();
 ?>
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Login</title>
         <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/login.min.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
         <script src="javascript/login.js"></script>
-        <title>Login</title>
     </head>
     <body>
         <?php
-        if (isset($loginFail) and $loginFail) {
-            ?>
-            <div>
-                <h2>Password or E-Mail is incorrect. Please try again.</h2>
-            </div>
-            <?php
-        }
+        include $controller->getHomeDir() . "pages/pageassembly/alerts/alerts.php";
         ?>
         <div class="form-wrap">
             <div class="rcorners2">

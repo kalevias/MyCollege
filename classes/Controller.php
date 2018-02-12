@@ -448,7 +448,7 @@ class Controller
              *    streetAddress : string
              *             city : string
              *         province : string (ISO code)
-             *              zip : string <=10 characters in length
+             *       postalCode : string <=10 characters in length
              *      phoneNumber : int <=15 digits in length
              *         gradYear : int 4 digits in length
              *         password : string
@@ -463,14 +463,20 @@ class Controller
                     $this->scrubbed["streetAddress"],
                     $this->scrubbed["city"],
                     $this->scrubbed["province"],
-                    $this->scrubbed["zip"],
+                    $this->scrubbed["postalCode"],
                     $this->scrubbed["phoneNumber"],
                     $this->scrubbed["gradYear"],
                     $this->scrubbed["password"],
                     $this->scrubbed["confirmPassword"]
                 ];
-                $success = call_user_func_array("Authenticator::registerStudent", $args);
-                $_SESSION["registerStudentFail"] = !$success;
+                try {
+                    $success = call_user_func_array("Authenticator::registerStudent", $args);
+                    if(!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
             /**
              * Required POST variables for this case:
@@ -495,16 +501,28 @@ class Controller
                     $this->scrubbed["email"],
                     $this->scrubbed["password"]
                 ];
-                $success = call_user_func_array("Authenticator::login", $args);
-                $_SESSION["loginFail"] = !$success;
+                try {
+                    $success = call_user_func_array("Authenticator::login", $args);
+                    if(!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: Login failure; account inactive";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
             /**
              * Required POST variables for this case:
              *      requestType : "logout"
              */
             case "logout":
-                $success = Authenticator::logout();
-                $_SESSION["logoutFail"] = !$success;
+                try {
+                    $success = Authenticator::logout();
+                    if(!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: Logout failure; no user logged in; How'd you even manage to trigger this error???";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
 
             /**
