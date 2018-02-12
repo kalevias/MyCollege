@@ -6,9 +6,8 @@
  * Time: 1:22 PM
  */
 
-class Token extends DataBasedEntity
-{
-    /**
+class Token extends DataBasedEntity{
+	/**
      * Stores data attached to a token to be used for its specified purpose.
      *
      * @var mixed
@@ -305,6 +304,27 @@ class Token extends DataBasedEntity
         $this->inDatabase = $this->synced = (bool)$result;
         return (bool)$result;
     }
+
+	/**
+	 * Removes this token from the database.
+	 * Returns true if the update was completed successfully, false otherwise.
+	 *
+	 * @return bool
+	 */
+	public function removeFromDatabase(): bool
+	{
+		$dbc = new DatabaseConnection();
+		if ($this->isInDatabase()) {
+			$params = [
+				"i",
+				$this->getTokenID()
+			];
+			$result = $dbc->query("update", "DELETE FROM `tbltokens` WHERE `pktokenid` = ?", $params);
+		}else{
+			$result = true;
+		}
+		return (bool)$result;
+	}
 
     /**
      * @return mixed|null
