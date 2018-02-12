@@ -5,7 +5,7 @@
  * Date: 2/6/2018
  * Time: 1:20 PM
  */
-
+include_once "entities/Token.php";
 class Controller
 {
     const MODE_COMP_AND = 2;
@@ -428,7 +428,30 @@ class Controller
     {
         $this->scrubbed = array_map(array("Controller", "spamScrubber"), $_GET);
         //TODO: Finish implementation via switch-case for various GET submit types.
-        return true; //temporary return value
+		//reset the password
+		if(isset($this->scrubbed["token"])){
+			//Check if token is in database
+			$token = null;
+			try{
+				$token = Token::__construct1($this->scrubbed["token"]);
+			}catch(Exception $e){
+				$_SESSION["resetToken"] = false;
+				return false;
+			}
+			//check if token has expired by subtracting current time from experation time
+			$timeDiff = $token->getExpiration()->diff(new DateTime("now"));
+			//if token is expired kick out
+			if($timeDiff <= 0){
+				$result = false;
+			}else{
+				$result = true;
+			}
+			//remove token
+			$token->removeFromDatabase();
+			unset($token);
+			$_SESSION["resetToken"] = $result;
+		}
+        return (bool)$result; //temporary return value
     }
 
     /**
@@ -515,19 +538,29 @@ class Controller
             case "sentResetEmail":
                 $email = $this->scrubbed["email"];
                 //check if user exists
-                if (User::load($email) == null) {
+				$user = User::load($email);
+                if ($user == null) {
                     $_SESSION["resetFail"] = true;
                     break;
                 }
+                //create a DateTime representing 24 hours in the future
+				$experation = (new DateTime())->add(new DateInterval("P1D"));
+                //Create a token representing a temporary link to reset password
+				$token = Token::__construct2("resetPasswordLink", $experation, $user);
                 //send email to user
                 try {
+
                     $mail = new PHPMailer();
                     $mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
                     $mail->addAddress($email);
                     $mail->isHTML(true);
                     $mail->Subject = "MyCollege Password Reset";
-                    //TODO: add fancy html link in body
-                    $mail->Body = "Congrats on losing your password, here is your second chance don't screw it up this time. INSERT LINK HERE.";
+                    //create a link to password reset page with the token ID as a parameter
+					$path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
+					//create the body of the email
+					$body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
+					$body .= "<a href=\"{$path}\">Click Me!";
+                    $mail->Body = $body;
                     if ($mail->send() == false) {
                         $success = false;
                     } else {
