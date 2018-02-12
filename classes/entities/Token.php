@@ -311,8 +311,7 @@ class Token extends DataBasedEntity{
 	 *
 	 * @return bool
 	 */
-	public function removeFromDatabase(): bool
-	{
+	public function removeFromDatabase(): bool{
 		$dbc = new DatabaseConnection();
 		if ($this->isInDatabase()) {
 			$params = [

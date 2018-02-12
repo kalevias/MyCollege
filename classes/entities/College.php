@@ -6,7 +6,7 @@
  * Time: 02:20
  */
 
-class College{
+class College extends DataBasedEntity{
 	private $collegeName;
 	/**
 	 * The type of education the college offers
@@ -48,6 +48,17 @@ class College{
 	 * @var $collegeAcceptRate
 	 */
 	private $collegeAcceptRate;
+	private $collegeProfessorCount;
+	private $collegeSize;
+	private $collegeWomanRatio;
+	private $collegeACT;
+	private $collegeSAT;
+	/**
+	 * The type of surrounding area that the college is located at
+	 * "Urban", "Suburban", "Rural", "Small Town"
+	 * @var
+	 */
+	private $collegeSetting;
 
 	/**
 	 * College constructor.
@@ -209,17 +220,36 @@ class College{
 	public function getCollegeSetting(){
 		return $this->collegeSetting;
 	}
-	private $collegeProfessorCount;
-	private $collegeSize;
-	private $collegeWomanRatio;
-	private $collegeACT;
-	private $collegeSAT;
+
+
+
+
 	/**
-	 * The type of surrounding area that the college is located at
-	 * "Urban", "Suburban", "Rural", "Small Town"
-	 * @var
+	 * Loads the current object with data from the database to which pkID pertains.
+	 *
+	 * @return bool
 	 */
-	private $collegeSetting;
+	public function updateFromDatabase(): bool{
+		// TODO: Implement updateFromDatabase() method.
+	}
 
+	/**
+	 * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
+	 * true.
+	 *
+	 * @return bool
+	 */
+	public function updateToDatabase(): bool{
+		// TODO: Implement updateToDatabase() method.
+	}
 
+	/**
+	 * Removes the current object from the database.
+	 * Returns true if the update was completed successfully, false otherwise.
+	 *
+	 * @return bool
+	 */
+	public function removeFromDatabase(): bool{
+		// TODO: Implement removeFromDatabase() method.
+	}
 }

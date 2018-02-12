@@ -97,5 +97,12 @@ abstract class DataBasedEntity
      * @return bool
      */
     public abstract function updateToDatabase(): bool;
+	/**
+	 * Removes the current object from the database.
+	 * Returns true if the update was completed successfully, false otherwise.
+	 *
+	 * @return bool
+	 */
+	public abstract function removeFromDatabase(): bool;
 
 }
