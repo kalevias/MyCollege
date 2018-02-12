@@ -7,4 +7,4 @@
  */
 $homedir = "";
 
-include $homedir."pages/homepage/index.php";
+include $homedir . "pages/homepage/index.php";

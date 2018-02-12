@@ -24,7 +24,7 @@
     }
   ],
   "require": {
-    "php" : "^7.1",
+    "php": "^7.1",
     "phpmailer/phpmailer": "^5.2.23",
     "giggsey/libphonenumber-for-php": "^8.4",
     "phpunit/phpunit": "6.0.13"

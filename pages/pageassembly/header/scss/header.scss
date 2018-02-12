@@ -19,10 +19,25 @@
 }
 
 /* Dropdown */
-.open  {
+.open {
   .dropdown-toggle {
     color: #fff;
     background-color: #555 !important;
+  }
+}
+
+nav .dropdown {
+  /* Set a style for all buttons */
+  button {
+    padding: 14px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+
+  button:hover {
+    opacity: 1;
   }
 }
 

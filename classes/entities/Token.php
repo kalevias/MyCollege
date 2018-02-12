@@ -6,8 +6,7 @@
  * Time: 1:22 PM
  */
 
-class Token extends DataBasedEntity
-{
+class Token extends DataBasedEntity{
     /**
      * Stores data attached to a token to be used for its specified purpose.
      *
@@ -39,6 +38,23 @@ class Token extends DataBasedEntity
      * @var User
      */
     private $user;
+
+    /**
+     * Token constructor.
+     */
+    public function __construct()
+    {
+        //This segment of code originally written by rayro@gmx.de
+        //http://php.net/manual/en/language.oop5.decon.php
+        $a = func_get_args();
+        $i = func_num_args();
+        if ($i > 2) {
+            $i = 2;
+        }
+        if (method_exists($this, $f = '__construct' . $i)) {
+            call_user_func_array(array($this, $f), $a);
+        }
+    }
 
     /**
      * Constructor for Tokens stored in the database.
@@ -176,6 +192,27 @@ class Token extends DataBasedEntity
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Removes this token from the database.
+     * Returns true if the update was completed successfully, false otherwise.
+     *
+     * @return bool
+     */
+    public function removeFromDatabase(): bool
+    {
+        $dbc = new DatabaseConnection();
+        if ($this->isInDatabase()) {
+            $params = [
+                "i",
+                $this->getTokenID()
+            ];
+            $result = $dbc->query("update", "DELETE FROM `tbltokens` WHERE `pktokenid` = ?", $params);
+        } else {
+            $result = true;
+        }
+        return (bool)$result;
     }
 
     /**

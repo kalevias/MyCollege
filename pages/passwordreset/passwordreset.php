@@ -5,7 +5,11 @@ include "../../autoload.php";
 $controller = $_SESSION["controller"] = new Controller("ResetPassword");
 $controller->initModuleDir();
 $controller->processREQUEST();
+//Check if token exists so user can reset password
+if (isset($_SESSION[resetToken]) && $_SESSION[resetToken] == false) {
+    //redirect to error page
 
+}
 $resetFail = isset($_SESSION["resetFail"]) ? $_SESSION["resetFail"] : false;
 
 ?>

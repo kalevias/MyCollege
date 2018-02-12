@@ -9,9 +9,9 @@
 class Province
 {
 
+    const MODE_DbID = 3;
     const MODE_ISO = 1;
     const MODE_NAME = 2;
-    const MODE_DbID = 3;
     /**
      * @var string
      */
@@ -51,7 +51,7 @@ class Province
                 $this->setISO($province["idiso"]),
                 $this->setName($province["nmname"])
             ];
-            if(in_array(false, $result)) {
+            if (in_array(false, $result)) {
                 throw new Exception("Province->__construct($identifier, $mode) - Unable to construct Province object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
         } else {

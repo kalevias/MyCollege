@@ -41,7 +41,7 @@ class Authenticator
                 $goodPass = Hasher::verifyCryptographicHash($password, $user->getHash());
 
                 if ($goodPass) {
-                    if($user->isActive()) {
+                    if ($user->isActive()) {
                         Controller::setLoggedInUser($user);
                         Controller::setLoginLockout();
                         Controller::setLoginFails();
@@ -84,6 +84,20 @@ class Authenticator
         }
     }
 
+    /**
+     * @param $fName
+     * @param $lName
+     * @param $email
+     * @param $altEmail
+     * @param $address
+     * @param $city
+     * @param $province
+     * @param $postalCode
+     * @param $phone
+     * @param $gradYear
+     * @param $password
+     * @return bool
+     */
     public static function registerRepresentative($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password)
     {
         //TODO: upon implementing email verification, the "true" below should be changed to false
@@ -101,20 +115,34 @@ class Authenticator
         }
     }
 
+    /**
+     * @param $fName
+     * @param $lName
+     * @param $email
+     * @param $altEmail
+     * @param $address
+     * @param $city
+     * @param $province
+     * @param $postalCode
+     * @param $phone
+     * @param $gradYear
+     * @param $password
+     * @param $confirmPassword
+     * @return bool
+     * @throws Exception
+     */
     public static function registerStudent($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, $confirmPassword)
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
             $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
-            try {
-                $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
-            } catch (Exception $e) {
-                return false;
-            }
+            $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($user)) {
                 return false;
             } else {
                 $user->updateToDatabase();
+                //This try-catch should stay here, as it basically just re-routes the user to the homepage if the login
+                //function fails, for some reason or another
                 try {
                     self::login($user->getEmail(), $password);
                 } catch (Exception $e) {
