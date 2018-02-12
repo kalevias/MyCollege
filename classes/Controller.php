@@ -5,7 +5,7 @@
  * Date: 2/6/2018
  * Time: 1:20 PM
  */
-include_once "entities/Token.php";
+
 class Controller
 {
     const MODE_COMP_AND = 2;
@@ -428,29 +428,29 @@ class Controller
     {
         $this->scrubbed = array_map(array("Controller", "spamScrubber"), $_GET);
         //TODO: Finish implementation via switch-case for various GET submit types.
-		//reset the password
-		if(isset($this->scrubbed["token"])){
-			//Check if token is in database
-			$token = null;
-			try{
-				$token = Token::__construct1($this->scrubbed["token"]);
-			}catch(Exception $e){
-				$_SESSION["resetToken"] = false;
-				return false;
-			}
-			//check if token has expired by subtracting current time from experation time
-			$timeDiff = $token->getExpiration()->diff(new DateTime("now"));
-			//if token is expired kick out
-			if($timeDiff <= 0){
-				$result = false;
-			}else{
-				$result = true;
-			}
-			//remove token
-			$token->removeFromDatabase();
-			unset($token);
-			$_SESSION["resetToken"] = $result;
-		}
+        //reset the password
+        if (isset($this->scrubbed["token"])) {
+            //Check if token is in database
+            $token = null;
+            try {
+                $token = new Token($this->scrubbed["token"]);
+            } catch (Exception $e) {
+                $_SESSION["resetToken"] = false;
+                return false;
+            }
+            //check if token has expired by subtracting current time from experation time
+            $timeDiff = $token->getExpiration()->diff(new DateTime("now"));
+            //if token is expired kick out
+            if ($timeDiff <= 0) {
+                $result = false;
+            } else {
+                $result = true;
+            }
+            //remove token
+            $token->removeFromDatabase();
+            unset($token);
+            $_SESSION["resetToken"] = $result;
+        }
         return (bool)$result; //temporary return value
     }
 
@@ -471,7 +471,7 @@ class Controller
              *    streetAddress : string
              *             city : string
              *         province : string (ISO code)
-             *              zip : string <=10 characters in length
+             *       postalCode : string <=10 characters in length
              *      phoneNumber : int <=15 digits in length
              *         gradYear : int 4 digits in length
              *         password : string
@@ -486,14 +486,20 @@ class Controller
                     $this->scrubbed["streetAddress"],
                     $this->scrubbed["city"],
                     $this->scrubbed["province"],
-                    $this->scrubbed["zip"],
+                    $this->scrubbed["postalCode"],
                     $this->scrubbed["phoneNumber"],
                     $this->scrubbed["gradYear"],
                     $this->scrubbed["password"],
                     $this->scrubbed["confirmPassword"]
                 ];
-                $success = call_user_func_array("Authenticator::registerStudent", $args);
-                $_SESSION["registerStudentFail"] = !$success;
+                try {
+                    $success = call_user_func_array("Authenticator::registerStudent", $args);
+                    if (!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
             /**
              * Required POST variables for this case:
@@ -518,16 +524,28 @@ class Controller
                     $this->scrubbed["email"],
                     $this->scrubbed["password"]
                 ];
-                $success = call_user_func_array("Authenticator::login", $args);
-                $_SESSION["loginFail"] = !$success;
+                try {
+                    $success = call_user_func_array("Authenticator::login", $args);
+                    if (!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: Login failure; account inactive";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
             /**
              * Required POST variables for this case:
              *      requestType : "logout"
              */
             case "logout":
-                $success = Authenticator::logout();
-                $_SESSION["logoutFail"] = !$success;
+                try {
+                    $success = Authenticator::logout();
+                    if (!$success) {
+                        $_SESSION["localWarnings"][] = "Warning: Logout failure; no user logged in; How'd you even manage to trigger this error???";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
                 break;
 
             /**
@@ -538,28 +556,27 @@ class Controller
             case "sentResetEmail":
                 $email = $this->scrubbed["email"];
                 //check if user exists
-				$user = User::load($email);
+                $user = User::load($email);
                 if ($user == null) {
                     $_SESSION["resetFail"] = true;
                     break;
                 }
                 //create a DateTime representing 24 hours in the future
-				$experation = (new DateTime())->add(new DateInterval("P1D"));
+                $expiration = (new DateTime())->add(new DateInterval("P1D"));
                 //Create a token representing a temporary link to reset password
-				$token = Token::__construct2("resetPasswordLink", $experation, $user);
+                $token = new Token("resetPasswordLink", $expiration, $user);
                 //send email to user
                 try {
-
                     $mail = new PHPMailer();
                     $mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
                     $mail->addAddress($email);
                     $mail->isHTML(true);
                     $mail->Subject = "MyCollege Password Reset";
                     //create a link to password reset page with the token ID as a parameter
-					$path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
-					//create the body of the email
-					$body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
-					$body .= "<a href=\"{$path}\">Click Me!";
+                    $path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
+                    //create the body of the email
+                    $body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
+                    $body .= "<a href=\"{$path}\">Click Me!";
                     $mail->Body = $body;
                     if ($mail->send() == false) {
                         $success = false;

@@ -60,7 +60,6 @@ $controller->processREQUEST();
                         <li data-target="#myCarousel" data-slide-to="3"></li>
                         <li data-target="#myCarousel" data-slide-to="4"></li>
                         <li data-target="#myCarousel" data-slide-to="5"></li>
-                        <li data-target="#myCarousel" data-slide-to="6"></li>
                     </ol>
                     <!-- Wrapper for slides -->
                     <div class="carousel-inner">

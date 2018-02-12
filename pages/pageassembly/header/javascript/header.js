@@ -1,6 +1,6 @@
-$(document).on("click", "#logoutButton", function() {
+$(document).on("click", "#logoutButton", function () {
     var params = {
-        requestType:"logout"
+        requestType: "logout"
     };
-    post("#",params);
+    post("#", params);
 });

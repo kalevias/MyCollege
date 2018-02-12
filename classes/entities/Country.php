@@ -8,11 +8,10 @@
 
 class Country
 {
+    const MODE_DbID = 4;
     const MODE_ISO = 1;
     const MODE_NAME = 2;
     const MODE_ProvinceID = 3;
-    const MODE_DbID = 4;
-
     /**
      * @var string
      */
@@ -107,6 +106,14 @@ class Country
     }
 
     /**
+     * @return Province[]
+     */
+    public function getProvinces()
+    {
+        return $this->provinces;
+    }
+
+    /**
      * @param string $ISO
      * @return bool
      */
@@ -156,13 +163,6 @@ class Country
     }
 
     /**
-     * @return Province[]
-     */
-    public function getProvinces() {
-        return $this->provinces;
-    }
-
-    /**
      * @return bool
      */
     private function setProvinces(): bool
@@ -171,11 +171,11 @@ class Country
         $params = ["i", $this->getPkID()];
         $provinces = $dbc->query("select multiple", "SELECT pkstateid FROM tblprovince WHERE fkcountryid = ?", $params);
         $provinceObjects = [];
-        if($provinces) {
+        if ($provinces) {
             foreach ($provinces as $province) {
                 try {
                     $provinceObjects[] = new Province($province["pkstateid"], Province::MODE_DbID);
-                } catch(Exception $e) {
+                } catch (Exception $e) {
                     return false;
                 }
             }
