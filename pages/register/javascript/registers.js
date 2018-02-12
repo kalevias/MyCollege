@@ -62,7 +62,7 @@ $(document).on("click", "#registerButton", function () {
 
 $(document).on("keyup", "#confirmPassword", function (e) {
     var key = e.which;
-    if(key === 13)  // the enter key code
+    if (key === 13)  // the enter key code
     {
         $('#registerButton').click();
         return false;

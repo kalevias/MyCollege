@@ -37,31 +37,31 @@ function isSpacer(str) {
         var mask = $(this).data("clevermask");
         return this.each(function () {
             $(this).on('keyup', function () {
-                var inval = $(this).val().substr(0,Math.min($(this).val().length, mask.length));
+                var inval = $(this).val().substr(0, Math.min($(this).val().length, mask.length));
                 var outForm = "";
                 var outVal = "";
                 var j = 0;
                 for (var i = 0; i < inval.length; i++) {
                     var activeChar = inval.charAt(i);
                     var activeMask = mask.charAt(j);
-                    switch(activeMask) {
+                    switch (activeMask) {
                         case "0": //Numerics
-                            if(jQuery.isNumeric(activeChar)) {
+                            if (jQuery.isNumeric(activeChar)) {
                                 outForm += activeChar;
                                 outVal += activeChar;
-                            } else if(isAlpha(activeChar)) {
+                            } else if (isAlpha(activeChar)) {
                                 j--; //bad input, recheck the current mask position with the next char
-                            } else if(isSpacer(activeChar)) {
+                            } else if (isSpacer(activeChar)) {
                                 j--; //bad input, recheck the current mask position with the next char
                             }
                             break;
                         case "a": //Alphas
-                            if(jQuery.isNumeric(activeChar)) {
+                            if (jQuery.isNumeric(activeChar)) {
                                 j--; //bad input, recheck the current mask position with the next char
-                            } else if(isAlpha(activeChar)) {
+                            } else if (isAlpha(activeChar)) {
                                 outForm += activeChar;
                                 outVal += activeChar;
-                            } else if(isSpacer(activeChar)) {
+                            } else if (isSpacer(activeChar)) {
                                 j--; //bad input, recheck the current mask position with the next char
                             }
                             break;
@@ -71,13 +71,13 @@ function isSpacer(str) {
                         case "(":
                         case ")":
                         case ".":
-                            if(jQuery.isNumeric(activeChar)) {
+                            if (jQuery.isNumeric(activeChar)) {
                                 outForm += activeMask;
                                 i--; //normal input, recheck current char at next mask position
-                            } else if(isAlpha(activeChar)) {
+                            } else if (isAlpha(activeChar)) {
                                 outForm += activeMask;
                                 i--; //normal input, recheck current char at next mask position
-                            } else if(isSpacer(activeChar)) {
+                            } else if (isSpacer(activeChar)) {
                                 outForm += activeMask;
                             }
                             break;

@@ -8,7 +8,7 @@
 
 include_once "../../../autoload.php";
 
-if(isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
+if (isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
     try {
         $country = new Country($_POST["country"], Country::MODE_ISO);
     } catch (Exception $e) {
@@ -17,10 +17,10 @@ if(isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
     $provinces = $country->getProvinces();
     $output = [];
 
-    foreach($provinces as $province) {
+    foreach ($provinces as $province) {
         $output[] = [
-            "iso"=>$province->getISO(),
-            "name"=>$province->getName()
+            "iso" => $province->getISO(),
+            "name" => $province->getName()
         ];
     }
     echo json_encode($output);

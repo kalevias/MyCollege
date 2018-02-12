@@ -56,10 +56,10 @@ class DatabaseConnection
             // Load configuration as an array. Use the actual location of your configuration file
 //            $config = parse_ini_file(SECURE_DIR.AutoLoader::PROJECT_DIR."config.ini");
             $config = [
-                "host"=>"localhost",
-                "username"=>"root",
-                "password"=>"",
-                "database"=>"mycollege",
+                "host" => "localhost",
+                "username" => "root",
+                "password" => "",
+                "database" => "mycollege",
             ];
             self::$connection = new mysqli($config["host"], $config["username"], $config["password"], $config["database"]);
             self::$db = $config["database"];
@@ -109,10 +109,10 @@ class DatabaseConnection
      * @param string|null $schema
      * @return int|int[]|bool
      */
-    public function getMaximumLength(string $table, string $field, string $schema=null)
+    public function getMaximumLength(string $table, string $field, string $schema = null)
     {
         $this->connect();
-        if(!isset($schema)) {
+        if (!isset($schema)) {
             $schema = $this->getTableSchema();
         }
         $params = ["sss", $schema, $table, $field];
@@ -121,8 +121,8 @@ class DatabaseConnection
                                                               WHERE `TABLE_SCHEMA` = ? 
                                                                 AND `TABLE_NAME` = ?
                                                                 AND `COLUMN_NAME` = ?", $params);
-        if($type) {
-            switch($type["DATA_TYPE"]) {
+        if ($type) {
+            switch ($type["DATA_TYPE"]) {
                 case "tinyint":
                 case "smallint":
                 case "mediumint":
@@ -134,7 +134,7 @@ class DatabaseConnection
                                                                             WHERE `TABLE_SCHEMA` = ?
                                                                               AND `TABLE_NAME` = ?
                                                                               AND `COLUMN_NAME` = ?", $params);
-                    if($length) {
+                    if ($length) {
                         return $length["NUMERIC_PRECISION"];
                     } else {
                         return false;
@@ -147,7 +147,7 @@ class DatabaseConnection
                                                                             WHERE `TABLE_SCHEMA` = ?
                                                                               AND `TABLE_NAME` = ?
                                                                               AND `COLUMN_NAME` = ?", $params);
-                    if($length) {
+                    if ($length) {
                         return $length;
                     } else {
                         return false;
@@ -171,7 +171,7 @@ class DatabaseConnection
                                                                             WHERE `TABLE_SCHEMA` = ?
                                                                               AND `TABLE_NAME` = ?
                                                                               AND `COLUMN_NAME` = ?", $params);
-                    if($length) {
+                    if ($length) {
                         return $length["CHARACTER_MAXIMUM_LENGTH"];
                     } else {
                         return false;
@@ -184,7 +184,7 @@ class DatabaseConnection
                                                                             WHERE `TABLE_SCHEMA` = ?
                                                                               AND `TABLE_NAME` = ?
                                                                               AND `COLUMN_NAME` = ?", $params);
-                    if($length) {
+                    if ($length) {
                         return $length["DATETIME_PRECISION"];
                     } else {
                         return false;

@@ -40,20 +40,8 @@ class Hasher
         try {
             return random_bytes(16);
         } catch (Exception $e) {
-            return substr(hash("sha256",rand()),0,16);
+            return substr(hash("sha256", rand()), 0, 16);
         }
-    }
-
-    /**
-     * Verifies that $string hashed is equivalent to $hash via the SHA256 hashing algorithm.
-     *
-     * @param string $string
-     * @param string $hash
-     * @return bool
-     */
-    public static function verifyHash(string $string, string $hash): bool
-    {
-        return hash("sha256", $string) == $hash;
     }
 
     /**
@@ -66,5 +54,17 @@ class Hasher
     public static function verifyCryptographicHash(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
+    }
+
+    /**
+     * Verifies that $string hashed is equivalent to $hash via the SHA256 hashing algorithm.
+     *
+     * @param string $string
+     * @param string $hash
+     * @return bool
+     */
+    public static function verifyHash(string $string, string $hash): bool
+    {
+        return hash("sha256", $string) == $hash;
     }
 }

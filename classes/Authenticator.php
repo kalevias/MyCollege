@@ -41,7 +41,7 @@ class Authenticator
                 $goodPass = Hasher::verifyCryptographicHash($password, $user->getHash());
 
                 if ($goodPass) {
-                    if($user->isActive()) {
+                    if ($user->isActive()) {
                         Controller::setLoggedInUser($user);
                         Controller::setLoginLockout();
                         Controller::setLoginFails();

@@ -50,6 +50,14 @@ abstract class DataBasedEntity
     }
 
     /**
+     * @return mixed
+     */
+    public function getPkID()
+    {
+        return $this->pkID;
+    }
+
+    /**
      * @return bool
      */
     public function isInDatabase(): bool
@@ -66,24 +74,6 @@ abstract class DataBasedEntity
     }
 
     /**
-     * @param $reference mixed : An internal class attribute to be changed
-     * @param $oldValue
-     * @param $newValue
-     */
-    protected function syncHandler(&$reference, $oldValue, $newValue): void {
-        $sync = ($this->synced and ($oldValue === $newValue));
-        $reference = $newValue;
-        $this->synced = $sync;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPkID() {
-        return $this->pkID;
-    }
-
-    /**
      * Loads the current object with data from the database to which pkID pertains.
      *
      * @return bool
@@ -97,5 +87,17 @@ abstract class DataBasedEntity
      * @return bool
      */
     public abstract function updateToDatabase(): bool;
+
+    /**
+     * @param $reference mixed : An internal class attribute to be changed
+     * @param $oldValue
+     * @param $newValue
+     */
+    protected function syncHandler(&$reference, $oldValue, $newValue): void
+    {
+        $sync = ($this->synced and ($oldValue === $newValue));
+        $reference = $newValue;
+        $this->synced = $sync;
+    }
 
 }

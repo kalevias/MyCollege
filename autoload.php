@@ -29,7 +29,8 @@ class AutoLoader
         ENTITIES_DIR
     ];
 
-    public static function PROJECT_DIR() {
+    public static function PROJECT_DIR()
+    {
         $OS_WIN = strtoupper(substr(php_uname("s"), 0, 3)) === "WIN";
         return ($OS_WIN ? AutoLoader::PROJECT_DIR : AutoLoader::PROJECT_DIR_MAC);
     }

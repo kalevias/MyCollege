@@ -1,7 +1,0 @@
-# Code owners file
-# This file specifies who code owners are for various files types, etc. in the Repo
-# By default, the project manager will be the code owner for all code, 
-# but more specific code owners may be specified later as needed.
-# (e.g. maybe add the system designer?)
-
-* @jnick1
