@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 11, 2018 at 03:42 AM
+-- Generation Time: Feb 12, 2018 at 07:22 PM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
   `txcity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fkprovinceid` int(10) NOT NULL,
   `nzip` int(5) NOT NULL,
+  `txwebsite` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nPhone` int(10) DEFAULT NULL,
   `ninstate` int(7) NOT NULL,
   `noutstate` int(7) NOT NULL,
@@ -56,16 +57,16 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
 -- Dumping data for table `tblcollege`
 --
 
-INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nPhone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
-(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
-(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
-(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
-(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
-(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
-(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban'),
-(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 57, 23, NULL, 'Small Town'),
-(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 59, NULL, NULL, 'Suburban'),
-(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 50, NULL, NULL, 'Urban');
+INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nPhone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
+(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
+(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, NULL, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban'),
+(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 57, 23, NULL, 'Small Town'),
+(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 59, NULL, NULL, 'Suburban'),
+(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 50, NULL, NULL, 'Urban');
 
 -- --------------------------------------------------------
 
@@ -449,26 +450,34 @@ INSERT INTO `tblcountry` (`pkcountryid`, `idiso`, `nmname`, `idphonecode`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbleduprofileid`
+-- Table structure for table `tbleduprofile`
 --
 
-DROP TABLE IF EXISTS `tbleduprofileid`;
-CREATE TABLE IF NOT EXISTS `tbleduprofileid` (
-  `pkEduProfileID` int(10) NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `tbleduprofile`;
+CREATE TABLE IF NOT EXISTS `tbleduprofile` (
+  `pkeduprofileid` int(10) NOT NULL,
   `fkuserid` int(10) NOT NULL,
   `fkmajorid` int(10) NOT NULL,
-  `fkmajora` int(10) DEFAULT NULL,
-  `fkmajorb` int(10) DEFAULT NULL,
-  `fkmajorc` int(10) DEFAULT NULL,
+  `fkmajor1` int(10) DEFAULT NULL,
+  `fkmajor2` int(10) DEFAULT NULL,
+  `fkmajor3` int(10) DEFAULT NULL,
   `ngpa` float NOT NULL DEFAULT '0',
   `nact` int(2) DEFAULT NULL,
-  `nsat` int(2) DEFAULT NULL,
+  `nsat` int(5) DEFAULT NULL,
   `hadap` tinyint(1) NOT NULL DEFAULT '0',
   `fkresumeid` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fktranscriptid` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nhouseincome` int(10) NOT NULL,
   `dtentry` year(4) NOT NULL,
   `ncollegelength` int(2) NOT NULL,
-  PRIMARY KEY (`pkEduProfileID`)
+  PRIMARY KEY (`pkeduprofileid`),
+  KEY `fkmajorid` (`fkmajorid`),
+  KEY `fkmajor1` (`fkmajor1`),
+  KEY `fkmajor2` (`fkmajor2`),
+  KEY `fkmajor3` (`fkmajor3`),
+  KEY `fkuserid` (`fkuserid`),
+  KEY `fktranscriptid` (`fktranscriptid`),
+  KEY `fkresumeid` (`fkresumeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -481,7 +490,8 @@ DROP TABLE IF EXISTS `tblfile`;
 CREATE TABLE IF NOT EXISTS `tblfile` (
   `pkfileid` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmtitle` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isactive` tinyint(1) NOT NULL
+  `isactive` tinyint(1) NOT NULL,
+  PRIMARY KEY (`pkfileid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1231,8 +1241,11 @@ CREATE TABLE IF NOT EXISTS `tblprofileanswers` (
   `fkeduprofileid` int(10) NOT NULL,
   `fkquestionid` int(10) NOT NULL,
   `txanswer` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `boolanswer` tinyint(1) NOT NULL,
   `nanswer` int(10) DEFAULT NULL,
-  `enimportant` enum('Irrelavent','Less','Average','Very') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Irrelavent'
+  `enimportant` enum('Irrelavent','Less','Average','Very') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Irrelavent',
+  KEY `fkeduprofileid` (`fkeduprofileid`),
+  KEY `fkquestionid` (`fkquestionid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -5142,7 +5155,7 @@ DROP TABLE IF EXISTS `tblquestions`;
 CREATE TABLE IF NOT EXISTS `tblquestions` (
   `pkquestionid` int(10) NOT NULL AUTO_INCREMENT,
   `txquestion` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `entype` enum('number','multiple choice','freeform') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entype` enum('number','multiple choice','freeform','true/false') COLLATE utf8mb4_unicode_ci NOT NULL,
   `txanswer1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txanswer2` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txanswer3` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -5150,7 +5163,7 @@ CREATE TABLE IF NOT EXISTS `tblquestions` (
   `txanswer5` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txanswer6` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`pkquestionid`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblquestions`
@@ -5162,16 +5175,45 @@ INSERT INTO `tblquestions` (`pkquestionid`, `txquestion`, `entype`, `txanswer1`,
 (3, 'Where would you like to live on campus?', 'multiple choice', 'Dorm ', 'Apartment', 'Home', 'Close to Campus', NULL, NULL),
 (4, 'Would you like to have roommates or live by yourself?', 'multiple choice', 'Roommates', 'Live By Myself', NULL, NULL, NULL, NULL),
 (5, 'How much would you be willing to spend on housing?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(6, 'If the college offered money to stay on campus, would you accept? ', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(6, 'If the college offered money to stay on campus, would you accept? ', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
 (7, 'What is the most important thing about housing?', 'multiple choice', 'Cost', 'Furnishing', 'Location', 'Roommates/Suitemates', NULL, NULL),
-(8, 'Would you like the option to choose your roommate?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(9, 'Are you looking to push yourself in Academia?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(10, 'If the college offered money for high grades, would you accept?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(11, 'Are you interested in a fraternity or sorority?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(8, 'Would you like the option to choose your roommate?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(9, 'Are you looking to push yourself in Academia?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(10, 'If the college offered money for high grades, would you accept?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(11, 'Are you interested in a fraternity or sorority?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
 (12, 'Which is the most important part of college, Education or Freedom?', 'multiple choice', 'Education', 'Freedom', NULL, NULL, NULL, NULL),
-(13, 'Are you interested in playing sports?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(14, 'Are you interested in playing in a college sports team?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(15, 'Are you interested in joining clubs?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL);
+(13, 'Are you interested in playing sports?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(14, 'Are you interested in playing in a college sports team?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(15, 'Are you interested in joining clubs?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(16, 'Would you like to join a sorority?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(17, 'Would you like to join a fraternity?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(18, 'What clubs are you looking for to join?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
+(19, 'How often would you like to meet up for a club?', 'multiple choice', 'Weekly', 'Biweekly', 'Monthly', 'Not Interested', NULL, NULL),
+(20, 'Would you consider to go study abroad if given the opportunity?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(21, 'What major are you interested in?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
+(22, 'What would be your top 5 majors you would consider?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
+(23, 'Would you consider going to a vocational or trade school?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(24, 'What Student resources would you like to use at college?', 'freeform', '', '', NULL, NULL, NULL, NULL),
+(25, 'Would you rather be in a more secluded area when on campus, or be surrounded by a suburban/urban area?', 'multiple choice', 'Secluded Area', 'Suburban/Urban Area', NULL, NULL, NULL, NULL),
+(26, 'What size college would you consider to go to?', 'multiple choice', 'Small ', 'Medium', 'Large', NULL, NULL, NULL),
+(27, 'What would be the maximum student population you would consider going to?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
+(28, 'What is the minimum student population you would consider going to?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
+(29, 'Would you like to have 24 hour access to the library on campus?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(30, 'Should libraries be quiet, or available for group work and projects?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(31, 'Would you consider leaving campus and explore the surrounding area?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(32, 'How would you like to travel between classes?', 'multiple choice', 'Bike', 'Walk', 'Car', 'Public Transport', NULL, NULL),
+(33, 'Will you have a car at college?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(34, 'How far away would you like to be from your home?', 'multiple choice', 'A drive away (2 hours max)', 'In State', 'One State Over', 'Insert Distance Here:', NULL, NULL),
+(35, 'Would you like the option to choose your own roommate?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(36, 'Would you like to have a job on campus?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(37, 'Would you like to work while going to college?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(38, 'Would you like to get a grant or loan to pay for college?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(39, 'Would you like to get scholarships from the school?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(40, 'Would you like to get a sports scholarship from the scholarship?  ', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(41, 'How much money would you like to gain from a scholarship?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
+(42, 'Are you a veteran of the Armed Forces of the United States?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(43, 'Do you have a disability?', 'true/false', 'Yes', 'No', NULL, NULL, NULL, NULL),
+(44, 'What type of disability do you have?', 'multiple choice', 'Visual/Auditory', 'Physical', 'Cognitive/Learning', 'Psychological', 'Invisible', NULL);
 
 -- --------------------------------------------------------
 
@@ -5998,6 +6040,18 @@ ALTER TABLE `tblcollegesports`
   ADD CONSTRAINT `tblcollegesports_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `tbleduprofile`
+--
+ALTER TABLE `tbleduprofile`
+  ADD CONSTRAINT `tbleduprofile_ibfk_1` FOREIGN KEY (`fkmajorid`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_2` FOREIGN KEY (`fkmajor1`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_3` FOREIGN KEY (`fkmajor2`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_4` FOREIGN KEY (`fkmajor3`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_5` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_6` FOREIGN KEY (`fktranscriptid`) REFERENCES `tblfile` (`pkfileid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_7` FOREIGN KEY (`fkresumeid`) REFERENCES `tblfile` (`pkfileid`) ON UPDATE CASCADE;
+
+--
 -- Constraints for table `tblmajorcollege`
 --
 ALTER TABLE `tblmajorcollege`
@@ -6009,6 +6063,13 @@ ALTER TABLE `tblmajorcollege`
 --
 ALTER TABLE `tblnotification`
   ADD CONSTRAINT `tblnotification_ibfk_1` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblprofileanswers`
+--
+ALTER TABLE `tblprofileanswers`
+  ADD CONSTRAINT `tblprofileanswers_ibfk_1` FOREIGN KEY (`fkeduprofileid`) REFERENCES `tbleduprofile` (`pkeduprofileid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblprofileanswers_ibfk_2` FOREIGN KEY (`fkquestionid`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblprovince`
