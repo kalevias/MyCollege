@@ -102,7 +102,7 @@ function summonAlert(type, message, isDismissible) {
 
     if (typeof isDismissible === "undefined" || isDismissible) {
         alert += "<span>" +
-            "<img class='remove-alert' src='/newjustice/images/32x32/cancel.png' title='Dismiss'>" +
+            "<img class='remove-alert' src='/mycollege/resources/images/cancel.png' title='Dismiss'>" +
             "</span>";
     }
 

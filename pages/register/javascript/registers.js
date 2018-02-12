@@ -7,7 +7,7 @@ $(document).ready(function () {
 
 $(document).on("change", "#country", function () {
     var provinceSelect = $("<select id='province' class='chosen-ones'></select>");
-    var existingProvinceSelect = $("#province")
+    var existingProvinceSelect = $("#province");
     var countrySelect = $("#country");
 
     var parameters = {

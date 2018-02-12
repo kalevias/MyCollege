@@ -450,8 +450,10 @@ class Controller
             $token->removeFromDatabase();
             unset($token);
             $_SESSION["resetToken"] = $result;
+            return (bool)$result; //temporary return value
+        } else {
+            return false;
         }
-        return (bool)$result; //temporary return value
     }
 
     /**
