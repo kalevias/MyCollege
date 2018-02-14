@@ -331,6 +331,133 @@ class User extends DataBasedEntity
     }
 
     /**
+     * Removes the current object from the database.
+     * Returns true if the update was completed successfully, false otherwise.
+     *
+     * @return bool
+     */
+    public function removeFromDatabase(): bool
+    {
+        if($this->isInDatabase()) {
+            $dbc = new DatabaseConnection();
+            $params = ["i", $this->getPkID()];
+            $result = $dbc->query("delete", "DELETE FROM tbluser WHERE pkuserid = ?", $params);
+            if($result) {
+                $this->inDatabase = false;
+                $this->synced = false;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Loads the current object with data from the database to which pkID pertains.
+     *
+     * @return bool
+     */
+    public function updateFromDatabase(): bool
+    {
+        if ($this->isSynced()) {
+            return true;
+        } elseif ($this->isInDatabase() and !$this->isSynced()) {
+            try {
+                $this->__construct2($this->getPkID(), self::MODE_DbID);
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
+     * true.
+     *
+     * @return bool
+     */
+    public function updateToDatabase(): bool
+    {
+        if ($this->isSynced()) {
+            return true;
+        }
+        $dbc = new DatabaseConnection();
+        if ($this->isInDatabase()) {
+            $params = [
+                "ssssssisiisii",
+                $this->getFirstName(),
+                $this->getLastName(),
+                $this->getEmail(),
+                $this->getAltEmail(),
+                $this->getStreetAddress(),
+                $this->getCity(),
+                $this->getProvince()->getPkID(),
+                $this->getPostalCode(),
+                $this->getPhone(),
+                $this->getGradYear(),
+                $this->getHash(),
+                $this->isActive(),
+                $this->getPkID()
+            ];
+            $result = $dbc->query("update", "UPDATE `tbluser` SET 
+                                      `nmfirst`=?,`nmlast`=?,`txemail`=?,`txemailalt`=?,
+                                      `txstreetaddress`=?,`txcity`=?,`fkprovinceid`=?,`txpostalcode`=?,
+                                      `nphone`=?,`dtgradyear`=?, `txhash`=?,`isactive`=?
+                                      WHERE `pkuserid`=?", $params);
+
+            $params = ["i", $this->getPkID()];
+            $result = ($result and $dbc->query("delete", "DELETE FROM `tbluserpermissions` WHERE `fkuserid`=?", $params));
+
+            foreach ($this->getPermissions() as $permission) {
+                $params = ["ii", $permission->getPkID(), $this->getPkID()];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tbluserpermissions` (`fkpermissionid`,`fkuserid`) VALUES (?,?)", $params));
+            }
+            $this->synced = $result;
+        } else {
+            $params = [
+                "ssssssisiisi",
+                $this->getFirstName(),
+                $this->getLastName(),
+                $this->getEmail(),
+                $this->getAltEmail(),
+                $this->getStreetAddress(),
+                $this->getCity(),
+                $this->getProvince()->getPkID(),
+                $this->getPostalCode(),
+                $this->getPhone(),
+                $this->getGradYear(),
+                $this->getHash(),
+                $this->isActive()
+            ];
+            $result = $dbc->query("insert", "INSERT INTO `tbluser` (`pkuserid`, 
+                                          `nmfirst`, `nmlast`, `txemail`, `txemailalt`, 
+                                          `txstreetaddress`, `txcity`, `fkprovinceid`, `txpostalcode`, 
+                                          `nphone`,`dtgradyear`, `txhash`, `isactive`) 
+                                          VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
+
+            $params = ["s", $this->getEmail()];
+            $result2 = $dbc->query("select", "SELECT `pkuserid` FROM `tbluser` WHERE `txemail`=?", $params);
+
+            $this->setPkID($result2["pkuserid"]);
+
+            foreach ($this->getPermissions() as $permission) {
+                $params = ["ii", $permission->getPkID(), $this->getPkID()];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tbluserpermissions` (`fkpermissionid`,`fkuserid`) VALUES (?,?)", $params));
+            }
+
+            $this->inDatabase = $result;
+            $this->synced = $result;
+        }
+
+        return (bool)$result;
+    }
+
+    /**
      * @param Permission $permission
      * @return bool
      */
@@ -516,109 +643,6 @@ class User extends DataBasedEntity
             return true;
         }
         return false;
-    }
-
-    /**
-     * Loads the current object with data from the database to which pkID pertains.
-     *
-     * @return bool
-     */
-    public function updateFromDatabase(): bool
-    {
-        if ($this->isSynced()) {
-            return true;
-        } elseif ($this->isInDatabase() and !$this->isSynced()) {
-            try {
-                $this->__construct2($this->getPkID(), self::MODE_DbID);
-            } catch (Exception $e) {
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
-     * true.
-     *
-     * @return bool
-     */
-    public function updateToDatabase(): bool
-    {
-        if ($this->isSynced()) {
-            return true;
-        }
-        $dbc = new DatabaseConnection();
-        if ($this->isInDatabase()) {
-            $params = [
-                "ssssssisiisii",
-                $this->getFirstName(),
-                $this->getLastName(),
-                $this->getEmail(),
-                $this->getAltEmail(),
-                $this->getStreetAddress(),
-                $this->getCity(),
-                $this->getProvince()->getPkID(),
-                $this->getPostalCode(),
-                $this->getPhone(),
-                $this->getGradYear(),
-                $this->getHash(),
-                $this->isActive(),
-                $this->getPkID()
-            ];
-            $result = $dbc->query("update", "UPDATE `tbluser` SET 
-                                      `nmfirst`=?,`nmlast`=?,`txemail`=?,`txemailalt`=?,
-                                      `txstreetaddress`=?,`txcity`=?,`fkprovinceid`=?,`txpostalcode`=?,
-                                      `nphone`=?,`dtgradyear`=?, `txhash`=?,`isactive`=?
-                                      WHERE `pkuserid`=?", $params);
-
-            $params = ["i", $this->getPkID()];
-            $result = ($result and $dbc->query("delete", "DELETE FROM `tbluserpermissions` WHERE `fkuserid`=?", $params));
-
-            foreach ($this->getPermissions() as $permission) {
-                $params = ["ii", $permission->getPkID(), $this->getPkID()];
-                $result = ($result and $dbc->query("insert", "INSERT INTO `tbluserpermissions` (`fkpermissionid`,`fkuserid`) VALUES (?,?)", $params));
-            }
-            $this->synced = $result;
-        } else {
-            $params = [
-                "ssssssisiisi",
-                $this->getFirstName(),
-                $this->getLastName(),
-                $this->getEmail(),
-                $this->getAltEmail(),
-                $this->getStreetAddress(),
-                $this->getCity(),
-                $this->getProvince()->getPkID(),
-                $this->getPostalCode(),
-                $this->getPhone(),
-                $this->getGradYear(),
-                $this->getHash(),
-                $this->isActive()
-            ];
-            $result = $dbc->query("insert", "INSERT INTO `tbluser` (`pkuserid`, 
-                                          `nmfirst`, `nmlast`, `txemail`, `txemailalt`, 
-                                          `txstreetaddress`, `txcity`, `fkprovinceid`, `txpostalcode`, 
-                                          `nphone`,`dtgradyear`, `txhash`, `isactive`) 
-                                          VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
-
-            $params = ["s", $this->getEmail()];
-            $result2 = $dbc->query("select", "SELECT `pkuserid` FROM `tbluser` WHERE `txemail`=?", $params);
-
-            $this->setPkID($result2["pkuserid"]);
-
-            foreach ($this->getPermissions() as $permission) {
-                $params = ["ii", $permission->getPkID(), $this->getPkID()];
-                $result = ($result and $dbc->query("insert", "INSERT INTO `tbluserpermissions` (`fkpermissionid`,`fkuserid`) VALUES (?,?)", $params));
-            }
-
-            $this->inDatabase = $result;
-            $this->synced = $result;
-        }
-
-        return (bool)$result;
     }
 
     /**

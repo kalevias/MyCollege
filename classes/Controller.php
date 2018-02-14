@@ -496,7 +496,9 @@ class Controller
                 ];
                 try {
                     $success = call_user_func_array("Authenticator::registerStudent", $args);
-                    if (!$success) {
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Yay! You have an account on MyCollege now! Be sure to activate your email via the link we just sent you.";
+                    } else {
                         $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered";
                     }
                 } catch (Exception | Error $e) {
@@ -568,26 +570,15 @@ class Controller
                 //Create a token representing a temporary link to reset password
                 $token = new Token("resetPasswordLink", $expiration, $user);
                 //send email to user
-                try {
-                    $mail = new PHPMailer();
-                    $mail->setFrom("myCollegeOfficial@gmail.com", "MyCollege");
-                    $mail->addAddress($email);
-                    $mail->isHTML(true);
-                    $mail->Subject = "MyCollege Password Reset";
-                    //create a link to password reset page with the token ID as a parameter
-                    $path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
-                    //create the body of the email
-                    $body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
-                    $body .= "<a href=\"{$path}\">Click Me!";
-                    $mail->Body = $body;
-                    if ($mail->send() == false) {
-                        $success = false;
-                    } else {
-                        $success = true;
-                    }
-                } catch (phpmailerException $e) {
-                    $success = false;
-                }
+				$mailman = Mailman();
+				//create email body
+				//create a link to password reset page with the token ID as a parameter
+				$path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
+				//create the body of the email
+				$body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
+				$body .= "<a href=\"{$path}\">Click Me!";
+				//send email
+				$success = $mailman->sendEmail($email, "MyCollege Password Reset", $body);
                 $_SESSION["resetFail"] = !$success;
                 break;
             case "resetPassword":
