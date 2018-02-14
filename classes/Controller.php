@@ -496,7 +496,9 @@ class Controller
                 ];
                 try {
                     $success = call_user_func_array("Authenticator::registerStudent", $args);
-                    if (!$success) {
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Yay! You have an account on MyCollege now! Be sure to activate your email via the link we just sent you.";
+                    } else {
                         $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered";
                     }
                 } catch (Exception | Error $e) {
