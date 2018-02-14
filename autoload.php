@@ -22,7 +22,6 @@ define("SECURE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../secure/");
 class AutoLoader
 {
     private const PROJECT_DIR = "mycollege" . DIRECTORY_SEPARATOR;
-    private const PROJECT_DIR_MAC = "";
 
     protected static $paths = [
         CLASSES_DIR,
@@ -31,8 +30,7 @@ class AutoLoader
 
     public static function PROJECT_DIR()
     {
-        $OS_WIN = strtoupper(substr(php_uname("s"), 0, 3)) === "WIN";
-        return ($OS_WIN ? AutoLoader::PROJECT_DIR : AutoLoader::PROJECT_DIR_MAC);
+        return self::PROJECT_DIR;
     }
 
     public static function addPath($path)
