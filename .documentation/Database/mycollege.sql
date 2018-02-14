@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 12, 2018 at 07:22 PM
+-- Generation Time: Feb 14, 2018 at 07:37 PM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -30,24 +30,24 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `tblcollege`;
 CREATE TABLE IF NOT EXISTS `tblcollege` (
-  `pkcollegeid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkcollegeid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmcollege` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('2-year','4-year','vocational','online','Grad School') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txstreetaddress` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txcity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fkprovinceid` int(10) NOT NULL,
-  `nzip` int(5) NOT NULL,
+  `fkprovinceid` int(10) UNSIGNED NOT NULL,
+  `nzip` int(5) UNSIGNED NOT NULL,
   `txwebsite` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nPhone` int(10) DEFAULT NULL,
-  `ninstate` int(7) NOT NULL,
-  `noutstate` int(7) NOT NULL,
+  `nPhone` int(10) UNSIGNED DEFAULT NULL,
+  `ninstate` int(7) UNSIGNED NOT NULL,
+  `noutstate` int(7) UNSIGNED NOT NULL,
   `nfinancialave` int(7) DEFAULT NULL,
-  `nacceptrate` float NOT NULL,
-  `nprof` int(5) DEFAULT NULL,
-  `nsize` int(10) DEFAULT NULL,
-  `nwomenratio` int(3) DEFAULT NULL,
-  `nact` int(2) DEFAULT NULL,
-  `nsat` int(4) DEFAULT NULL,
+  `nacceptrate` float UNSIGNED NOT NULL,
+  `nprof` int(5) UNSIGNED DEFAULT NULL,
+  `nsize` int(10) UNSIGNED DEFAULT NULL,
+  `nwomenratio` int(3) UNSIGNED DEFAULT NULL,
+  `nact` int(2) UNSIGNED DEFAULT NULL,
+  `nsat` int(4) UNSIGNED DEFAULT NULL,
   `ensetting` enum('Urban','Suburban','Rural','Small Town') COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`pkcollegeid`),
   KEY `fkprovinceid` (`fkprovinceid`)
@@ -76,8 +76,8 @@ INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress
 
 DROP TABLE IF EXISTS `tblcollegerep`;
 CREATE TABLE IF NOT EXISTS `tblcollegerep` (
-  `fkuserid` int(10) NOT NULL,
-  `fkcollegeid` int(10) NOT NULL,
+  `fkuserid` int(10) UNSIGNED NOT NULL,
+  `fkcollegeid` int(10) UNSIGNED NOT NULL,
   KEY `fkuserid` (`fkuserid`),
   KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -90,15 +90,15 @@ CREATE TABLE IF NOT EXISTS `tblcollegerep` (
 
 DROP TABLE IF EXISTS `tblcollegescholarship`;
 CREATE TABLE IF NOT EXISTS `tblcollegescholarship` (
-  `pkcscholarship` int(10) NOT NULL AUTO_INCREMENT,
-  `fkcollegeid` int(10) NOT NULL,
+  `pkcscholarship` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fkcollegeid` int(10) UNSIGNED NOT NULL,
   `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('Grant','Loan','Merit based') COLLATE utf8mb4_unicode_ci NOT NULL,
   `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txrequirements` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enfield` enum('Liberal Arts','Medical and Life Science','Visual and Performance Arts','Engineering and Technology','Business') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ngpa` float DEFAULT NULL,
-  `namount` int(10) NOT NULL,
+  `ngpa` float UNSIGNED DEFAULT NULL,
+  `namount` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkcscholarship`),
   KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -111,12 +111,12 @@ CREATE TABLE IF NOT EXISTS `tblcollegescholarship` (
 
 DROP TABLE IF EXISTS `tblcollegesports`;
 CREATE TABLE IF NOT EXISTS `tblcollegesports` (
-  `fksportsid` int(10) NOT NULL,
-  `fkcollegeid` int(10) NOT NULL,
-  `iswomen` tinyint(1) NOT NULL DEFAULT '0',
-  `isteam` tinyint(1) NOT NULL DEFAULT '0',
-  `isclub` tinyint(1) NOT NULL DEFAULT '0',
-  `isscholarship` tinyint(1) NOT NULL DEFAULT '0',
+  `fksportsid` int(10) UNSIGNED NOT NULL,
+  `fkcollegeid` int(10) UNSIGNED NOT NULL,
+  `iswomen` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `isteam` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `isclub` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `isscholarship` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   KEY `fksportsid` (`fksportsid`),
   KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -182,10 +182,10 @@ INSERT INTO `tblcollegesports` (`fksportsid`, `fkcollegeid`, `iswomen`, `isteam`
 
 DROP TABLE IF EXISTS `tblcountry`;
 CREATE TABLE IF NOT EXISTS `tblcountry` (
-  `pkcountryid` int(3) NOT NULL AUTO_INCREMENT,
+  `pkcountryid` int(3) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idiso` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idphonecode` int(5) NOT NULL,
+  `idphonecode` int(5) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkcountryid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -455,29 +455,29 @@ INSERT INTO `tblcountry` (`pkcountryid`, `idiso`, `nmname`, `idphonecode`) VALUE
 
 DROP TABLE IF EXISTS `tbleduprofile`;
 CREATE TABLE IF NOT EXISTS `tbleduprofile` (
-  `pkeduprofileid` int(10) NOT NULL,
-  `fkuserid` int(10) NOT NULL,
-  `fkmajorid` int(10) NOT NULL,
-  `fkmajor1` int(10) DEFAULT NULL,
-  `fkmajor2` int(10) DEFAULT NULL,
-  `fkmajor3` int(10) DEFAULT NULL,
-  `ngpa` float NOT NULL DEFAULT '0',
-  `nact` int(2) DEFAULT NULL,
-  `nsat` int(5) DEFAULT NULL,
-  `hadap` tinyint(1) NOT NULL DEFAULT '0',
+  `pkeduprofileid` int(10) UNSIGNED NOT NULL,
+  `fkuserid` int(10) UNSIGNED NOT NULL,
+  `fkmajorid` int(10) UNSIGNED NOT NULL,
+  `fkmajor1` int(10) UNSIGNED DEFAULT NULL,
+  `fkmajor2` int(10) UNSIGNED DEFAULT NULL,
+  `fkmajor3` int(10) UNSIGNED DEFAULT NULL,
+  `ngpa` float UNSIGNED NOT NULL DEFAULT '0',
+  `nact` int(2) UNSIGNED DEFAULT NULL,
+  `nsat` int(5) UNSIGNED DEFAULT NULL,
+  `hadap` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `fkresumeid` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fktranscriptid` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nhouseincome` int(10) NOT NULL,
+  `nhouseincome` int(10) UNSIGNED NOT NULL,
   `dtentry` year(4) NOT NULL,
-  `ncollegelength` int(2) NOT NULL,
+  `ncollegelength` int(2) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkeduprofileid`),
-  KEY `fkmajorid` (`fkmajorid`),
   KEY `fkmajor1` (`fkmajor1`),
   KEY `fkmajor2` (`fkmajor2`),
   KEY `fkmajor3` (`fkmajor3`),
-  KEY `fkuserid` (`fkuserid`),
+  KEY `fkmajorid` (`fkmajorid`),
+  KEY `fkresumeid` (`fkresumeid`),
   KEY `fktranscriptid` (`fktranscriptid`),
-  KEY `fkresumeid` (`fkresumeid`)
+  KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -490,7 +490,7 @@ DROP TABLE IF EXISTS `tblfile`;
 CREATE TABLE IF NOT EXISTS `tblfile` (
   `pkfileid` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmtitle` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isactive` tinyint(1) NOT NULL,
+  `isactive` tinyint(1) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkfileid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -502,7 +502,7 @@ CREATE TABLE IF NOT EXISTS `tblfile` (
 
 DROP TABLE IF EXISTS `tblmajor`;
 CREATE TABLE IF NOT EXISTS `tblmajor` (
-  `pkmajorid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkmajorid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`pkmajorid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -713,12 +713,12 @@ INSERT INTO `tblmajor` (`pkmajorid`, `nmname`) VALUES
 
 DROP TABLE IF EXISTS `tblmajorcollege`;
 CREATE TABLE IF NOT EXISTS `tblmajorcollege` (
-  `fkmajorid` int(10) NOT NULL,
-  `fkcollegeid` int(10) NOT NULL,
-  `isassociate` tinyint(1) NOT NULL DEFAULT '0',
-  `isbachelor` tinyint(1) NOT NULL DEFAULT '0',
-  `ismaster` tinyint(1) DEFAULT '0',
-  `isdoctoral` tinyint(1) DEFAULT '0',
+  `fkmajorid` int(10) UNSIGNED NOT NULL,
+  `fkcollegeid` int(10) UNSIGNED NOT NULL,
+  `isassociate` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `isbachelor` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `ismaster` tinyint(1) UNSIGNED DEFAULT '0',
+  `isdoctoral` tinyint(1) UNSIGNED DEFAULT '0',
   KEY `fkcollegeid` (`fkcollegeid`),
   KEY `fkmajorid` (`fkmajorid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1175,11 +1175,11 @@ INSERT INTO `tblmajorcollege` (`fkmajorid`, `fkcollegeid`, `isassociate`, `isbac
 
 DROP TABLE IF EXISTS `tblnotification`;
 CREATE TABLE IF NOT EXISTS `tblnotification` (
-  `pknotificationid` int(10) NOT NULL AUTO_INCREMENT,
+  `pknotificationid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `enlevel` enum('Notification','Warning','Error') COLLATE utf8mb4_unicode_ci NOT NULL,
   `txdescription` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fkuserid` int(10) NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '0',
+  `fkuserid` int(10) UNSIGNED NOT NULL,
+  `isactive` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`pknotificationid`),
   KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1192,7 +1192,7 @@ CREATE TABLE IF NOT EXISTS `tblnotification` (
 
 DROP TABLE IF EXISTS `tblotherscholarship`;
 CREATE TABLE IF NOT EXISTS `tblotherscholarship` (
-  `pkoscholarship` int(10) NOT NULL AUTO_INCREMENT,
+  `pkoscholarship` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('Scholarship','Grant','Loan','Fellowship','Prize') COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmorganization` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1202,7 +1202,7 @@ CREATE TABLE IF NOT EXISTS `tblotherscholarship` (
   `enreligion` enum('Jewish','Catholic','Islam/Muslim Faith','Baptist','Brethern','Christain','Deciple of Christ','Eastern Orthodox','Episcopalian','Latter-Day Saints','Methodist','Presbyterian','Protestant') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `enmilitary` enum('Air Force','Army','Navy','Marines','Coast Guard','Air National Guard','Army National Guard') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `endisability` enum('Visual','Hearing','Physical','Learning') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `namount` int(10) NOT NULL,
+  `namount` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkoscholarship`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1214,7 +1214,7 @@ CREATE TABLE IF NOT EXISTS `tblotherscholarship` (
 
 DROP TABLE IF EXISTS `tblpermission`;
 CREATE TABLE IF NOT EXISTS `tblpermission` (
-  `pkpermissionid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkpermissionid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmname` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`pkpermissionid`)
@@ -1238,11 +1238,11 @@ INSERT INTO `tblpermission` (`pkpermissionid`, `nmname`, `txdescription`) VALUES
 
 DROP TABLE IF EXISTS `tblprofileanswers`;
 CREATE TABLE IF NOT EXISTS `tblprofileanswers` (
-  `fkeduprofileid` int(10) NOT NULL,
-  `fkquestionid` int(10) NOT NULL,
+  `fkeduprofileid` int(10) UNSIGNED NOT NULL,
+  `fkquestionid` int(10) UNSIGNED NOT NULL,
   `txanswer` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `boolanswer` tinyint(1) NOT NULL,
-  `nanswer` int(10) DEFAULT NULL,
+  `boolanswer` tinyint(1) UNSIGNED NOT NULL,
+  `nanswer` int(10) UNSIGNED DEFAULT NULL,
   `enimportant` enum('Irrelavent','Less','Average','Very') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Irrelavent',
   KEY `fkeduprofileid` (`fkeduprofileid`),
   KEY `fkquestionid` (`fkquestionid`)
@@ -1256,10 +1256,10 @@ CREATE TABLE IF NOT EXISTS `tblprofileanswers` (
 
 DROP TABLE IF EXISTS `tblprovince`;
 CREATE TABLE IF NOT EXISTS `tblprovince` (
-  `pkstateid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkstateid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idiso` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmname` varchar(192) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fkcountryid` int(3) NOT NULL,
+  `fkcountryid` int(3) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkstateid`),
   KEY `fkcountryid` (`fkcountryid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3876 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5153,7 +5153,7 @@ INSERT INTO `tblprovince` (`pkstateid`, `idiso`, `nmname`, `fkcountryid`) VALUES
 
 DROP TABLE IF EXISTS `tblquestions`;
 CREATE TABLE IF NOT EXISTS `tblquestions` (
-  `pkquestionid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkquestionid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `txquestion` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('number','multiple choice','freeform','true/false') COLLATE utf8mb4_unicode_ci NOT NULL,
   `txanswer1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -5223,8 +5223,8 @@ INSERT INTO `tblquestions` (`pkquestionid`, `txquestion`, `entype`, `txanswer1`,
 
 DROP TABLE IF EXISTS `tblsatconversion`;
 CREATE TABLE IF NOT EXISTS `tblsatconversion` (
-  `nold` int(10) NOT NULL,
-  `nnew` int(10) NOT NULL
+  `nold` int(10) UNSIGNED NOT NULL,
+  `nnew` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -5235,7 +5235,7 @@ CREATE TABLE IF NOT EXISTS `tblsatconversion` (
 
 DROP TABLE IF EXISTS `tblsports`;
 CREATE TABLE IF NOT EXISTS `tblsports` (
-  `pksportsid` int(10) NOT NULL AUTO_INCREMENT,
+  `pksportsid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmsport` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`pksportsid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=702 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5955,7 +5955,7 @@ INSERT INTO `tblsports` (`pksportsid`, `nmsport`) VALUES
 
 DROP TABLE IF EXISTS `tbltokens`;
 CREATE TABLE IF NOT EXISTS `tbltokens` (
-  `pktokenid` int(64) NOT NULL AUTO_INCREMENT,
+  `pktokenid` int(64) UNSIGNED NOT NULL AUTO_INCREMENT,
   `jsonget` json NOT NULL,
   `dtexpire` timestamp NOT NULL,
   `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -5970,19 +5970,19 @@ CREATE TABLE IF NOT EXISTS `tbltokens` (
 
 DROP TABLE IF EXISTS `tbluser`;
 CREATE TABLE IF NOT EXISTS `tbluser` (
-  `pkuserid` int(10) NOT NULL AUTO_INCREMENT,
+  `pkuserid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmfirst` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nmlast` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txemail` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txemailalt` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txstreetaddress` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txcity` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `fkprovinceid` int(10) DEFAULT NULL,
+  `fkprovinceid` int(10) UNSIGNED DEFAULT NULL,
   `txpostalcode` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nphone` bigint(15) DEFAULT NULL,
+  `nphone` bigint(15) UNSIGNED DEFAULT NULL,
   `dtgradyear` year(4) DEFAULT NULL,
   `txhash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '1',
+  `isactive` tinyint(1) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`pkuserid`),
   UNIQUE KEY `txemail` (`txemail`),
   KEY `fkprovinceid` (`fkprovinceid`)
@@ -6003,8 +6003,8 @@ INSERT INTO `tbluser` (`pkuserid`, `nmfirst`, `nmlast`, `txemail`, `txemailalt`,
 
 DROP TABLE IF EXISTS `tbluserpermissions`;
 CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
-  `fkpermissionid` int(10) NOT NULL,
-  `fkuserid` int(10) NOT NULL,
+  `fkpermissionid` int(10) UNSIGNED NOT NULL,
+  `fkuserid` int(10) UNSIGNED NOT NULL,
   KEY `fkpermissionid` (`fkpermissionid`),
   KEY `fkuserid` (`fkuserid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -6023,8 +6023,8 @@ ALTER TABLE `tblcollege`
 -- Constraints for table `tblcollegerep`
 --
 ALTER TABLE `tblcollegerep`
-  ADD CONSTRAINT `tblcollegerep_ibfk_1` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tblcollegerep_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `tblcollegerep_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblcollegerep_ibfk_2` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblcollegescholarship`
@@ -6036,20 +6036,20 @@ ALTER TABLE `tblcollegescholarship`
 -- Constraints for table `tblcollegesports`
 --
 ALTER TABLE `tblcollegesports`
-  ADD CONSTRAINT `tblcollegesports_ibfk_1` FOREIGN KEY (`fksportsid`) REFERENCES `tblsports` (`pksportsid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tblcollegesports_ibfk_2` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `tblcollegesports_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblcollegesports_ibfk_2` FOREIGN KEY (`fksportsid`) REFERENCES `tblsports` (`pksportsid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbleduprofile`
 --
 ALTER TABLE `tbleduprofile`
-  ADD CONSTRAINT `tbleduprofile_ibfk_1` FOREIGN KEY (`fkmajorid`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbleduprofile_ibfk_2` FOREIGN KEY (`fkmajor1`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbleduprofile_ibfk_3` FOREIGN KEY (`fkmajor2`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbleduprofile_ibfk_4` FOREIGN KEY (`fkmajor3`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbleduprofile_ibfk_5` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_1` FOREIGN KEY (`fkmajor1`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_2` FOREIGN KEY (`fkmajor2`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_3` FOREIGN KEY (`fkmajor3`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_4` FOREIGN KEY (`fkmajorid`) REFERENCES `tblmajor` (`pkmajorid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tbleduprofile_ibfk_5` FOREIGN KEY (`fkresumeid`) REFERENCES `tblfile` (`pkfileid`) ON UPDATE CASCADE,
   ADD CONSTRAINT `tbleduprofile_ibfk_6` FOREIGN KEY (`fktranscriptid`) REFERENCES `tblfile` (`pkfileid`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbleduprofile_ibfk_7` FOREIGN KEY (`fkresumeid`) REFERENCES `tblfile` (`pkfileid`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tbleduprofile_ibfk_7` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblmajorcollege`
