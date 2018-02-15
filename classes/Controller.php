@@ -488,9 +488,9 @@ class Controller
                     $this->scrubbed["streetAddress"],
                     $this->scrubbed["city"],
                     $this->scrubbed["province"],
-                    $this->scrubbed["postalCode"],
-                    $this->scrubbed["phoneNumber"],
-                    $this->scrubbed["gradYear"],
+                    ((int) $this->scrubbed["postalCode"]),
+                    ((int) $this->scrubbed["phoneNumber"]),
+                    ((int) $this->scrubbed["gradYear"]),
                     $this->scrubbed["password"],
                     $this->scrubbed["confirmPassword"]
                 ];
