@@ -1,0 +1,72 @@
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+.bg-image {
+  //From https://stackoverflow.com/a/8981374
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  pointer-events: none;
+}
+
+label {
+  color: #fff;
+}
+
+input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #fff;
+  border-radius: 3px;
+  padding: 6px 15px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #fff;
+
+  &.chosen-search-input {
+    color: #000;
+  }
+  &[type="button"] {
+    background: #ffffff;
+    border: 0;
+    cursor: pointer;
+    color: #696868;
+
+    &:hover {
+      background: #ffffff;
+      transition: .6s;
+    }
+  }
+  &::placeholder {
+    color: #ffffff;
+  }
+}
+
+.rcorners2 {
+  border-radius: 5px;
+  border: 2px solid #6aa3c3;
+  padding: 10px;
+  width: 320px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

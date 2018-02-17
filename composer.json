@@ -1,0 +1,38 @@
+{
+  "name": "jnick1/MyCollege",
+  "description": "MyCollege Matchmaking Senior Project",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Stephanie Gorham"
+    },
+    {
+      "name": "David Poduska"
+    },
+    {
+      "name": "Naba Shaukat"
+    },
+    {
+      "name": "Jacob Nick"
+    },
+    {
+      "name": "Sierra Rush"
+    },
+    {
+      "name": "Hamza Shaukat"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "phpmailer/phpmailer": "^5.2.23",
+    "giggsey/libphonenumber-for-php": "^8.4",
+    "phpunit/phpunit": "6.0.13"
+  },
+  "prefer-stable": true,
+  "config": {
+    "platform": {
+      "php": "7.1.4"
+    }
+  }
+}
