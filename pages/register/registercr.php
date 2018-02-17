@@ -1,7 +1,7 @@
 <?php
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("Representative Registration");
+$controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 //$controller->processREQUEST();
 
@@ -32,7 +32,7 @@ if (!empty($_POST)) {
 <!DOCTYPE html>
 <html>
     <head>
-        <title>College Rep Sign Up</title>
+        <title>MyCollege</title>
         <link rel="stylesheet" href="css/register.min.css" type="text/css">
     </head>
     <body>

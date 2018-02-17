@@ -2,7 +2,7 @@
 
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("ResetPassword");
+$controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 //Check if token exists so user can reset password
@@ -17,7 +17,7 @@ $resetFail = isset($_SESSION["resetFail"]) ? $_SESSION["resetFail"] : false;
 <html>
     <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/passwordreset.min.css" type="text/css">
     <head>
-        <title>Password Reset</title>
+        <title>MyCollege</title>
     </head>
     <body>
         <?php

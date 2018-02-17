@@ -2,14 +2,14 @@
 
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("Login");
+$controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Login</title>
+        <title>MyCollege</title>
         <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/login.min.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>

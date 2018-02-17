@@ -45,6 +45,10 @@ class Controller
      * @var int
      */
     private $tabIncrement;
+    /**
+     * @var string
+     */
+    private $pageTitle;
 
     /**
      * Controller constructor. A new Constructor instance should be created on each page in the site.
@@ -60,6 +64,7 @@ class Controller
         $this->scrubbed = array_map(array($this, "spamScrubber"), $_POST);
         $this->dbc = new DatabaseConnection();
         $this->tabIncrement = 1;
+        $this->pageTitle = $pageTitle;
         $this->setHomeDir();
     }
 
@@ -344,10 +349,10 @@ class Controller
     {
         $stack = debug_backtrace();
         $pathToCaller = $stack[0]['file'];
-        if (stripos($pathToCaller, rtrim(Controller::MODULE_DIR, "/"))) {
+        if (stripos($pathToCaller, rtrim(Controller::MODULE_DIR, DIRECTORY_SEPARATOR))) {
             $pathArr = explode(DIRECTORY_SEPARATOR, $pathToCaller);
-            $nextDir = array_search(rtrim(Controller::MODULE_DIR, "/"), $pathArr) + 1;
-            $this->moduleDir = Controller::MODULE_DIR . $pathArr[$nextDir] . "/";
+            $nextDir = array_search(rtrim(Controller::MODULE_DIR, DIRECTORY_SEPARATOR), $pathArr) + 1;
+            $this->moduleDir = Controller::MODULE_DIR . $pathArr[$nextDir] . DIRECTORY_SEPARATOR;
             return true;
         }
         return false;
@@ -401,7 +406,7 @@ class Controller
      * @param int $mode
      * @return bool
      */
-    public function userHasAccess(array $permissions, int $mode = self::MODE_COMP_AND): bool
+    public function userHasAccess(array $permissions = [], int $mode = self::MODE_COMP_AND): bool
     {
         $user = self::getLoggedInUser();
         if (isset($user) and $mode === self::MODE_COMP_AND) {
@@ -418,6 +423,28 @@ class Controller
             return $result;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * The value of the parameter supplied to this function should be the value returned from a call to the class
+     * function, "userHasAccess." Depending on the return value of that function, this one will kick the user back to
+     * the homepage or not.
+     *
+     * @param bool $userHasAccessCall
+     */
+    public function checkPermissions(bool $userHasAccessCall): void {
+        if(!$userHasAccessCall) {
+            $_SESSION["localWarnings"][] = "Warning: You are not permitted to access that page";
+            //TODO: figure out why in the world this session variable is being reset!
+            //So far, I've found that it's because the alerts.php code is being run on the page that this functio
+            //is being called from, but that code should even be running yet, as the HTTP header is changing.
+            //UNLESS!!! the header is simply changed here, but it doesn't actually cause a page redirect!!! The PHP
+            //code embedded in a page might continue to run through, even if I change the HTTP header (as I saw when
+            //I was able to continue running code in this function after the call to the header function.
+            //verdict: maybe save the original header location to a controller internal var, and then only go through
+            //any following PHP code (or just the alerts code) if the header hasn't changed? Might work; we'll see
+            header("Location: " . $this->getHomeDir());
         }
     }
 

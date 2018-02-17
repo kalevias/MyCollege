@@ -27,8 +27,10 @@
 }
 
 nav .dropdown {
+  position: static !important;
+
   /* Set a style for all buttons */
-  button {
+  & button {
     padding: 14px 20px;
     border: none;
     cursor: pointer;
@@ -36,7 +38,7 @@ nav .dropdown {
     opacity: 0.9;
   }
 
-  button:hover {
+  & button:hover {
     opacity: 1;
   }
 }

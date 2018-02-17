@@ -6,7 +6,7 @@
  * Time: 8:25 PM
  */
 
-include_once "../../../autoload.php";
+include_once "../../autoload.php";
 
 if (isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
     try {

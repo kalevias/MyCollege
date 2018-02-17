@@ -1,7 +1,8 @@
 $(document).ready(function () {
     $(".chosen-ones").chosen({width: "100%"});
-    $("#phoneNumber").cleverMask();
-    $("#gradYear").cleverMask();
+    // $("#postalCode").cleverMask();
+    // $("#phoneNumber").cleverMask();
+    // $("#gradYear").cleverMask();
 });
 
 $(document).on("change", "#country", function () {
@@ -38,32 +39,4 @@ $(document).on("change", "#country", function () {
             summonAlert("error", xhr.status + " " + thrownError);
         }
     });
-});
-
-$(document).on("click", "#registerButton", function () {
-    var params = {
-        firstName: $("#firstName").val(),
-        lastName: $("#lastName").val(),
-        email: $("#email").val(),
-        altEmail: $("#altEmail").val(),
-        streetAddress: $("#streetAddress").val(),
-        city: $("#city").val(),
-        province: $("#province").val(),
-        postalCode: $("#postalCode").data("clevermaskout"),
-        phoneNumber: $("#phoneNumber").data("clevermaskout"),
-        gradYear: $("#gradYear").data("clevermaskout"),
-        password: $("#password").val(),
-        confirmPassword: $("#confirmPassword").val(),
-        requestType: "registerStudent"
-    };
-    post("#", params);
-});
-
-$(document).on("keyup", "#confirmPassword", function (e) {
-    var key = e.which;
-    if (key === 13)  // the enter key code
-    {
-        $('#registerButton').click();
-        return false;
-    }
 });

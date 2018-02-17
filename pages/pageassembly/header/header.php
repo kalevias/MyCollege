@@ -8,35 +8,58 @@
 ?>
 
 <!-- Navbar -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/pageassembly/header/css/header.min.css" type="text/css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
 <script src="<?php echo $controller->getHomeDir(); ?>pages/pageassembly/header/javascript/header.js"></script>
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <ul class="nav navbar-nav navbar-left">
-                <li>
-                    <a href="<?php echo $controller->getHomeDir(); ?>" class="navbar-nav navbar-default">MyCollege</a>
+                <li class="navbar-nav navbar-default">
+                    <a href="<?php echo $controller->getHomeDir(); ?>">MyCollege</a>
                 </li>
-                <li>
-                    <a href="<?php echo $controller->getHomeDir(); ?>pages/search/search.php" class="navbar-nav navbar-default">Schools</a>
+                <li class="navbar-nav navbar-default">
+                    <a href="<?php echo $controller->getHomeDir(); ?>pages/search/search.php">Schools</a>
                 </li>
-                <li>
-                    <a href="#" class="navbar-nav navbar-default">Scholarships</a>
+                <li class="navbar-nav navbar-default">
+                    <a href="#">Scholarships</a>
                 </li>
-                <li>
-                    <a href="#" class="navbar-nav navbar-default">Events</a>
+                <li class="navbar-nav navbar-default">
+                    <a href="#">Events</a>
                 </li>
-                <li>
-                    <a href="#" class="navbar-nav navbar-default">More</a>
+                <li class="navbar-nav navbar-default">
+                    <a href="#">More</a>
                 </li>
                 <?php
                 if ($controller::isUserLoggedIn()) {
                     ?>
-                    <li>
-                        <input type="button" class="navbar-nav navbar-default" value="Log Out" id="logoutButton">
+                    <li class="navbar-nav navbar-default">
+                        <div class="dropdown">
+                            <button class="navbar-nav navbar-default dropdown-toggle" id="accountmenu" type="button" data-toggle="dropdown">
+                                My Account
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="<?php echo $controller->getHomeDir();?>pages/userprofile/profile.php">Profile</a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="" id="logoutButton">Log Out</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
-                    <li>
+                    <li class="navbar-nav navbar-default">
                         <a href="#myModal" data-toggle="modal" data-target="#myModal">
                             <span class="glyphicon glyphicon-search"></span>
                         </a>
@@ -44,11 +67,11 @@
                     <?php
                 } else {
                     ?>
-                    <li>
-                        <a href="<?php echo $controller->getHomeDir(); ?>pages/login/login.php" class="navbar-nav navbar-default">Login</a>
+                    <li class="navbar-nav navbar-default">
+                        <a href="<?php echo $controller->getHomeDir(); ?>pages/login/login.php">Login</a>
                     </li>
-                    <li>
-                        <div class="navbar-nav navbar-default dropdown">
+                    <li class="navbar-nav navbar-default">
+                        <div class="dropdown">
                             <button class="navbar-nav navbar-default dropdown-toggle" id="registermenu" type="button" data-toggle="dropdown">
                                 Register
                                 <span class="caret"></span>
