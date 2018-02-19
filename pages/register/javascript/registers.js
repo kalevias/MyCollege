@@ -49,14 +49,19 @@ $(document).on("click", "#registerButton", function () {
         streetAddress: $("#streetAddress").val(),
         city: $("#city").val(),
         province: $("#province").val(),
-        postalCode: $("#postalCode").data("clevermaskout"),
+        postalCode: $("#postalCode"),
         phoneNumber: $("#phoneNumber").data("clevermaskout"),
         gradYear: $("#gradYear").data("clevermaskout"),
         password: $("#password").val(),
         confirmPassword: $("#confirmPassword").val(),
         requestType: "registerStudent"
     };
-    post("#", params);
+
+    if(validate_REntropy(params.password)>40) {
+        post("#", params);
+    } else {
+        summonAlert("warning", "Warning: Your password isn't strong enough.");
+    }
 });
 
 $(document).on("keyup", "#confirmPassword", function (e) {

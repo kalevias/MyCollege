@@ -5,6 +5,7 @@ include "../../autoload.php";
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
+$controller->checkPermissions(!$controller->userHasAccess()); //checks to see if no user is logged in
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,7 +17,7 @@ $controller->processREQUEST();
     <body>
         <img class="bg-image" src="css/UniOfChi.jpg">
         <?php
-        include $controller->getHomeDir() . "pages/pageassembly/alerts/alerts.php";
+        include $controller->getHomeDir(). Controller::MODULE_DIR . "/pageassembly/alerts/alerts.php";
         ?>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>

@@ -4,6 +4,7 @@ include "../../autoload.php";
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 //$controller->processREQUEST();
+$controller->checkPermissions(!$controller->userHasAccess()); //checks to see if no user is logged in
 
 //check if $_POST is empty
 if (!empty($_POST)) {
@@ -22,7 +23,8 @@ if (!empty($_POST)) {
             $registerFail = true;
         }
         if (isset($_SESSION["userLoggedIn"])) {
-            header("Location: $homedir");
+            header("Location: " . $controller->getHomeDir());
+            exit;
         } else {
             $registerFail = true;
         }

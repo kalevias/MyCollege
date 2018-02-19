@@ -436,15 +436,8 @@ class Controller
     public function checkPermissions(bool $userHasAccessCall): void {
         if(!$userHasAccessCall) {
             $_SESSION["localWarnings"][] = "Warning: You are not permitted to access that page";
-            //TODO: figure out why in the world this session variable is being reset!
-            //So far, I've found that it's because the alerts.php code is being run on the page that this functio
-            //is being called from, but that code should even be running yet, as the HTTP header is changing.
-            //UNLESS!!! the header is simply changed here, but it doesn't actually cause a page redirect!!! The PHP
-            //code embedded in a page might continue to run through, even if I change the HTTP header (as I saw when
-            //I was able to continue running code in this function after the call to the header function.
-            //verdict: maybe save the original header location to a controller internal var, and then only go through
-            //any following PHP code (or just the alerts code) if the header hasn't changed? Might work; we'll see
             header("Location: " . $this->getHomeDir());
+            exit;
         }
     }
 
@@ -578,7 +571,62 @@ class Controller
                     $_SESSION["localErrors"][] = $e;
                 }
                 break;
-
+            /**
+             * Required POST variables for this case:
+             *      requestType : "updateContactInfo"
+             *        firstName : string
+             *         lastName : string
+             *            email : string (email format)
+             *         altEmail : string (email format)
+             *    streetAddress : string
+             *             city : string
+             *         province : string (ISO code)
+             *       postalCode : string <=10 characters in length
+             *      phoneNumber : int <=15 digits in length
+             *         gradYear : int 4 digits in length
+             */
+            case "updateContactInfo":
+                $originalUser = Controller::getLoggedInUser()->getEmail();
+                try {
+                    $args = [
+                        $this->scrubbed["firstName"],
+                        $this->scrubbed["lastName"],
+                        $this->scrubbed["email"],
+                        $this->scrubbed["altEmail"],
+                        $this->scrubbed["streetAddress"],
+                        $this->scrubbed["city"],
+                        new Province($this->scrubbed["province"], Province::MODE_ISO),
+                        ((int) $this->scrubbed["postalCode"]),
+                        ((int) $this->scrubbed["phoneNumber"]),
+                        ((int) $this->scrubbed["gradYear"]),
+                    ];
+                    $functions = [
+                        "setFirstName",
+                        "setLastName",
+                        "setEmail",
+                        "setAltEmail",
+                        "setStreetAddress",
+                        "setCity",
+                        "setProvince",
+                        "setPostalCode",
+                        "setPhone",
+                        "setGradYear"
+                    ];
+                    $user = Controller::getLoggedInUser();
+                    for($i = 0; $i < count($args); $i++) {
+                        call_user_func([$user, $functions[$i]], $args[$i]);
+                    }
+                    $success = $user->updateToDatabase();
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Contact information updated";
+                    } else {
+                        Controller::setLoggedInUser(User::load($originalUser));
+                        $_SESSION["localErrors"][] = "Error: Unable to save changes";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
             /**
              * Required POST variables for this case:
              *     requestType : "sentResetEmail"
@@ -597,7 +645,7 @@ class Controller
                 //Create a token representing a temporary link to reset password
                 $token = new Token("resetPasswordLink", $expiration, $user);
                 //send email to user
-				$mailman = Mailman();
+				$mailman = new Mailman();
 				//create email body
 				//create a link to password reset page with the token ID as a parameter
 				$path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";

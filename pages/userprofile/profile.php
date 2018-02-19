@@ -20,7 +20,7 @@ $controller->checkPermissions($controller->userHasAccess());
         <link rel="stylesheet" href="css/profile.min.css" type="text/css">
     </head>
     <body>
-        <?php include $controller->getHomeDir() . "pages/pageassembly/header/header.php"; ?>
+        <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
@@ -29,12 +29,20 @@ $controller->checkPermissions($controller->userHasAccess());
         <script src="javascript/profile.js"></script>
         <div class="container">
             <div class="row">
-                <div class="col-md-10 ">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <h2>MyProfile</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "pageassembly/profilenav/profilenav.php"; ?>
+                </div>
+                <div class="col-sm-4">
                     <form class="form-horizontal">
                         <div>
-                            <h2>MyProfile</h2>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-user"></i>
@@ -44,7 +52,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-user"></i>
@@ -54,7 +62,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-envelope"></i>
@@ -64,7 +72,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-envelope"></i>
@@ -74,7 +82,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-home"></i>
@@ -84,7 +92,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-road"></i>
@@ -94,7 +102,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-globe"></i>
@@ -107,7 +115,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                             //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
                                             $userCountry = $controller::getLoggedInUser()->getCountry()->getISO();
                                             foreach ($countries as $country) {
-                                                if($userCountry === $country["idiso"]) {
+                                                if ($userCountry === $country["idiso"]) {
                                                     $selected = " selected";
                                                     $savedCountry = $country["pkcountryid"];
                                                 } else {
@@ -120,6 +128,10 @@ $controller->checkPermissions($controller->userHasAccess());
                                             ?>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-globe"></i>
@@ -133,7 +145,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                                 //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
                                                 $userProvince = Controller::getLoggedInUser()->getProvince()->getISO();
                                                 foreach ($provinces as $province) {
-                                                    if($userProvince === $province["idiso"]) {
+                                                    if ($userProvince === $province["idiso"]) {
                                                         $selected = " selected";
                                                     } else {
                                                         $selected = "";
@@ -149,7 +161,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-globe"></i>
@@ -159,7 +171,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-phone"></i>
@@ -169,7 +181,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-mortar-board"></i>
@@ -179,14 +191,10 @@ $controller->checkPermissions($controller->userHasAccess());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-4">
-                                    <a href="#" class="btn btn-success">
+                                <div>
+                                    <a href="#" class="btn btn-success" id="updateContactInfo">
                                         <span class="glyphicon glyphicon-thumbs-up"></span>
                                         Update
-                                    </a>
-                                    <a href="#" class="btn btn-danger">
-                                        <span class="glyphicon glyphicon-remove-sign"></span>
-                                        Clear
                                     </a>
                                 </div>
                             </div>

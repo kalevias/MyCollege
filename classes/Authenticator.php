@@ -47,7 +47,7 @@ class Authenticator
                         Controller::setLoginFails();
                         $controller = $_SESSION["controller"];
                         header("Location: " . $controller->getHomeDir());
-                        return true;
+                        exit;
                     } else {
                         return false;
                     }
@@ -78,7 +78,7 @@ class Authenticator
             Controller::setLoggedInUser();
             $controller = $_SESSION["controller"];
             header("Location: " . $controller->getHomeDir());
-            return true;
+            exit;
         } else {
             return false;
         }
@@ -148,6 +148,7 @@ class Authenticator
                 } catch (Exception $e) {
                     $controller = $_SESSION["controller"];
                     header("Location: " . $controller->getHomeDir());
+                    exit;
                 }
                 return true;
             }

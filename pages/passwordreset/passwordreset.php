@@ -15,7 +15,7 @@ $resetFail = isset($_SESSION["resetFail"]) ? $_SESSION["resetFail"] : false;
 ?>
 <!DOCTYPE html>
 <html>
-    <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/passwordreset.min.css" type="text/css">
+    <link rel="stylesheet" href="css/passwordreset.min.css" type="text/css">
     <head>
         <title>MyCollege</title>
     </head>

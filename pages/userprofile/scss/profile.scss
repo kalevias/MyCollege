@@ -1,3 +1,31 @@
 .othertop {
   margin-top: 10px;
 }
+
+h2 {
+  text-align: center;
+}
+
+.profileNav {
+  margin-bottom: 30px;
+  @media screen and (max-width: 767px) {
+    text-align: center;
+  }
+  @media screen and (min-width: 768px) {
+    text-align: right;
+    float: right;
+    width: 60%;
+  }
+
+  li {
+    border-top: 1px solid #6f6f6f;
+
+    &:last-child {
+      border-bottom: 1px solid #6f6f6f;
+    }
+  }
+}
+
+.chosen-single {
+  border-radius: 0 5px 5px 0 !important;
+}
