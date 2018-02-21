@@ -26,13 +26,12 @@ $controller->checkPermissions($controller->userHasAccess());
         <link rel="stylesheet" href="css/profile.min.css" type="text/css">
     </head>
     <body>
-        <?php include $controller->getHomeDir(). Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
+        <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
-        <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/cleverMask.js"></script>
-        <script src="javascript/profile.js"></script>
+        <script src="javascript/eduprofile.js"></script>
         <div class="container">
             <div class="row">
                 <div class="col-md-4"></div>

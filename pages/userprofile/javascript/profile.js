@@ -63,7 +63,7 @@ $(document).on("click", "#updateContactInfo", function () {
         },
         {
             name: "alternative email",
-            value: params.altEmail === "" ? "example@example.com" : params.altEmail,
+            value: params.altEmail === "" ? "example@example.com" : params.altEmail, //dummy value to allow blanks
             validationType: "email",
             alertLevel: "warning",
             alertMessage: "Please enter a valid email"
