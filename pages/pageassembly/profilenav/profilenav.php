@@ -14,5 +14,8 @@
         <li>
             <a href="eduprofile.php">Education</a>
         </li>
+        <li>
+            <a href="questions.php">College Preferences</a>
+        </li>
     </ul>
 </div>

@@ -74,6 +74,14 @@ abstract class DataBasedEntity
     }
 
     /**
+     * Removes the current object from the database.
+     * Returns true if the update was completed successfully, false otherwise.
+     *
+     * @return bool
+     */
+    public abstract function removeFromDatabase(): bool;
+
+    /**
      * Loads the current object with data from the database to which pkID pertains.
      *
      * @return bool
@@ -87,13 +95,20 @@ abstract class DataBasedEntity
      * @return bool
      */
     public abstract function updateToDatabase(): bool;
-	/**
-	 * Removes the current object from the database.
-	 * Returns true if the update was completed successfully, false otherwise.
-	 *
-	 * @return bool
-	 */
-	public abstract function removeFromDatabase(): bool;
+
+    /**
+     * @param mixed $pkID
+     * @return bool
+     */
+    protected function setPkID($pkID): bool
+    {
+        if ($this->isInDatabase()) {
+            return false;
+        } else {
+            $this->pkID = $pkID;
+            return true;
+        }
+    }
 
     /**
      * @param $reference mixed : An internal class attribute to be changed
@@ -106,5 +121,4 @@ abstract class DataBasedEntity
         $reference = $newValue;
         $this->synced = $sync;
     }
-
 }

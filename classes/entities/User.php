@@ -185,13 +185,13 @@ class User extends DataBasedEntity
      *
      * @param Permission $permission
      * @return bool|int
-     * @throws InvalidArgumentException()
      */
     public function addPermission(Permission $permission)
     {
         if (in_array($permission, $this->getPermissions())) {
             return false;
         } else {
+            $this->synced = false;
             return array_push($this->permissions, $permission);
         }
     }
@@ -673,7 +673,7 @@ class User extends DataBasedEntity
      * @param int $pkID
      * @return bool
      */
-    private function setPkID(int $pkID): bool
+    protected function setPkID($pkID): bool
     {
         if ($this->isInDatabase()) {
             return false;

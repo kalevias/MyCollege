@@ -359,7 +359,6 @@ class College extends DataBasedEntity
             return true;
         }
         return false;
-
     }
 
     /**
