@@ -4,7 +4,7 @@
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 0px;
+  padding-top: 0;
 }
 
 /*
@@ -34,7 +34,6 @@ body {
     position: fixed;
     height: calc(100vh - 51px);
 
-    top: 51px;
     bottom: 0;
     left: 0;
     z-index: 1000;
@@ -71,7 +70,7 @@ body {
  */
 
 .main {
-  padding: 0px;
+  padding: 0;
   overflow-y: scroll;
   height: calc(100vh - 51px);
 
@@ -85,7 +84,7 @@ body {
 }
 
 .main .page-header {
-  margin-top: 71px;
+  margin-top: 20px;
 }
 
 .contentStyle {

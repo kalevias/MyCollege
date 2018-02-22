@@ -37,6 +37,10 @@ class College extends DataBasedEntity
      */
     private $finAid;
     /**
+     * @var Major[]
+     */
+    private $majors;
+    /**
      * @var string
      */
     private $name;
@@ -46,6 +50,10 @@ class College extends DataBasedEntity
      * @var int
      */
     private $phone;
+    /**
+     * @var int
+     */
+    private $postalCode;
     /**
      * @var int
      */
@@ -66,13 +74,13 @@ class College extends DataBasedEntity
      */
     private $setting;
     /**
-     * @var int
-     */
-    private $size;
-    /**
      * @var string
      */
     private $streetAddress;
+    /**
+     * @var int
+     */
+    private $studentCount;
     /**
      * The average yearly tutition for the college in state
      * @var int
@@ -90,13 +98,63 @@ class College extends DataBasedEntity
      */
     private $type;
     /**
+     * @var string
+     */
+    private $website;
+    /**
      * @var float
      */
     private $womenRatio;
+
     /**
-     * @var int
+     * @param int $PkID
+     * @throws Exception
      */
-    private $zip;
+    public function __construct1(int $PkID)
+    {
+        $dbc = new DatabaseConnection();
+        $params = ["i", $PkID];
+        $college = $dbc->query("select", "SELECT * FROM `tblcollege` WHERE `pkcollegeid`=?", $params);
+
+        if ($college) {
+            $result = [
+                $this->setPkID($college["pkcollegeid"]),
+                $this->setName($college["nmcollege"]),
+                $this->setType($college["entype"]),
+                $this->setStreetAddress($college["txstreetaddress"]),
+                $this->setCity($college["txcity"]),
+                $this->setProvince(new Province($college["fkprovinceid"], Province::MODE_DbID)),
+                $this->setPostalCode($college["nzip"]),
+                $this->setWebsite($college["txwebsite"]),
+                $this->setPhone($college["nphone"]),//must occur after setProvince
+                $this->setTuitionIn($college["ninstate"]),
+                $this->setTuitionOut($college["noutstate"]),
+                $this->setFinAid($college["nfinancialave"]),
+                $this->setAcceptRate($college["nacceptrate"]),
+                $this->setProfCount($college["nprof"]),
+                $this->setStudentCount($college["nsize"]),
+                $this->setWomenRatio($college["nwomenratio"]),
+                $this->setACT($college["nact"]),
+                $this->setSAT($college["nsat"]),
+                $this->setSetting($college["ensetting"])
+            ];
+            if (in_array(false, $result, true)) {
+                throw new Exception("College->__construct1($PkID) - Unable to construct College object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+            }
+            $this->inDatabase = true;
+            $this->removeAllMajors();
+            $params = ["i", $college["pkcollegeid"]];
+            $majors = $dbc->query("select multiple", "SELECT `fkmajorid` FROM `tblmajorcollege` WHERE `fkcollegeid` = ?", $params);
+            if ($majors) {
+                foreach ($majors as $major) {
+                    $this->addMajor(new Major($major["fkmajorid"], $college["pkcollegeid"]));
+                }
+            }
+            $this->synced = true;
+        } else {
+            throw new InvalidArgumentException("College->__construct1($PkID) - College not found");
+        }
+    }
 
     /**
      * College constructor.
@@ -117,6 +175,7 @@ class College extends DataBasedEntity
      * @param int $act
      * @param int $sat
      * @param $setting
+     * @throws Exception
      */
     public function __construct17(string $name, $type, string $streetAddress, string $city, Province $province, int $zip, int $phone, int $inState, int $outState, int $finAid, float $acceptRate, int $profCount, int $size, float $womenRatio, int $act, int $sat, $setting)
     {
@@ -126,21 +185,46 @@ class College extends DataBasedEntity
             $this->setStreetAddress($streetAddress),
             $this->setCity($city),
             $this->setProvince($province),
-            $this->setZip($zip),
+            $this->setPostalCode($zip),
             $this->setPhone($phone),
             $this->setTuitionIn($inState),
             $this->setTuitionOut($outState),
             $this->setFinAid($finAid),
             $this->setAcceptRate($acceptRate),
             $this->setProfCount($profCount),
-            $this->setSize($size),
+            $this->setStudentCount($size),
             $this->setWomenRatio($womenRatio),
-            $this->setAct($act),
-            $this->setSat($sat),
+            $this->setACT($act),
+            $this->setSAT($sat),
             $this->setSetting($setting),
         ];
+        if (in_array(false, $result, true)) {
+            throw new Exception("Country->__construct17($name, $type, $streetAddress, $city, " . $province->getISO() . ", $zip, $phone, $inState, $outState, $finAid, $acceptRate, $profCount, $size, $womenRatio, $act, $sat, $setting) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+        }
         $this->inDatabase = false;
         $this->synced = false;
+    }
+
+    /**
+     * @param Major $major
+     * @return bool|int
+     */
+    public function addMajor(Major $major)
+    {
+        if (in_array($major, $this->getMajors())) {
+            return false;
+        } else {
+            $this->synced = false;
+            return array_push($this->majors, $major);
+        }
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getACT()
+    {
+        return $this->act;
     }
 
     /**
@@ -152,14 +236,6 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @return int|null
-     */
-    public function getAct()
-    {
-        return $this->act;
-    }
-
-    /**
      * @return string|null
      */
     public function getCity()
@@ -168,11 +244,27 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @return Country
+     */
+    public function getCountry(): Country
+    {
+        return $this->getProvince()->getCountry();
+    }
+
+    /**
      * @return int|null
      */
     public function getFinAid()
     {
         return $this->finAid;
+    }
+
+    /**
+     * @return Major[]|null
+     */
+    public function getMajors()
+    {
+        return $this->majors;
     }
 
     /**
@@ -195,6 +287,14 @@ class College extends DataBasedEntity
     /**
      * @return int|null
      */
+    public function getPostalCode()
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @return int|null
+     */
     public function getProfCount()
     {
         return $this->profCount;
@@ -211,7 +311,7 @@ class College extends DataBasedEntity
     /**
      * @return int|null
      */
-    public function getSat()
+    public function getSAT()
     {
         return $this->sat;
     }
@@ -225,19 +325,19 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @return int|null
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-    /**
      * @return string|null
      */
     public function getStreetAddress()
     {
         return $this->streetAddress;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getStudentCount()
+    {
+        return $this->studentCount;
     }
 
     /**
@@ -265,6 +365,14 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @return string|null
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
      * @return float|null
      */
     public function getWomenRatio()
@@ -273,11 +381,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @return int|null
+     * @return bool
      */
-    public function getZip()
+    public function removeAllMajors(): bool
     {
-        return $this->zip;
+        $this->syncHandler($this->majors, $this->getMajors(), []);
+        return true;
     }
 
     /**
@@ -288,7 +397,20 @@ class College extends DataBasedEntity
      */
     public function removeFromDatabase(): bool
     {
-        // TODO: Implement removeFromDatabase() method.
+        if ($this->isInDatabase()) {
+            $dbc = new DatabaseConnection();
+            $params = ["i", $this->getPkID()];
+            $result = $dbc->query("delete", "DELETE FROM tblcollege WHERE pkcollegeid = ?", $params);
+            if ($result) {
+                $this->inDatabase = false;
+                $this->synced = false;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -298,7 +420,18 @@ class College extends DataBasedEntity
      */
     public function updateFromDatabase(): bool
     {
-        // TODO: Implement updateFromDatabase() method.
+        if ($this->isSynced()) {
+            return true;
+        } elseif ($this->isInDatabase() and !$this->isSynced()) {
+            try {
+                $this->__construct1($this->getPkID());
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -309,7 +442,117 @@ class College extends DataBasedEntity
      */
     public function updateToDatabase(): bool
     {
-        // TODO: Implement updateToDatabase() method.
+        if ($this->isSynced()) {
+            return true;
+        }
+        $dbc = new DatabaseConnection();
+        if ($this->isInDatabase()) {
+            $params = [
+                "ssssissiiiidiidiisi",
+                $this->getName(),
+                $this->getType(),
+                $this->getStreetAddress(),
+                $this->getCity(),
+                $this->getProvince()->getPkID(),
+                $this->getPostalCode(),
+                $this->getWebsite(),
+                $this->getPhone(),
+                $this->getTuitionIn(),
+                $this->getTuitionOut(),
+                $this->getFinAid(),
+                $this->getAcceptRate(),
+                $this->getProfCount(),
+                $this->getStudentCount(),
+                $this->getWomenRatio(),
+                $this->getACT(),
+                $this->getSAT(),
+                $this->getSetting(),
+                $this->getPkID()
+            ];
+            $result = $dbc->query("update", "UPDATE `tblcollege` SET 
+                                  `nmcollege`=?,`entype`=?,`txstreetaddress`=?,`txcity`=?,`fkprovinceid`=?,`nzip`=?,
+                                  `txwebsite`=?,`nphone`=?,`ninstate`=?,`noutstate`=?,`nfinancialave`=?,`nacceptrate`=?,
+                                  `nprof`=?,`nsize`=?,`nwomenratio`=?,`nact`=?,`nsat`=?,`ensetting`=?
+                                  WHERE pkcollegeid = ?", $params);
+
+            $params = ["i", $this->getPkID()];
+            $result = ($result and $dbc->query("delete", "DELETE FROM `tblmajorcollege` WHERE `fkcollegeid`=?", $params));
+
+            foreach ($this->getMajors() as $major) {
+                $params = [
+                    "iiiiii",
+                    $major->getPkID(),
+                    $this->getPkID(),
+                    $major->isAssociate(),
+                    $major->isBachelor(),
+                    $major->isMaster(),
+                    $major->isDoctoral()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblmajorcollege` (`fkmajorid`,`fkcollegeid`,isassociate,isbachelor,ismaster,isdoctoral) VALUES (?,?,?,?,?,?)", $params));
+            }
+            $this->synced = $result;
+        } else {
+            $params = [
+                "ssssissiiiidiidiis",
+                $this->getName(),
+                $this->getType(),
+                $this->getStreetAddress(),
+                $this->getCity(),
+                $this->getProvince()->getPkID(),
+                $this->getPostalCode(),
+                $this->getWebsite(),
+                $this->getPhone(),
+                $this->getTuitionIn(),
+                $this->getTuitionOut(),
+                $this->getFinAid(),
+                $this->getAcceptRate(),
+                $this->getProfCount(),
+                $this->getStudentCount(),
+                $this->getWomenRatio(),
+                $this->getACT(),
+                $this->getSAT(),
+                $this->getSetting()
+            ];
+            $result = $dbc->query("insert", "INSERT INTO `tblcollege`(`pkcollegeid`, `nmcollege`, `entype`, 
+                                          `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nphone`, 
+                                          `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, 
+                                          `nwomenratio`, `nact`, `nsat`, `ensetting`)
+                                          VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
+
+            $result2 = $dbc->query("select", "SELECT LAST_INSERT_ID() AS lii");
+            $this->setPkID($result2["lii"]);
+
+            foreach ($this->getMajors() as $major) {
+                $params = [
+                    "iiiiii",
+                    $major->getPkID(),
+                    $this->getPkID(),
+                    $major->isAssociate(),
+                    $major->isBachelor(),
+                    $major->isMaster(),
+                    $major->isDoctoral()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblmajorcollege` (`fkmajorid`,`fkcollegeid`,isassociate,isbachelor,ismaster,isdoctoral) VALUES (?,?,?,?,?,?)", $params));
+            }
+
+            $this->inDatabase = $result;
+            $this->synced = $result;
+        }
+
+        return (bool)$result;
+    }
+
+    /**
+     * @param int $act
+     * @return bool
+     */
+    public function setACT(int $act): bool
+    {
+        if ($act <= 36 and $act >= 1) {
+            $this->syncHandler($this->act, $this->getACT(), $act);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -318,21 +561,8 @@ class College extends DataBasedEntity
      */
     public function setAcceptRate(float $acceptRate): bool
     {
-        if($acceptRate <= 1 and $acceptRate >= 0) {
+        if ($acceptRate <= 1 and $acceptRate >= 0) {
             $this->syncHandler($this->acceptRate, $this->getAcceptRate(), $acceptRate);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param int $act
-     * @return bool
-     */
-    public function setAct(int $act): bool
-    {
-        if($act <= 36 and $act >= 1) {
-            $this->syncHandler($this->act, $this->getAct(), $act);
             return true;
         }
         return false;
@@ -354,7 +584,7 @@ class College extends DataBasedEntity
      */
     public function setFinAid(int $finAid): bool
     {
-        if($finAid >= 0) {
+        if ($finAid >= 0) {
             $this->syncHandler($this->finAid, $this->getFinAid(), $finAid);
             return true;
         }
@@ -369,13 +599,6 @@ class College extends DataBasedEntity
     {
         $this->syncHandler($this->name, $this->getName(), $name);
         return true;
-    }
-
-    /**
-     * @return Country
-     */
-    public function getCountry(): Country {
-        return $this->getProvince()->getCountry();
     }
 
     /**
@@ -400,12 +623,22 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @param int $postalCode
+     * @return bool
+     */
+    public function setPostalCode(int $postalCode): bool
+    {
+        $this->syncHandler($this->postalCode, $this->getPostalCode(), $postalCode);
+        return true;
+    }
+
+    /**
      * @param int $profCount
      * @return bool
      */
     public function setProfCount(int $profCount): bool
     {
-        if($profCount >= 1) {
+        if ($profCount >= 1) {
             $this->syncHandler($this->profCount, $this->getProfCount(), $profCount);
             return true;
         }
@@ -426,10 +659,10 @@ class College extends DataBasedEntity
      * @param int $sat
      * @return bool
      */
-    public function setSat(int $sat): bool
+    public function setSAT(int $sat): bool
     {
-        if($sat <= 1600 and $sat >= 400) {
-            $this->syncHandler($this->sat, $this->getSat(), $sat);
+        if ($sat <= 1600 and $sat >= 400) {
+            $this->syncHandler($this->sat, $this->getSAT(), $sat);
             return true;
         }
         return false;
@@ -441,7 +674,7 @@ class College extends DataBasedEntity
      */
     public function setSetting(string $setting): bool
     {
-        switch($setting) {
+        switch ($setting) {
             case self::SETTING_RURAL:
             case self::SETTING_SMALL_TOWN:
             case self::SETTING_SUBURBAN:
@@ -455,19 +688,6 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param int $size
-     * @return bool
-     */
-    public function setSize(int $size): bool
-    {
-        if($size >= 1) {
-            $this->syncHandler($this->size, $this->getSize(), $size);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @param string $streetAddress
      * @return bool
      */
@@ -478,12 +698,25 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @param int $size
+     * @return bool
+     */
+    public function setStudentCount(int $size): bool
+    {
+        if ($size >= 1) {
+            $this->syncHandler($this->studentCount, $this->getStudentCount(), $size);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param int $tuitionIn
      * @return bool
      */
     public function setTuitionIn(int $tuitionIn): bool
     {
-        if($tuitionIn >= 0) {
+        if ($tuitionIn >= 0) {
             $this->syncHandler($this->tuitionIn, $this->getTuitionIn(), $tuitionIn);
             return true;
         }
@@ -496,7 +729,7 @@ class College extends DataBasedEntity
      */
     public function setTuitionOut(int $tuitionOut): bool
     {
-        if($tuitionOut >= 0) {
+        if ($tuitionOut >= 0) {
             $this->syncHandler($this->tuitionOut, $this->getTuitionOut(), $tuitionOut);
             return true;
         }
@@ -509,7 +742,7 @@ class College extends DataBasedEntity
      */
     public function setType(string $type): bool
     {
-        switch($type) {
+        switch ($type) {
             case self::TYPE_2YEAR:
             case self::TYPE_4YEAR:
             case self::TYPE_GRAD:
@@ -524,35 +757,28 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param float $womenRatio
+     * @param string $website
      * @return bool
      */
-    public function setWomenRatio(float $womenRatio): bool
+    public function setWebsite(string $website): bool
     {
-        if($womenRatio >= 0 and $womenRatio <= 1) {
-            $this->syncHandler($this->womenRatio, $this->getWomenRatio(), $womenRatio);
+        if (filter_var($website, FILTER_VALIDATE_URL) === true) {
+            $this->syncHandler($this->website, $this->getWebsite(), $website);
             return true;
         }
         return false;
     }
 
     /**
-     * @param int $zip
+     * @param float $womenRatio
      * @return bool
      */
-    public function setZip(int $zip): bool
+    public function setWomenRatio(float $womenRatio): bool
     {
-        $this->syncHandler($this->zip, $this->getZip(), $zip);
-        return true;
-    }
-
-    /**
-     * @param int $pkID
-     * @return bool
-     */
-    private function setPkID(int $pkID): bool
-    {
-        $this->pkID = $pkID;
-        return true;
+        if ($womenRatio >= 0 and $womenRatio <= 1) {
+            $this->syncHandler($this->womenRatio, $this->getWomenRatio(), $womenRatio);
+            return true;
+        }
+        return false;
     }
 }

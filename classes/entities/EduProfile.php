@@ -6,9 +6,17 @@
  * Time: 11:34 PM
  */
 
-class EduProfile extends DataBasedEntity
+class EduProfile extends DataBasedEntity //Should extend the User class to a Student, and then have eduprofile as tacked on stuff
 {
-
+    //TODO: extend User class to Student, and handle all eduprofile stuff there instead of in a separate class
+    const MODE_EDUPROFILEID = 1;
+    const MODE_USERID = 2;
+    /**
+     * What did the student get on the ACT test?
+     *
+     * @var int
+     */
+    private $ACT;
     /**
      * Has the student taken AP classes?
      *
@@ -16,11 +24,17 @@ class EduProfile extends DataBasedEntity
      */
     private $AP;
     /**
-     * What did the student get on the ACT test?
+     * What is the student's GPA on a 4-point scale?
+     *
+     * @var float
+     */
+    private $GPA;
+    /**
+     * What did the student get on the SAT test?
      *
      * @var int
      */
-    private $act;
+    private $SAT;
     /**
      * When (usually a year) would the student like to enter higher education?
      *
@@ -28,23 +42,17 @@ class EduProfile extends DataBasedEntity
      */
     private $desiredCollegeEntry;
     /**
-     *
+     * How long the student would like to remain in college
      *
      * @var DateInterval
      */
     private $desiredCollegeLength;
     /**
-     *
+     * The most preferred major of the student. May be, "undecided."
      *
      * @var Major
      */
     private $desiredMajor;
-    /**
-     * What is the student's GPA on a 4-point scale?
-     *
-     * @var float
-     */
-    private $gpa;
     /**
      * How much money can the student and their family expect to save, per year, for educational expenses?
      *
@@ -57,19 +65,81 @@ class EduProfile extends DataBasedEntity
      * @var Major[]
      */
     private $preferredMajors;
+
     /**
-     * What did the student get on the SAT test?
-     *
-     * @var int
+     * @param int $identifier
+     * @param int $mode
+     * @throws Exception
      */
-    private $sat;
+    public function __construct2(int $identifier, int $mode = self::MODE_USERID)
+    {
+        //TODO: finish constructor implementation, specifically with regard to adding preferred majors
+        $dbc = new DatabaseConnection();
+        if ($mode === self::MODE_EDUPROFILEID) {
+            $params = ["i", $identifier];
+            $eduprofile = $dbc->query("select", "SELECT * FROM `tbleduprofile` WHERE `pkeduprofileid`=?", $params);
+        } else {
+            $params = ["s", $identifier];
+            $eduprofile = $dbc->query("select", "SELECT * FROM `tbleduprofile` WHERE `fkuserid`=?", $params);
+        }
+
+        if ($eduprofile) {
+            $result = [
+                $this->setPkID($eduprofile["pkeduprofileid"]),
+                $this->setACT($eduprofile["nact"]),
+                $this->setAP($eduprofile["hadap"]),
+                $this->setDesiredCollegeEntry($eduprofile["dtentry"]),
+                $this->setDesiredCollegeLength($eduprofile["ncollegelength"]),
+                $this->setDesiredMajor($eduprofile["fkmajorid"]),
+                $this->setGPA($eduprofile["ngpa"]),
+                $this->setHouseholdIncome($eduprofile["nhouseincome"]),
+                $this->setSAT($eduprofile["nsat"])
+            ];
+            if (in_array(false, $result, true)) {
+                throw new Exception("EduProfile->__construct2($identifier, $mode) - Unable to construct EduProfile object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+            }
+            $this->inDatabase = true;
+            $this->synced = true;
+        } else {
+            throw new InvalidArgumentException("EduProfile->__construct2($identifier, $mode) - EduProfile not found");
+        }
+    }
+
+    /**
+     * @param bool $AP
+     * @param int $ACT
+     * @param DateTime $desiredCollegeEntry
+     * @param DateInterval $desiredCollegeLength
+     * @param Major $desiredMajor
+     * @param float $GPA
+     * @param int $householdIncome
+     * @param int $SAT
+     */
+    public function __construct8(bool $AP, int $ACT, DateTime $desiredCollegeEntry, DateInterval $desiredCollegeLength, Major $desiredMajor, float $GPA, int $householdIncome, int $SAT)
+    {
+        //TODO: finish implementation of function.
+    }
+
+    /**
+     * @param Major $major
+     * @return int|bool
+     */
+    public function addPreferredMajor(Major $major)
+    {
+        if (in_array($major, $this->getPreferredMajors())) {
+            return false;
+        } else {
+            $this->synced = false;
+            return array_push($this->preferredMajors, $major);
+        }
+    }
 
     /**
      * @return int|null
      */
-    public function getAct()
+    public function getACT()
     {
-        return $this->act;
+        return $this->ACT;
     }
 
     /**
@@ -99,9 +169,9 @@ class EduProfile extends DataBasedEntity
     /**
      * @return float|null
      */
-    public function getGpa()
+    public function getGPA()
     {
-        return $this->gpa;
+        return $this->GPA;
     }
 
     /**
@@ -123,9 +193,9 @@ class EduProfile extends DataBasedEntity
     /**
      * @return int|null
      */
-    public function getSat()
+    public function getSAT()
     {
-        return $this->sat;
+        return $this->SAT;
     }
 
     /**
@@ -134,6 +204,15 @@ class EduProfile extends DataBasedEntity
     public function isAP()
     {
         return $this->AP;
+    }
+
+    /**
+     * @return bool
+     */
+    public function removeAllPreferredMajors(): bool
+    {
+        $this->syncHandler($this->preferredMajors, $this->getPreferredMajors(), []);
+        return true;
     }
 
     /**
@@ -169,6 +248,19 @@ class EduProfile extends DataBasedEntity
     }
 
     /**
+     * @param int $act
+     * @return bool
+     */
+    public function setACT(int $act): bool
+    {
+        if ($act <= 36 and $act >= 1) {
+            $this->syncHandler($this->ACT, $this->getAct(), $act);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param bool $AP
      * @return bool
      */
@@ -179,25 +271,12 @@ class EduProfile extends DataBasedEntity
     }
 
     /**
-     * @param int $act
-     * @return bool
-     */
-    public function setAct(int $act): bool
-    {
-        if ($act <= 36 and $act >= 1) {
-            $this->syncHandler($this->act, $this->getAct(), $act);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @param DateTime $desiredCollegeEntry
      * @return bool
      */
     public function setDesiredCollegeEntry(DateTime $desiredCollegeEntry): bool
     {
-        if($desiredCollegeEntry > new DateTime()) {
+        if ($desiredCollegeEntry > new DateTime()) {
             $this->syncHandler($this->desiredCollegeEntry, $this->getDesiredCollegeEntry(), $desiredCollegeEntry);
             return true;
         }
@@ -214,6 +293,8 @@ class EduProfile extends DataBasedEntity
         return true;
     }
 
+    //TODO: add in resume and transcript handling (if useful...?)
+
     /**
      * @param Major $desiredMajor
      * @return bool
@@ -228,16 +309,14 @@ class EduProfile extends DataBasedEntity
      * @param float $gpa
      * @return bool
      */
-    public function setGpa(float $gpa): bool
+    public function setGPA(float $gpa): bool
     {
-        if($gpa >= 0 and $gpa <= 4) {
-            $this->syncHandler($this->gpa, $this->getGpa(), $gpa);
+        if ($gpa >= 0 and $gpa <= 4) {
+            $this->syncHandler($this->GPA, $this->getGpa(), $gpa);
             return true;
         }
         return false;
     }
-
-    //TODO: add in resume and transcript handling (if useful...?)
 
     /**
      * @param int $householdIncome
@@ -245,7 +324,7 @@ class EduProfile extends DataBasedEntity
      */
     public function setHouseholdIncome(int $householdIncome): bool
     {
-        if($householdIncome >= 0) {
+        if ($householdIncome >= 0) {
             $this->syncHandler($this->householdIncome, $this->getHouseholdIncome(), $householdIncome);
             return true;
         }
@@ -253,35 +332,13 @@ class EduProfile extends DataBasedEntity
     }
 
     /**
-     * @param Major $major
-     * @return int|bool
-     */
-    public function addPreferredMajor(Major $major) {
-        if (in_array($major, $this->getPreferredMajors())) {
-            return false;
-        } else {
-            $this->synced = false;
-            return array_push($this->preferredMajors, $major);
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    public function removeAllPreferredMajors(): bool
-    {
-        $this->syncHandler($this->preferredMajors, $this->getPreferredMajors(), []);
-        return true;
-    }
-
-    /**
      * @param int $sat
      * @return bool
      */
-    public function setSat(int $sat): bool
+    public function setSAT(int $sat): bool
     {
-        if($sat <= 1600 and $sat >= 400) {
-            $this->syncHandler($this->sat, $this->getSat(), $sat);
+        if ($sat <= 1600 and $sat >= 400) {
+            $this->syncHandler($this->SAT, $this->getSat(), $sat);
             return true;
         }
         return false;

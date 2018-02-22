@@ -97,16 +97,13 @@ class Authenticator
      * @param $gradYear
      * @param $password
      * @return bool
+     * @throws Exception
      */
     public static function registerRepresentative($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password)
     {
         //TODO: upon implementing email verification, the "true" below should be changed to false
-        $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
-        try {
-            $user->addPermission(new Permission(Permission::PERMISSION_REPRESENTATIVE));
-        } catch (Exception $e) {
-            return false;
-        }
+        $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
+        $user->addPermission(new Permission(Permission::PERMISSION_REPRESENTATIVE));
         if (self::userExists($user)) {
             return false;
         } else {
@@ -135,7 +132,7 @@ class Authenticator
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
-            $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
+            $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
             $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($user)) {
                 return false;
