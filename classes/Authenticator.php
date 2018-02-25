@@ -175,6 +175,7 @@ class Authenticator
                 return false;
             }
         } else {
+			$_SESSION["localWarnings"][] = "Passwords do not match, check to make sure you have typed correctly or if Caps Lock is on.";
             return false;
         }
     }

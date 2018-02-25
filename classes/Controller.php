@@ -638,6 +638,7 @@ class Controller
                 $user = User::load($email);
                 if ($user == null) {
                     $_SESSION["resetFail"] = true;
+					$_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
                     break;
                 }
                 //create a DateTime representing 24 hours in the future
