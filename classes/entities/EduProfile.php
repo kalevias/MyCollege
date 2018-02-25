@@ -221,9 +221,21 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
      *
      * @return bool
      */
-    public function removeFromDatabase(): bool
-    {
-        // TODO: Implement removeFromDatabase() method.
+    public function removeFromDatabase(): bool{
+		if ($this->isInDatabase()) {
+			$dbc = new DatabaseConnection();
+			$params = ["i", $this->getPkID()];
+			$result = $dbc->query("delete", "DELETE FROM tblEduProfile WHERE pkEduProfileID = ?", $params);
+			if ($result) {
+				$this->inDatabase = false;
+				$this->synced = false;
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
     }
 
     /**
@@ -231,9 +243,19 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
      *
      * @return bool
      */
-    public function updateFromDatabase(): bool
-    {
-        // TODO: Implement updateFromDatabase() method.
+    public function updateFromDatabase(): bool{
+		if ($this->isSynced()) {
+			return true;
+		} elseif ($this->isInDatabase() and !$this->isSynced()) {
+			try {
+				$this->__construct1($this->getPkID());
+			} catch (Exception $e) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
     }
 
     /**
@@ -242,9 +264,31 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
      *
      * @return bool
      */
-    public function updateToDatabase(): bool
-    {
-        // TODO: Implement updateToDatabase() method.
+    public function updateToDatabase(): bool{
+		//Check if current object is already syncronized to database
+		if ($this->isSynced()) {
+			return true;
+		}
+		//open database connection
+		$dbc = new DatabaseConnection();
+		$params = [
+			"ibfissiii",
+			$this->getACT(),
+			$this->isAP(),
+			$this->getGPA(),
+			$this->getSAT(),
+			$this->getDesiredCollegeEntry(),
+			$this->getDesiredCollegeLength(),
+			$this->getDesiredMajor(),
+			$this->getHouseholdIncome(),
+			$this->getPkID
+		];
+		$result = $dbc->query("update","UPDATE tblEduProfile SET nACT=?, hadAP=?, nGPA=?, nSAT=?, 
+							  dtEntry=?, nCollegeLength=?, fkMajorID=?, nHouseIncome=?, WHERE pkEduProfileID=?", $params);
+		$this->inDatabase = $result;
+		$this->synced = $result;
+		return (bool)$result;
+
     }
 
     /**
