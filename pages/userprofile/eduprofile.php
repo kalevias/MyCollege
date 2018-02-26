@@ -10,7 +10,7 @@ include "../../autoload.php";
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
-$controller->checkPermissions($controller->userHasAccess());
+$controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION_STUDENT]));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,12 +50,141 @@ $controller->checkPermissions($controller->userHasAccess());
                                 <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
-                                            <i class="fa fa-user"></i>
+                                            <i class="fa fa-mortar-board"></i>
                                         </div>
-                                        <input id="firstName" type="text" value="<?php echo Controller::getLoggedInUser()->getFirstName(); ?>" placeholder="First name" class="form-control input-md">
+                                        <input id="gpa" type="number" value="<?php echo Controller::getLoggedInUser()->getGPA(); ?>" placeholder="GPA" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-mortar-board"></i>
+                                        </div>
+                                        <input id="act" type="number" value="<?php echo Controller::getLoggedInUser()->getACT(); ?>" placeholder="ACT composite score" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-mortar-board"></i>
+                                        </div>
+                                        <input id="sat" type="number" value="<?php echo Controller::getLoggedInUser()->getSAT(); ?>" placeholder="SAT score" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 style="text-align: center;">Did you take AP classes?</h5>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-mortar-board"></i>
+                                        </div>
+                                        <input id="ap" type="checkbox" <?php if(Controller::getLoggedInUser()->isAP()) echo "checked"; ?> class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-money"></i>
+                                        </div>
+                                        <input id="income" type="number" value="<?php echo Controller::getLoggedInUser()->getHouseholdIncome(); ?>" placeholder="Household Income" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input id="entry" type="number" value="<?php echo Controller::getLoggedInUser()->getDesiredCollegeEntry()->format("Y"); ?>" placeholder="What year would you like to start college?" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input id="length" type="number" value="<?php echo Controller::getLoggedInUser()->getDesiredCollegeLength()->format("%y"); ?>" placeholder="Max years desired to be in college" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 style="text-align: center;">Desired major</h5>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-book"></i>
+                                        </div>
+                                        <select id="desiredMajor" class="chosen-ones">
+                                            <?php
+                                            $dbc = new DatabaseConnection();
+                                            $majors = $dbc->query("select multiple", "SELECT pkmajorid, nmname FROM tblmajor WHERE 1 ORDER BY nmname ASC");
+                                            //Could potentially instantiate a bunch of Major objects here, but with exception handling,
+                                            //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
+                                            /**
+                                             * @var $student Student
+                                             */
+                                            $student = Controller::getLoggedInUser();
+                                            $studentMajor = $student->getDesiredMajor()->getPkID();
+                                            foreach ($majors as $major) {
+                                                if ($studentMajor === $major["pkmajorid"]) {
+                                                    $selected = " selected";
+                                                    $savedMajor = $major["pkmajorid"];
+                                                } else {
+                                                    $selected = "";
+                                                }
+                                                ?>
+                                                <option value="<?php echo $major["pkmajorid"]; ?>"<?php echo $selected; ?>><?php echo $major["nmname"]; ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 style="text-align: center;">Other preferred areas of study</h5>
+                            <?php
+                            $i = 1;
+                            foreach ($student->getPreferredMajors() as $preferredMajor) {
+                                ?>
+                                <div class="form-group">
+                                    <div>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-book"></i>
+                                            </div>
+                                            <select id="preferredMajor<?php echo $i; ?>" class="chosen-ones">
+                                                <?php
+                                                $studentMajor = $preferredMajor->getPkID();
+                                                foreach ($majors as $major) {
+                                                    if ($studentMajor === $major["pkmajorid"]) {
+                                                        $selected = " selected";
+                                                        $savedMajor = $major["pkmajorid"];
+                                                    } else {
+                                                        $selected = "";
+                                                    }
+                                                    ?>
+                                                    <option value="<?php echo $major["pkmajorid"]; ?>"<?php echo $selected; ?>><?php echo $major["nmname"]; ?></option>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+                                $i++;
+                            }
+                            ?>
                             <div class="form-group">
                                 <div>
                                     <a href="#" class="btn btn-success" id="updateEduProfile">

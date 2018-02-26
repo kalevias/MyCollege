@@ -42,12 +42,19 @@ class Authenticator
 
                 if ($goodPass) {
                     if ($user->isActive()) {
-                        Controller::setLoggedInUser($user);
+                        if($user->hasPermission(new Permission(Permission::PERMISSION_STUDENT))) {
+                            $student = new Student($email,Student::MODE_NAME);
+                            if(isset($student)) {
+                                Controller::setLoggedInUser($student);
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            Controller::setLoggedInUser($user);
+                        }
                         Controller::setLoginLockout();
                         Controller::setLoginFails();
-                        $controller = $_SESSION["controller"];
-                        header("Location: " . $controller->getHomeDir());
-                        exit;
+                        return true;
                     } else {
                         return false;
                     }
@@ -75,10 +82,7 @@ class Authenticator
     public static function logout(): bool
     {
         if (Controller::isUserLoggedIn()) {
-            Controller::setLoggedInUser();
-            $controller = $_SESSION["controller"];
-            header("Location: " . $controller->getHomeDir());
-            exit;
+            return Controller::setLoggedInUser();
         } else {
             return false;
         }
@@ -138,16 +142,7 @@ class Authenticator
                 return false;
             } else {
                 $user->updateToDatabase();
-                //This try-catch should stay here, as it basically just re-routes the user to the homepage if the login
-                //function fails, for some reason or another
-                try {
-                    self::login($user->getEmail(), $password);
-                } catch (Exception $e) {
-                    $controller = $_SESSION["controller"];
-                    header("Location: " . $controller->getHomeDir());
-                    exit;
-                }
-                return true;
+                return self::login($user->getEmail(), $password);
             }
         } else {
             return false;

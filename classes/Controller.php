@@ -32,6 +32,10 @@ class Controller
      */
     private $moduleDir;
     /**
+     * @var string
+     */
+    private $pageTitle;
+    /**
      * An array that contains the output of the spamScrubber function after it has been applied to the content of an
      * HTTP POST or HTTP GET request.
      *
@@ -45,10 +49,6 @@ class Controller
      * @var int
      */
     private $tabIncrement;
-    /**
-     * @var string
-     */
-    private $pageTitle;
 
     /**
      * Controller constructor. A new Constructor instance should be created on each page in the site.
@@ -235,6 +235,22 @@ class Controller
     }
 
     /**
+     * The value of the parameter supplied to this function should be the value returned from a call to the class
+     * function, "userHasAccess." Depending on the return value of that function, this one will kick the user back to
+     * the homepage or not.
+     *
+     * @param bool $userHasAccessCall
+     */
+    public function checkPermissions(bool $userHasAccessCall): void
+    {
+        if (!$userHasAccessCall) {
+            $_SESSION["localWarnings"][] = "Warning: You are not permitted to access that page";
+            header("Location: " . $this->getHomeDir());
+            exit;
+        }
+    }
+
+    /**
      * This function (enum2options) retrieves an enum field from a table and echoes
      * the possible values for that enum field as options for an HTML select
      * element.
@@ -402,7 +418,7 @@ class Controller
      * The use of either "any" or "all" depends on the comparison mode, specified by $mode.
      * $permissions must be an array of Permission objects.
      *
-     * @param Permission[] $permissions
+     * @param int[] $permissions
      * @param int $mode
      * @return bool
      */
@@ -412,32 +428,25 @@ class Controller
         if (isset($user) and $mode === self::MODE_COMP_AND) {
             $result = true;
             foreach ($permissions as $perm) {
-                $result = ($result and $user->hasPermission($perm));
+                try {
+                    $result = ($result and $user->hasPermission(new Permission($perm)));
+                } catch (Exception $e) {
+                    $result = false;
+                }
             }
             return $result;
         } else if (isset($user) and $mode === self::MODE_COMP_OR) {
             $result = false;
             foreach ($permissions as $perm) {
-                $result = ($result or $user->hasPermission($perm));
+                try {
+                    $result = ($result or $user->hasPermission(new Permission($perm)));
+                } catch (Exception $e) {
+                    $result = false;
+                }
             }
             return $result;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * The value of the parameter supplied to this function should be the value returned from a call to the class
-     * function, "userHasAccess." Depending on the return value of that function, this one will kick the user back to
-     * the homepage or not.
-     *
-     * @param bool $userHasAccessCall
-     */
-    public function checkPermissions(bool $userHasAccessCall): void {
-        if(!$userHasAccessCall) {
-            $_SESSION["localWarnings"][] = "Warning: You are not permitted to access that page";
-            header("Location: " . $this->getHomeDir());
-            exit;
         }
     }
 
@@ -508,9 +517,9 @@ class Controller
                     $this->scrubbed["streetAddress"],
                     $this->scrubbed["city"],
                     $this->scrubbed["province"],
-                    ((int) $this->scrubbed["postalCode"]),
-                    ((int) $this->scrubbed["phoneNumber"]),
-                    ((int) $this->scrubbed["gradYear"]),
+                    ((int)$this->scrubbed["postalCode"]),
+                    ((int)$this->scrubbed["phoneNumber"]),
+                    ((int)$this->scrubbed["gradYear"]),
                     $this->scrubbed["password"],
                     $this->scrubbed["confirmPassword"]
                 ];
@@ -518,8 +527,10 @@ class Controller
                     $success = call_user_func_array("Authenticator::registerStudent", $args);
                     if ($success) {
                         $_SESSION["localNotifications"][] = "Yay! You have an account on MyCollege now! Be sure to activate your email via the link we just sent you.";
+                        header("Location: " . $this->getHomeDir());
+                        exit;
                     } else {
-                        $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered";
+                        $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered, may be unable to log in";
                     }
                 } catch (Exception | Error $e) {
                     $_SESSION["localErrors"][] = $e;
@@ -550,7 +561,10 @@ class Controller
                 ];
                 try {
                     $success = call_user_func_array("Authenticator::login", $args);
-                    if (!$success) {
+                    if ($success) {
+                        header("Location: " . $this->getHomeDir());
+                        exit;
+                    } else {
                         $_SESSION["localWarnings"][] = "Warning: Login failure; account inactive";
                     }
                 } catch (Exception | Error $e) {
@@ -564,7 +578,10 @@ class Controller
             case "logout":
                 try {
                     $success = Authenticator::logout();
-                    if (!$success) {
+                    if ($success) {
+                        header("Location: " . $this->getHomeDir());
+                        exit;
+                    } else {
                         $_SESSION["localWarnings"][] = "Warning: Logout failure; no user logged in; How'd you even manage to trigger this error???";
                     }
                 } catch (Exception | Error $e) {
@@ -596,9 +613,9 @@ class Controller
                         $this->scrubbed["streetAddress"],
                         $this->scrubbed["city"],
                         new Province($this->scrubbed["province"], Province::MODE_ISO),
-                        ((int) $this->scrubbed["postalCode"]),
-                        ((int) $this->scrubbed["phoneNumber"]),
-                        ((int) $this->scrubbed["gradYear"]),
+                        ((int)$this->scrubbed["postalCode"]),
+                        ((int)$this->scrubbed["phoneNumber"]),
+                        ((int)$this->scrubbed["gradYear"]),
                     ];
                     $functions = [
                         "setFirstName",
@@ -613,7 +630,7 @@ class Controller
                         "setGradYear"
                     ];
                     $user = Controller::getLoggedInUser();
-                    for($i = 0; $i < count($args); $i++) {
+                    for ($i = 0; $i < count($args); $i++) {
                         call_user_func([$user, $functions[$i]], $args[$i]);
                     }
                     $success = $user->updateToDatabase();
@@ -638,23 +655,28 @@ class Controller
                 $user = User::load($email);
                 if ($user == null) {
                     $_SESSION["resetFail"] = true;
-					$_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
+                    $_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
                     break;
                 }
                 //create a DateTime representing 24 hours in the future
-                $expiration = (new DateTime())->add(new DateInterval("P1D"));
+                try {
+                    $dateInterval = new DateInterval("P1D");
+                } catch (Exception $e) {
+                    return false;
+                }
+                $expiration = (new DateTime())->add($dateInterval);
                 //Create a token representing a temporary link to reset password
                 $token = new Token("resetPasswordLink", $expiration, $user);
                 //send email to user
-				$mailman = new Mailman();
-				//create email body
-				//create a link to password reset page with the token ID as a parameter
-				$path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
-				//create the body of the email
-				$body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
-				$body .= "<a href=\"{$path}\">Click Me!";
-				//send email
-				$success = $mailman->sendEmail($email, "MyCollege Password Reset", $body);
+                $mailman = new Mailman();
+                //create email body
+                //create a link to password reset page with the token ID as a parameter
+                $path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
+                //create the body of the email
+                $body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
+                $body .= "<a href=\"{$path}\">Click Me!";
+                //send email
+                $success = $mailman->sendEmail($email, "MyCollege Password Reset", $body);
                 $_SESSION["resetFail"] = !$success;
                 break;
             case "resetPassword":

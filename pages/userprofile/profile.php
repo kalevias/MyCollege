@@ -112,7 +112,7 @@ $controller->checkPermissions($controller->userHasAccess());
                                             $countries = $dbc->query("select multiple", "SELECT pkcountryid, idiso, nmname FROM tblcountry WHERE 1");
                                             //Could potentially instantiate a bunch of Country objects here, but with exception handling,
                                             //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
-                                            $userCountry = $controller::getLoggedInUser()->getCountry()->getISO();
+                                            $userCountry = Controller::getLoggedInUser()->getCountry()->getISO();
                                             foreach ($countries as $country) {
                                                 if ($userCountry === $country["idiso"]) {
                                                     $selected = " selected";

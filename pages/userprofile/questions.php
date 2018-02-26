@@ -11,7 +11,7 @@ include "../../autoload.php";
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
-$controller->checkPermissions($controller->userHasAccess());
+$controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION_STUDENT]));
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -6,11 +6,10 @@
  * Time: 11:34 PM
  */
 
-class EduProfile extends DataBasedEntity //Should extend the User class to a Student, and then have eduprofile as tacked on stuff
+class Student extends User
 {
-    //TODO: extend User class to Student, and handle all eduprofile stuff there instead of in a separate class
-    const MODE_EDUPROFILEID = 1;
-    const MODE_USERID = 2;
+    const MODE_EduprofileID = 3;
+    const MODE_UserID = 4;
     /**
      * What did the student get on the ACT test?
      *
@@ -67,42 +66,148 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
     private $preferredMajors;
 
     /**
+     * Loads a user from the database.
+     *
+     * @param string|int $identifier May be either user email or ID
+     * @param int $mode
+     * @return null|User
+     */
+    public static function load($identifier, int $mode = self::MODE_NAME)
+    {
+        try {
+            return new Student($identifier, $mode);
+        } catch (InvalidArgumentException $iae) {
+            return null;
+        }
+    }
+
+    /**
      * @param int $identifier
      * @param int $mode
      * @throws Exception
      */
-    public function __construct2(int $identifier, int $mode = self::MODE_USERID)
+    public function __construct2($identifier, int $mode = self::MODE_UserID)
     {
-        //TODO: finish constructor implementation, specifically with regard to adding preferred majors
         $dbc = new DatabaseConnection();
-        if ($mode === self::MODE_EDUPROFILEID) {
+        $foundID = $mode;
+        if ($mode == self::MODE_UserID) {
+            $foundID = self::MODE_DbID;
+        } else if ($mode == self::MODE_EduprofileID) {
             $params = ["i", $identifier];
-            $eduprofile = $dbc->query("select", "SELECT * FROM `tbleduprofile` WHERE `pkeduprofileid`=?", $params);
-        } else {
-            $params = ["s", $identifier];
-            $eduprofile = $dbc->query("select", "SELECT * FROM `tbleduprofile` WHERE `fkuserid`=?", $params);
+            $identifier = $dbc->query("select", "SELECT fkuserid FROM tbleduprofile WHERE pkeduprofileid = ?", $params)["fkuserid"];
+            $foundID = self::MODE_DbID;
         }
+        parent::__construct2($identifier, $foundID);
+        $this->inDatabase = false;
+        $this->synced = false;
 
-        if ($eduprofile) {
+        $params = ["i", $this->getPkID()];
+        $student = $dbc->query("select", "SELECT * FROM `tbleduprofile` WHERE `fkuserid`=?", $params);
+
+        if ($student) {
             $result = [
-                $this->setPkID($eduprofile["pkeduprofileid"]),
-                $this->setACT($eduprofile["nact"]),
-                $this->setAP($eduprofile["hadap"]),
-                $this->setDesiredCollegeEntry($eduprofile["dtentry"]),
-                $this->setDesiredCollegeLength($eduprofile["ncollegelength"]),
-                $this->setDesiredMajor($eduprofile["fkmajorid"]),
-                $this->setGPA($eduprofile["ngpa"]),
-                $this->setHouseholdIncome($eduprofile["nhouseincome"]),
-                $this->setSAT($eduprofile["nsat"])
+                $this->setACT($student["nact"]),
+                $this->setAP($student["hadap"]),
+                $this->setDesiredCollegeEntry(new DateTime($student["dtentry"])),
+                $this->setDesiredCollegeLength(new DateInterval("P".$student["ncollegelength"]."Y")),
+                $this->setDesiredMajor(new Major($student["fkmajorid"])),
+                $this->setGPA($student["ngpa"]),
+                $this->setHouseholdIncome($student["nhouseincome"]),
+                $this->setSAT($student["nsat"])
             ];
             if (in_array(false, $result, true)) {
-                throw new Exception("EduProfile->__construct2($identifier, $mode) - Unable to construct EduProfile object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+                throw new Exception("Student->__construct2($identifier, $mode) - Unable to construct Student object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
+            $this->removeAllPreferredMajors();
+            $this->addPreferredMajor(new Major($student["fkmajor1"]));
+            $this->addPreferredMajor(new Major($student["fkmajor2"]));
+            $this->addPreferredMajor(new Major($student["fkmajor3"]));
+
             $this->inDatabase = true;
             $this->synced = true;
         } else {
-            throw new InvalidArgumentException("EduProfile->__construct2($identifier, $mode) - EduProfile not found");
+            throw new InvalidArgumentException("Student->__construct2($identifier, $mode) - Student not found");
         }
+    }
+
+    /**
+     * Removes the current object from the database.
+     * Returns true if the update was completed successfully, false otherwise.
+     *
+     * @return bool
+     */
+    public function removeFromDatabase(): bool
+    {
+        if ($this->isInDatabase()) {
+            $dbc = new DatabaseConnection();
+            $params = ["i", $this->getPkID()];
+            $result = $dbc->query("delete", "DELETE FROM tblEduProfile WHERE fkuserid = ?", $params);
+            if ($result) {
+                $this->inDatabase = false;
+                $this->synced = false;
+                return parent::removeFromDatabase();
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * Loads the current object with data from the database to which pkID pertains.
+     *
+     * @return bool
+     */
+    public function updateFromDatabase(): bool
+    {
+        if ($this->isSynced()) {
+            return true;
+        } elseif ($this->isInDatabase() and !$this->isSynced()) {
+            try {
+                $this->__construct2($this->getPkID(), self::MODE_UserID);
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
+     * true.
+     *
+     * @return bool
+     */
+    public function updateToDatabase(): bool
+    {
+        //Check if current object is already syncronized to database
+        if ($this->isSynced()) {
+            return true;
+        }
+        //open database connection
+        $dbc = new DatabaseConnection();
+        $params = [
+            "ibfissiii",
+            $this->getACT(),
+            $this->isAP(),
+            $this->getGPA(),
+            $this->getSAT(),
+            $this->getDesiredCollegeEntry(),
+            $this->getDesiredCollegeLength(),
+            $this->getDesiredMajor(),
+            $this->getHouseholdIncome(),
+            $this->getPkID()
+        ];
+        $result = $dbc->query("update", "UPDATE tblEduProfile SET nACT=?, hadAP=?, nGPA=?, nSAT=?, 
+							  dtEntry=?, nCollegeLength=?, fkMajorID=?, nHouseIncome=?, WHERE fkuserid=?", $params);
+        $this->inDatabase = $result;
+        $this->synced = $result;
+        return (bool)$result;
+
     }
 
     /**
@@ -118,6 +223,7 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
     public function __construct8(bool $AP, int $ACT, DateTime $desiredCollegeEntry, DateInterval $desiredCollegeLength, Major $desiredMajor, float $GPA, int $householdIncome, int $SAT)
     {
         //TODO: finish implementation of function.
+        //need to add a bunch of arguments so that the parent constructor can be called.
     }
 
     /**
@@ -213,82 +319,6 @@ class EduProfile extends DataBasedEntity //Should extend the User class to a Stu
     {
         $this->syncHandler($this->preferredMajors, $this->getPreferredMajors(), []);
         return true;
-    }
-
-    /**
-     * Removes the current object from the database.
-     * Returns true if the update was completed successfully, false otherwise.
-     *
-     * @return bool
-     */
-    public function removeFromDatabase(): bool{
-		if ($this->isInDatabase()) {
-			$dbc = new DatabaseConnection();
-			$params = ["i", $this->getPkID()];
-			$result = $dbc->query("delete", "DELETE FROM tblEduProfile WHERE pkEduProfileID = ?", $params);
-			if ($result) {
-				$this->inDatabase = false;
-				$this->synced = false;
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-    }
-
-    /**
-     * Loads the current object with data from the database to which pkID pertains.
-     *
-     * @return bool
-     */
-    public function updateFromDatabase(): bool{
-		if ($this->isSynced()) {
-			return true;
-		} elseif ($this->isInDatabase() and !$this->isSynced()) {
-			try {
-				$this->__construct1($this->getPkID());
-			} catch (Exception $e) {
-				return false;
-			}
-			return true;
-		} else {
-			return false;
-		}
-    }
-
-    /**
-     * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
-     * true.
-     *
-     * @return bool
-     */
-    public function updateToDatabase(): bool{
-		//Check if current object is already syncronized to database
-		if ($this->isSynced()) {
-			return true;
-		}
-		//open database connection
-		$dbc = new DatabaseConnection();
-		$params = [
-			"ibfissiii",
-			$this->getACT(),
-			$this->isAP(),
-			$this->getGPA(),
-			$this->getSAT(),
-			$this->getDesiredCollegeEntry(),
-			$this->getDesiredCollegeLength(),
-			$this->getDesiredMajor(),
-			$this->getHouseholdIncome(),
-			$this->getPkID
-		];
-		$result = $dbc->query("update","UPDATE tblEduProfile SET nACT=?, hadAP=?, nGPA=?, nSAT=?, 
-							  dtEntry=?, nCollegeLength=?, fkMajorID=?, nHouseIncome=?, WHERE pkEduProfileID=?", $params);
-		$this->inDatabase = $result;
-		$this->synced = $result;
-		return (bool)$result;
-
     }
 
     /**

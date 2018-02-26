@@ -37,7 +37,7 @@ class College extends DataBasedEntity
      */
     private $finAid;
     /**
-     * @var Major[]
+     * @var CollegeMajor[]
      */
     private $majors;
     /**
@@ -147,7 +147,7 @@ class College extends DataBasedEntity
             $majors = $dbc->query("select multiple", "SELECT `fkmajorid` FROM `tblmajorcollege` WHERE `fkcollegeid` = ?", $params);
             if ($majors) {
                 foreach ($majors as $major) {
-                    $this->addMajor(new Major($major["fkmajorid"], $college["pkcollegeid"]));
+                    $this->addMajor(new CollegeMajor($major["fkmajorid"], $college["pkcollegeid"]));
                 }
             }
             $this->synced = true;
@@ -206,10 +206,10 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param Major $major
+     * @param CollegeMajor $major
      * @return bool|int
      */
-    public function addMajor(Major $major)
+    public function addMajor(CollegeMajor $major)
     {
         if (in_array($major, $this->getMajors())) {
             return false;
@@ -260,7 +260,7 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @return Major[]|null
+     * @return CollegeMajor[]|null
      */
     public function getMajors()
     {
