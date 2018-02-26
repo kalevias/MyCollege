@@ -50,6 +50,7 @@ $schools = $dbc->query("select multiple", $query, $params);
         </head>
         <body>
             <?php include $controller->getHomeDir() . "pages/pageassembly/header/header.php"; ?>
+            <script src="javascript/search.js"></script>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-3 sidebar">
@@ -59,48 +60,18 @@ $schools = $dbc->query("select multiple", $query, $params);
                                 <input type="range" min="1000" max="70000" value="<?php echo $size; ?>" step="1000" class="slider" id="myRange" name="s">
                                 <p>Less than <span id="demo"></span> Students</p>
                             </div>
-                            <script>
-                                var slider = document.getElementById("myRange");
-                                var output = document.getElementById("demo");
-                                output.innerHTML = slider.value; // Display the default slider value
-
-                                // Update the current slider value (each time you drag the slider handle)
-                                slider.oninput = function () {
-                                    output.innerHTML = this.value;
-                                }
-                            </script>
                             <br>
                             <div class="slidecontainer">
                                 <label for="myRange2">Tuition Rates:</label>
                                 <input type="range" min="1000" max="60000" value="<?php echo $tuition; ?>" step="1000" class="slider" id="myRange2" name="t">
                                 <p>Less than $<span id="demo2"></span> per year</p>
                             </div>
-                            <script>
-                                slider = document.getElementById("myRange2");
-                                var output2 = document.getElementById("demo2");
-                                output2.innerHTML = slider.value; // Display the default slider value
-
-                                // Update the current slider value (each time you drag the slider handle)
-                                slider.oninput = function () {
-                                    output2.innerHTML = this.value;
-                                }
-                            </script>
                             <br>
                             <div class="slidecontainer">
                                 <label for="myRange3">Average SAT Score:</label>
                                 <input type="range" min="0" max="1600" value="<?php echo $sat; ?>" step="50" class="slider" id="myRange3" name="sat">
                                 <p>Greater than <span id="demo3"></span></p>
                             </div>
-                            <script>
-                                slider = document.getElementById("myRange3");
-                                var output3 = document.getElementById("demo3");
-                                output3.innerHTML = slider.value; // Display the default slider value
-
-                                // Update the current slider value (each time you drag the slider handle)
-                                slider.oninput = function () {
-                                    output3.innerHTML = this.value;
-                                }
-                            </script>
                             <?php if ($controller::isUserLoggedIn()) { ?>
                                 <br>
                                 <div class="slidecontainer">
@@ -108,16 +79,6 @@ $schools = $dbc->query("select multiple", $query, $params);
                                     <input type="range" min="0" max="500" value="<?php echo $dist; ?>" step="10" class="slider" id="myRange4" name="dist">
                                     <p>Less than <span id="demo4"></span> miles</p>
                                 </div>
-                                <script>
-                                    slider = document.getElementById("myRange4");
-                                    var output4 = document.getElementById("demo4");
-                                    output4.innerHTML = slider.value; // Display the default slider value
-
-                                    // Update the current slider value (each time you drag the slider handle)
-                                    slider.oninput = function () {
-                                        output4.innerHTML = this.value;
-                                    }
-                                </script>
                             <?php } ?>
                             <br>
                             <div class="dropdown">

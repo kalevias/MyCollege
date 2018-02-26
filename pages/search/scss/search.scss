@@ -211,3 +211,12 @@ footer {
     height: auto;
   }
 }
+
+h3 {
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: #1e69d3;
+  }
+}

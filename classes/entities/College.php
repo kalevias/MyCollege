@@ -543,12 +543,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param int $act
+     * @param int|null $act
      * @return bool
      */
-    public function setACT(int $act): bool
+    public function setACT($act): bool
     {
-        if ($act <= 36 and $act >= 1) {
+        if (is_null($act) or($act <= 36 and $act >= 1)) {
             $this->syncHandler($this->act, $this->getACT(), $act);
             return true;
         }
@@ -602,11 +602,15 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param int $phone
+     * @param int|null $phone
      * @return bool
      */
-    public function setPhone(int $phone): bool
+    public function setPhone($phone): bool
     {
+        if(is_null($phone)) {
+            $this->syncHandler($this->phone, $this->getPhone(), $phone);
+            return true;
+        }
         $phoneNumberUtil = libphonenumber\PhoneNumberUtil::getInstance();
         try {
             $phoneNumberObject = $phoneNumberUtil->parse($phone, $this->getCountry()->getISO());
@@ -656,12 +660,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param int $sat
+     * @param int|null $sat
      * @return bool
      */
-    public function setSAT(int $sat): bool
+    public function setSAT($sat): bool
     {
-        if ($sat <= 1600 and $sat >= 400) {
+        if (is_null($sat) or ($sat <= 1600 and $sat >= 400)) {
             $this->syncHandler($this->sat, $this->getSAT(), $sat);
             return true;
         }
@@ -737,10 +741,10 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param string $type
+     * @param string|null $type
      * @return bool
      */
-    public function setType(string $type): bool
+    public function setType($type): bool
     {
         switch ($type) {
             case self::TYPE_2YEAR:
@@ -748,6 +752,7 @@ class College extends DataBasedEntity
             case self::TYPE_GRAD:
             case self::TYPE_ONLINE:
             case self::TYPE_VOCATIONAL:
+            case null:
                 $this->syncHandler($this->type, $this->getType(), $type);
                 return true;
                 break;
@@ -757,12 +762,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param string $website
+     * @param string|null $website
      * @return bool
      */
-    public function setWebsite(string $website): bool
+    public function setWebsite($website): bool
     {
-        if (filter_var($website, FILTER_VALIDATE_URL) === true) {
+        if (is_null($website) or filter_var($website, FILTER_VALIDATE_URL) === true) {
             $this->syncHandler($this->website, $this->getWebsite(), $website);
             return true;
         }

@@ -35,7 +35,7 @@ class CollegeMajor extends Major
     {
         parent::__construct($pkID);
         $dbc = new DatabaseConnection();
-        $params = ["ii", $pkID, $fkCollegeID];
+        $params = ["ii", $fkCollegeID, $pkID];
         $collegeMajor = $dbc->query("select", "SELECT * FROM tblmajorcollege WHERE fkcollegeid = ? AND fkmajorid = ?", $params);
         if ($collegeMajor) {
             $result = [

@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,2BAAmC,CACjC,WAAW,CAAE,oBAAoB,CAGnC,WAAY,CACV,OAAO,CAAE,CAAC,CACV,KAAK,CAAE,KAAK,CACZ,GAAG,CAAE,IAAI,CACT,MAAM,CAAE,CAAC,CACT,MAAM,CAAE,OAAO",
+"sources": ["../scss/college.scss"],
+"names": [],
+"file": "college.min.css"
+}

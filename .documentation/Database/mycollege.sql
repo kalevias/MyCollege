@@ -38,14 +38,14 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
   `fkprovinceid` int(10) UNSIGNED NOT NULL,
   `nzip` int(5) UNSIGNED NOT NULL,
   `txwebsite` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nPhone` int(10) UNSIGNED DEFAULT NULL,
+  `nphone` int(10) UNSIGNED DEFAULT NULL,
   `ninstate` int(7) UNSIGNED NOT NULL,
   `noutstate` int(7) UNSIGNED NOT NULL,
   `nfinancialave` int(7) DEFAULT NULL,
   `nacceptrate` float UNSIGNED NOT NULL,
   `nprof` int(5) UNSIGNED DEFAULT NULL,
   `nsize` int(10) UNSIGNED DEFAULT NULL,
-  `nwomenratio` int(3) UNSIGNED DEFAULT NULL,
+  `nwomenratio` float UNSIGNED DEFAULT NULL,
   `nact` int(2) UNSIGNED DEFAULT NULL,
   `nsat` int(4) UNSIGNED DEFAULT NULL,
   `ensetting` enum('Urban','Suburban','Rural','Small Town') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -57,16 +57,16 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
 -- Dumping data for table `tblcollege`
 --
 
-INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nPhone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
-(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 56, NULL, NULL, 'Urban'),
-(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 51, 26, NULL, 'Suburban'),
-(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 57, 29, NULL, 'Urban'),
-(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, NULL, 4390, 8780, NULL, 1, 281, 4094, 51, NULL, NULL, 'Rural'),
-(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 18, NULL, NULL, 'Urban'),
-(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 48, NULL, NULL, 'Urban'),
-(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 57, 23, NULL, 'Small Town'),
-(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 59, NULL, NULL, 'Suburban'),
-(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 50, NULL, NULL, 'Urban');
+INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nphone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
+(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 0.56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 0.51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 0.57, 29, NULL, 'Urban'),
+(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, NULL, 4390, 8780, NULL, 1, 281, 4094, 0.51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 0.18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 0.48, NULL, NULL, 'Urban'),
+(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 0.57, 23, NULL, 'Small Town'),
+(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 0.59, NULL, NULL, 'Suburban'),
+(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 0.5, NULL, NULL, 'Urban');
 
 -- --------------------------------------------------------
 
