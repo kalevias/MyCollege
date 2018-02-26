@@ -1,6 +1,5 @@
 $(document).ready(function () {
     $(".chosen-ones").chosen({width: "100%"});
-    $("#phoneNumber").cleverMask();
     $("#gradYear").cleverMask();
 });
 
@@ -40,7 +39,7 @@ $(document).on("change", "#country", function () {
     });
 });
 
-$(document).on("click", "#registerButton", function () {
+$(document).on("click", "#updateContactInfo", function () {
     var params = {
         firstName: $("#firstName").val(),
         lastName: $("#lastName").val(),
@@ -49,26 +48,36 @@ $(document).on("click", "#registerButton", function () {
         streetAddress: $("#streetAddress").val(),
         city: $("#city").val(),
         province: $("#province").val(),
-        postalCode: $("#postalCode"),
-        phoneNumber: $("#phoneNumber").data("clevermaskout"),
+        postalCode: $("#postalCode").val(),
+        phoneNumber: $("#phoneNumber").val(),
         gradYear: $("#gradYear").data("clevermaskout"),
-        password: $("#password").val(),
-        confirmPassword: $("#confirmPassword").val(),
-        requestType: "registerStudent"
+        requestType: "updateContactInfo"
     };
-
-    if(validate_REntropy(params.password)>40) {
-        post("#", params);
-    } else {
-        summonAlert("warning", "Warning: Your password isn't strong enough.");
-    }
-});
-
-$(document).on("keyup", "#confirmPassword", function (e) {
-    var key = e.which;
-    if (key === 13)  // the enter key code
-    {
-        $('#registerButton').click();
-        return false;
+    var inputs = [
+        {
+            name: "email",
+            value: params.email,
+            validationType: "email",
+            alertLevel: "warning",
+            alertMessage: "Please enter a valid email"
+        },
+        {
+            name: "alternative email",
+            value: params.altEmail === "" ? "example@example.com" : params.altEmail, //dummy value to allow blanks
+            validationType: "email",
+            alertLevel: "warning",
+            alertMessage: "Please enter a valid email"
+        }
+        // ,
+        // {
+        //     name: "phone",
+        //     value: params.phoneNumber,
+        //     validationType: "phone",
+        //     alertLevel: "warning",
+        //     alertMessage: "Please enter a valid phone number"
+        // }
+    ];
+    if (validateInput(inputs)) {
+        post("", params);
     }
 });

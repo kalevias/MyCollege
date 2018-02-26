@@ -186,7 +186,7 @@ function validate_REntropy(string) {
 /**
  * This function is used to simplify the process of validating user input in
  * forms, and the process of notifying the user via the alert system that an
- * error has occured. The function takes one argument, an array storing objects
+ * error has occurred. The function takes one argument, an array storing objects
  * used as associative arrays, with the following structure scheme:
  *
  * ( "[[" and "]]" denote optional/depends on other conditions)
@@ -252,7 +252,8 @@ function validateInput(inputs) {
 
     var returnVal = true;
 
-    for (var input in inputs) {
+    for (var index in inputs) {
+        var input = inputs[index];
 
         var n, count, regex, val, flag = false;
 
@@ -347,6 +348,7 @@ function validateInput(inputs) {
                 break;
             default:
                 alert("Invalid validation type passed");
+                flag = false;
         }
 
         if (!flag) {
@@ -363,15 +365,7 @@ function validateInput(inputs) {
                     image = "exclamation.png";
                     break;
             }
-            var alerts = '<div>\n' +
-                '    <span>\n' +
-                '        <img class="remove-alert" src="' + window.location.hostname + '/mycollege/resources/images/cancel.png"; ?>" title="Dismiss">\n' +
-                '    </span>\n' +
-                '    <img src="' + window.location.hostname + '/mycollege/resources/images/' + image + '">\n' +
-                '    The value for ' + input.name + ' could not be validated. ' + input.alertLevel + ' message: ' + input.alertMessage + '\n' +
-                '</div>';
-
-            $("#" + input.alertLevel + "s").append(alerts);
+            summonAlert(input.alertLevel, 'The value for ' + input.name + ' could not be validated. ' + input.alertLevel + ' message: ' + input.alertMessage);
         }
     }
     return returnVal;

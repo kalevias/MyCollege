@@ -2,22 +2,22 @@
 
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("Login");
+$controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Login</title>
-        <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/login/css/login.min.css" type="text/css">
+        <title>MyCollege</title>
+        <link rel="stylesheet" href="css/login.min.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
         <script src="javascript/login.js"></script>
     </head>
     <body>
         <?php
-        include $controller->getHomeDir() . "pages/pageassembly/alerts/alerts.php";
+        include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/alerts/alerts.php";
         ?>
         <div class="form-wrap">
             <div class="rcorners2">

@@ -89,7 +89,7 @@ class User extends DataBasedEntity
      * @param string $altEmail
      * @param string $streetAddress
      * @param string $city
-     * @param string $province
+     * @param Province $province
      * @param int $postalCode
      * @param int $phone
      * @param int $gradYear
@@ -97,7 +97,7 @@ class User extends DataBasedEntity
      * @param bool $active
      * @throws Exception
      */
-    public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, string $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active)
+    public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active)
     {
         $result = [
             $this->setFirstName($firstName),
@@ -106,7 +106,7 @@ class User extends DataBasedEntity
             $this->setAltEmail($altEmail),
             $this->setStreetAddress($streetAddress),
             $this->setCity($city),
-            $this->setProvince(new Province($province, Province::MODE_ISO)),
+            $this->setProvince($province),
             $this->setPostalCode($postalCode),
             $this->setPhone($phone),
             $this->setGradYear($gradYear),
@@ -114,7 +114,7 @@ class User extends DataBasedEntity
             $this->setActive($active),
         ];
         if (in_array(false, $result, true)) {
-            throw new Exception("User->__construct13($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+            throw new Exception("User->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, ".$province->getISO().", $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
         $this->permissions = [];
         $this->inDatabase = false;
@@ -177,7 +177,7 @@ class User extends DataBasedEntity
      */
     public function __toString(): string
     {
-        return "{" . implode(" ", [$this->getFirstName(), $this->getLastName(), $this->getEmail(), $this->getUserID(), $this->isInDatabase(), $this->isActive()]) . "}";
+        return "{" . implode(" ", [$this->getFirstName(), $this->getLastName(), $this->getEmail(), $this->getPkID(), $this->isInDatabase(), $this->isActive()]) . "}";
     }
 
     /**
@@ -185,13 +185,13 @@ class User extends DataBasedEntity
      *
      * @param Permission $permission
      * @return bool|int
-     * @throws InvalidArgumentException()
      */
     public function addPermission(Permission $permission)
     {
         if (in_array($permission, $this->getPermissions())) {
             return false;
         } else {
+            $this->synced = false;
             return array_push($this->permissions, $permission);
         }
     }
@@ -350,6 +350,29 @@ class User extends DataBasedEntity
                 return false;
             }
         } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param int $pkID
+     * @return bool
+     */
+    protected function setPkID($pkID): bool
+    {
+        if ($this->isInDatabase()) {
+            return false;
+        } else {
+            $options = [
+                "options" => [
+                    "min_range" => 0,
+                    "max_range" => pow(2, 31) - 1
+                ]
+            ];
+            if ($filtered = filter_var($pkID, FILTER_VALIDATE_INT, $options)) {
+                $this->pkID = $filtered;
+                return true;
+            }
             return false;
         }
     }
@@ -667,28 +690,5 @@ class User extends DataBasedEntity
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param int $pkID
-     * @return bool
-     */
-    private function setPkID(int $pkID): bool
-    {
-        if ($this->isInDatabase()) {
-            return false;
-        } else {
-            $options = [
-                "options" => [
-                    "min_range" => 0,
-                    "max_range" => pow(2, 31) - 1
-                ]
-            ];
-            if ($filtered = filter_var($pkID, FILTER_VALIDATE_INT, $options)) {
-                $this->pkID = $filtered;
-                return true;
-            }
-            return false;
-        }
     }
 }

@@ -42,11 +42,18 @@ class Authenticator
 
                 if ($goodPass) {
                     if ($user->isActive()) {
-                        Controller::setLoggedInUser($user);
+                        if($user->hasPermission(new Permission(Permission::PERMISSION_STUDENT))) {
+                            $student = new Student($email,Student::MODE_NAME);
+                            if(isset($student)) {
+                                Controller::setLoggedInUser($student);
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            Controller::setLoggedInUser($user);
+                        }
                         Controller::setLoginLockout();
                         Controller::setLoginFails();
-                        $controller = $_SESSION["controller"];
-                        header("Location: " . $controller->getHomeDir());
                         return true;
                     } else {
                         return false;
@@ -75,10 +82,7 @@ class Authenticator
     public static function logout(): bool
     {
         if (Controller::isUserLoggedIn()) {
-            Controller::setLoggedInUser();
-            $controller = $_SESSION["controller"];
-            header("Location: " . $controller->getHomeDir());
-            return true;
+            return Controller::setLoggedInUser();
         } else {
             return false;
         }
@@ -97,16 +101,13 @@ class Authenticator
      * @param $gradYear
      * @param $password
      * @return bool
+     * @throws Exception
      */
     public static function registerRepresentative($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password)
     {
         //TODO: upon implementing email verification, the "true" below should be changed to false
-        $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
-        try {
-            $user->addPermission(new Permission(Permission::PERMISSION_REPRESENTATIVE));
-        } catch (Exception $e) {
-            return false;
-        }
+        $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
+        $user->addPermission(new Permission(Permission::PERMISSION_REPRESENTATIVE));
         if (self::userExists($user)) {
             return false;
         } else {
@@ -135,21 +136,13 @@ class Authenticator
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
-            $user = new User($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, true);
+            $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
             $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($user)) {
                 return false;
             } else {
                 $user->updateToDatabase();
-                //This try-catch should stay here, as it basically just re-routes the user to the homepage if the login
-                //function fails, for some reason or another
-                try {
-                    self::login($user->getEmail(), $password);
-                } catch (Exception $e) {
-                    $controller = $_SESSION["controller"];
-                    header("Location: " . $controller->getHomeDir());
-                }
-                return true;
+                return self::login($user->getEmail(), $password);
             }
         } else {
             return false;
@@ -177,6 +170,7 @@ class Authenticator
                 return false;
             }
         } else {
+			$_SESSION["localWarnings"][] = "Passwords do not match, check to make sure you have typed correctly or if Caps Lock is on.";
             return false;
         }
     }

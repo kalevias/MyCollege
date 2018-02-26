@@ -1,9 +1,10 @@
 <?php
 include "../../autoload.php";
 
-$controller = $_SESSION["controller"] = new Controller("Login");
+$controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
-//$controller->processREQUEST();
+$controller->processREQUEST();
+$controller->checkPermissions($controller->userHasAccess());
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,209 +14,193 @@ $controller->initModuleDir();
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>Edit Profile</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <style>
-            body {
-                padding-top: 70px;
-                /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
-            }
+        <title>MyCollege</title>
 
-            .othertop {
-                margin-top: 10px;
-            }
-        </style>
+        <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.min.css" type="text/css">
+        <link rel="stylesheet" href="css/profile.min.css" type="text/css">
     </head>
     <body>
-        <?php include $controller->getHomeDir() . "pages/pageassembly/header/header.php"; ?>
+        <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/cleverMask.js"></script>
+        <script src="javascript/profile.js"></script>
         <div class="container">
             <div class="row">
-                <div class="col-md-10 ">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <h2>MyProfile</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "pageassembly/profilenav/profilenav.php"; ?>
+                </div>
+                <div class="col-sm-4">
                     <form class="form-horizontal">
-                        <fieldset>
-
-                            <!-- Form Name -->
-                            <legend>Edit Profile</legend>
-
-                            <!-- Text input-->
+                        <div>
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Name (Full name)">Name (Full name)</label>
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
-                                            <i class="fa fa-user">
-                                            </i>
+                                            <i class="fa fa-user"></i>
                                         </div>
-                                        <input id="Name (Full name)" name="Name (Full name)" type="text" placeholder="Name (Full name)" class="form-control input-md">
+                                        <input id="firstName" type="text" value="<?php echo Controller::getLoggedInUser()->getFirstName(); ?>" placeholder="First name" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- File Button -->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Upload photo">Upload photo</label>
-                                <div class="col-md-4">
-                                    <input id="Upload photo" name="Upload photo" class="input-file" type="file">
-                                </div>
-                            </div>
-
-                            <!-- Text input-->
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="Date Of Birth">Date Of Birth</label>
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
-                                            <i class="fa fa-birthday-cake"></i>
+                                            <i class="fa fa-user"></i>
                                         </div>
-                                        <input id="Date Of Birth" name="Date Of Birth" type="text" placeholder="Date Of Birth" class="form-control input-md">
+                                        <input id="lastName" type="text" value="<?php echo Controller::getLoggedInUser()->getLastName(); ?>" placeholder="Last name" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Multiple Radios (inline) -->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Gender">Gender</label>
-                                <div class="col-md-4">
-                                    <label class="radio-inline" for="Gender-0">
-                                        <input type="radio" name="Gender" id="Gender-0" value="1" checked="checked">
-                                        Male
-                                    </label>
-                                    <label class="radio-inline" for="Gender-1">
-                                        <input type="radio" name="Gender" id="Gender-1" value="2">
-                                        Female
-                                    </label>
-                                    <label class="radio-inline" for="Gender-2">
-                                        <input type="radio" name="Gender" id="Gender-2" value="3">
-                                        Other
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label col-xs-12" for="Permanent Address">Permanent
-                                    Address</label>
-                                <div class="col-md-2  col-xs-4">
-                                    <input id="Permanent Address" name="Permanent Address" type="text" placeholder="District" class="form-control input-md ">
-                                </div>
-                                <div class="col-md-2 col-xs-4">
-                                    <input id="Permanent Address" name="Permanent Address" type="text" placeholder="Area" class="form-control input-md ">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="Permanent Address"></label>
-                                <div class="col-md-2  col-xs-4">
-                                    <input id="Permanent Address" name="Permanent Address" type="text" placeholder="Street" class="form-control input-md ">
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="Temporary Address"></label>
-                                <div class="col-md-2  col-xs-4">
-                                    <input id="Temporary Address" name="Temporary Address" type="text" placeholder="Street" class="form-control input-md ">
-                                </div>
-                            </div>
-
-
-                            <!-- Text input-->
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="Skills">Skills</label>
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
-                                            <i class="fa fa-graduation-cap"></i>
+                                            <i class="fa fa-envelope"></i>
                                         </div>
-                                        <input id="Skills" name="Skills" type="text" placeholder="Skills" class="form-control input-md">
+                                        <input id="email" type="email" value="<?php echo Controller::getLoggedInUser()->getEmail(); ?>" placeholder="Email address" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Text input-->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Phone number ">Phone number </label>
-                                <div class="col-md-4">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-envelope"></i>
+                                        </div>
+                                        <input id="altEmail" type="email" value="<?php echo Controller::getLoggedInUser()->getAltEmail(); ?>" placeholder="Alternate email address" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-home"></i>
+                                        </div>
+                                        <input id="streetAddress" type="text" value="<?php echo Controller::getLoggedInUser()->getStreetAddress(); ?>" placeholder="Street Address" class="form-control input-md ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-road"></i>
+                                        </div>
+                                        <input id="city" type="text" value="<?php echo Controller::getLoggedInUser()->getCity(); ?>" placeholder="City" class="form-control input-md ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-globe"></i>
+                                        </div>
+                                        <select id="country" class="chosen-ones">
+                                            <?php
+                                            $dbc = new DatabaseConnection();
+                                            $countries = $dbc->query("select multiple", "SELECT pkcountryid, idiso, nmname FROM tblcountry WHERE 1");
+                                            //Could potentially instantiate a bunch of Country objects here, but with exception handling,
+                                            //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
+                                            $userCountry = Controller::getLoggedInUser()->getCountry()->getISO();
+                                            foreach ($countries as $country) {
+                                                if ($userCountry === $country["idiso"]) {
+                                                    $selected = " selected";
+                                                    $savedCountry = $country["pkcountryid"];
+                                                } else {
+                                                    $selected = "";
+                                                }
+                                                ?>
+                                                <option value="<?php echo $country["idiso"]; ?>"<?php echo $selected; ?>><?php echo $country["nmname"]; ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-globe"></i>
+                                        </div>
+                                        <div id="provinceLabel">
+                                            <select id="province" class="chosen-ones">
+                                                <?php
+                                                $params = ["i", $savedCountry];
+                                                $provinces = $dbc->query("select multiple", "SELECT idiso, nmname FROM tblprovince WHERE fkcountryid = ?", $params);
+                                                //Could potentially instantiate a bunch of Country objects here, but with exception handling,
+                                                //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
+                                                $userProvince = Controller::getLoggedInUser()->getProvince()->getISO();
+                                                foreach ($provinces as $province) {
+                                                    if ($userProvince === $province["idiso"]) {
+                                                        $selected = " selected";
+                                                    } else {
+                                                        $selected = "";
+                                                    }
+                                                    ?>
+                                                    <option value="<?php echo $province["idiso"]; ?>"<?php echo $selected; ?>><?php echo $province["nmname"]; ?></option>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-globe"></i>
+                                        </div>
+                                        <input id="postalCode" type="text" value="<?php echo Controller::getLoggedInUser()->getPostalCode(); ?>" placeholder="Postal code" class="form-control input-md ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-phone"></i>
                                         </div>
-                                        <input id="Phone number " name="Phone number " type="text" placeholder="Primary Phone number " class="form-control input-md">
-                                    </div>
-                                    <div class="input-group othertop">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-mobile fa-1x" style="font-size: 20px;"></i>
-                                        </div>
-                                        <input id="Phone number " name="Secondary Phone number " type="text" placeholder=" Secondary Phone number " class="form-control input-md">
+                                        <input id="phoneNumber" type="tel" value="<?php echo Controller::getLoggedInUser()->getPhone(); ?>" placeholder="Phone number" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Text input-->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Email Address">Email Address</label>
-                                <div class="col-md-4">
+                                <div>
                                     <div class="input-group">
                                         <div class="input-group-addon">
-                                            <i class="fa fa-envelope-o"></i>
+                                            <i class="fa fa-mortar-board"></i>
                                         </div>
-                                        <input id="Email Address" name="Email Address" type="text" placeholder="Email Address" class="form-control input-md">
+                                        <input id="gradYear" type="number" value="<?php echo Controller::getLoggedInUser()->getGradYear(); ?>" min="1900" max="2100" placeholder="Graduation year" class="form-control input-md" data-clevermask="0000">
                                     </div>
                                 </div>
                             </div>
-
-
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="Email Address">Alternate Email
-                                    Address</label>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-envelope-o"></i>
-                                        </div>
-                                        <input id="Email Address" name="Alternate Email Address" type="text" placeholder="Alternate Email Address" class="form-control input-md">
-                                    </div>
+                                <div>
+                                    <a href="#" class="btn btn-success" id="updateContactInfo">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        Update
+                                    </a>
                                 </div>
                             </div>
-
-
-                            <!-- Textarea -->
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" for="About (max 200 words)">About (max 200
-                                    words)</label>
-                                <div class="col-md-4">
-                                    <textarea class="form-control" rows="10" id="About (max 200 words)" name="About (max 200 words)"></textarea>
-                                </div>
-                            </div>
-
-
-                            <div class="form-group">
-                                <label class="col-md-4 control-label"></label>
-                                <div class="col-md-4">
-                                    <a href="#" class="btn btn-success"><span class="glyphicon glyphicon-thumbs-up"></span>
-                                        Update</a>
-                                    <a href="#" class="btn btn-danger" value=""><span class="glyphicon glyphicon-remove-sign"></span>
-                                        Clear</a>
-                                </div>
-                            </div>
-                        </fieldset>
+                        </div>
                     </form>
-                </div>
-                <div class="col-md-2 hidden-xs">
-                    <img src="http://websamplenow.com/30/userprofile/images/avatar.jpg" class="img-responsive img-thumbnail ">
                 </div>
             </div>
         </div>
-        <!-- jQuery Version 1.11.1 -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-        <!-- Bootstrap Core JavaScript -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
     </body>
-
 </html>
