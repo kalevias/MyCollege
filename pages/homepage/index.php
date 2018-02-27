@@ -12,6 +12,7 @@ $controller->processREQUEST();
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
         <link rel="stylesheet" href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/css/index.min.css" type="text/css">
     </head>
     <body>
@@ -94,7 +95,7 @@ $controller->processREQUEST();
                         </p>
                     </div>
                     <div class="w3-third w3-center">
-                        <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
+                        <i class="fa fa-graduation-cap w3-padding-64 w3-text-red"></i>
                     </div>
                 </div>
             </div>
