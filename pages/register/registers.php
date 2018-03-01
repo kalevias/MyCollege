@@ -13,16 +13,18 @@ $controller->checkPermissions(!$controller->userHasAccess()); //checks to see if
         <title>MyCollege</title>
         <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.min.css" type="text/css">
         <link rel="stylesheet" href="css/register.min.css" type="text/css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
+        <script src="<?php echo $controller->getHomeDir(); ?>resources/cleverMask.js"></script>
+        <script src="javascript/registers.js"></script>
     </head>
     <body>
         <img class="bg-image" src="css/IndianaUni.jpg">
         <?php
         include $controller->getHomeDir(). Controller::MODULE_DIR . "/pageassembly/alerts/alerts.php";
         ?>
-        <script src="<?php echo $controller->getHomeDir(); ?>resources/jslib/chosen/chosen.jquery.min.js"></script>
-        <script src="<?php echo $controller->getHomeDir(); ?>resources/common.js"></script>
-        <script src="<?php echo $controller->getHomeDir(); ?>resources/cleverMask.js"></script>
-        <script src="javascript/registers.js"></script>
         <div class="rcorners2">
             <h1>Student Sign Up</h1>
             <input id="firstName" type="text" placeholder="First name" required>
