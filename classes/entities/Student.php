@@ -108,7 +108,7 @@ class Student extends User
             $result = [
                 $this->setACT($student["nact"]),
                 $this->setAP($student["hadap"]),
-                $this->setDesiredCollegeEntry(new DateTime($student["dtentry"])),
+                $this->setDesiredCollegeEntry((new DateTime())->setDate($student["dtentry"],0,0)),
                 $this->setDesiredCollegeLength(new DateInterval("P".$student["ncollegelength"]."Y")),
                 $this->setDesiredMajor(new Major($student["fkmajorid"])),
                 $this->setGPA($student["ngpa"]),
