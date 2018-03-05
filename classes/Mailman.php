@@ -3,8 +3,15 @@
 
 class Mailman
 {
+    /**
+     * @var PHPMailer
+     */
     private $mail;
 
+    /**
+     * Mailman constructor.
+     * @throws phpmailerException
+     */
     function __construct()
     {
         //load email credentials into a multidimensional array
@@ -13,7 +20,6 @@ class Mailman
         $emailPassword = $cred["Email Settings"]["emailPassword"];
         //Set up PHP mailer and initialize error variable
         $mail = new PHPMailer;
-        $mailfail = false;
         $mail->Timeout = 10;
         $mail->isSMTP();                                // Set mailer to use SMTP
         $mail->CharSet = "UTF-8";
@@ -29,6 +35,12 @@ class Mailman
         $this->mail = $mail;
     }
 
+    /**
+     * @param $toAddress
+     * @param $subject
+     * @param $body
+     * @return bool
+     */
     function sendEmail($toAddress, $subject, $body): bool
     {
         $this->mail->addAddress($toAddress);

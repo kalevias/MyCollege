@@ -509,45 +509,49 @@ class Controller
              *  confirmPassword : string
              */
             case "registerStudent":
-                $args = [
-                    $this->scrubbed["firstName"],
-                    $this->scrubbed["lastName"],
-                    $this->scrubbed["email"],
-                    $this->scrubbed["altEmail"],
-                    $this->scrubbed["streetAddress"],
-                    $this->scrubbed["city"],
-                    $this->scrubbed["province"],
-                    ((int)$this->scrubbed["postalCode"]),
-                    ((int)$this->scrubbed["phoneNumber"]),
-                    ((int)$this->scrubbed["gradYear"]),
-                    $this->scrubbed["password"],
-                    $this->scrubbed["confirmPassword"]
-                ];
-                try {
-                    $success = call_user_func_array("Authenticator::registerStudent", $args);
-                    if ($success) {
-                        $_SESSION["localNotifications"][] = "Yay! You have an account on MyCollege now! Be sure to activate your email via the link we just sent you.";
-                        header("Location: " . $this->getHomeDir());
-                        exit;
-                    } else {
-                        $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered, may be unable to log in";
+                {
+                    try {
+                        $args = [
+                            $this->scrubbed["firstName"],
+                            $this->scrubbed["lastName"],
+                            $this->scrubbed["email"],
+                            $this->scrubbed["altEmail"],
+                            $this->scrubbed["streetAddress"],
+                            $this->scrubbed["city"],
+                            $this->scrubbed["province"],
+                            ((int)$this->scrubbed["postalCode"]),
+                            ((int)$this->scrubbed["phoneNumber"]),
+                            ((int)$this->scrubbed["gradYear"]),
+                            $this->scrubbed["password"],
+                            $this->scrubbed["confirmPassword"]
+                        ];
+                        $success = call_user_func_array("Authenticator::registerStudent", $args);
+                        if ($success) {
+                            $_SESSION["localNotifications"][] = "Yay! You have an account on MyCollege now! Be sure to activate your email via the link we just sent you.";
+                            header("Location: " . $this->getHomeDir());
+                            exit;
+                        } else {
+                            $_SESSION["localWarnings"][] = "Warning: unable to register a new account; passwords may not match, user may already be registered, may be unable to log in";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = $e;
                     }
-                } catch (Exception | Error $e) {
-                    $_SESSION["localErrors"][] = $e;
+                    break;
                 }
-                break;
             /**
              * Required POST variables for this case:
              *      requestType : "registerRepresentative"
              * //TODO: fill in other required fields
              */
             case "registerRepresentative":
-                //TODO: complete representative registration handling
-                $args = [
+                {
+                    //TODO: complete representative registration handling
+                    $args = [
 
-                ];
+                    ];
 //                call_user_func_array("Authenticator::registerRepresentative", $args);
-                break;
+                    break;
+                }
             /**
              * Required POST variables for this case:
              *      requestType : "login"
@@ -555,39 +559,53 @@ class Controller
              *         password : string
              */
             case "login":
-                $args = [
-                    $this->scrubbed["email"],
-                    $this->scrubbed["password"]
-                ];
-                try {
-                    $success = call_user_func_array("Authenticator::login", $args);
-                    if ($success) {
-                        header("Location: " . $this->getHomeDir());
-                        exit;
-                    } else {
-                        $_SESSION["localWarnings"][] = "Warning: Login failure; account inactive";
+                {
+                    try {
+                        $args = [
+                            $this->scrubbed["email"],
+                            $this->scrubbed["password"]
+                        ];
+                        $success = call_user_func_array("Authenticator::login", $args);
+                        if ($success) {
+                            header("Location: " . $this->getHomeDir());
+                            exit;
+                        } else {
+                            $_SESSION["localWarnings"][] = "Warning: Login failure; account inactive";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = $e;
                     }
-                } catch (Exception | Error $e) {
-                    $_SESSION["localErrors"][] = $e;
+                    break;
                 }
-                break;
             /**
              * Required POST variables for this case:
              *      requestType : "logout"
              */
             case "logout":
-                try {
-                    $success = Authenticator::logout();
-                    if ($success) {
-                        header("Location: " . $this->getHomeDir());
-                        exit;
-                    } else {
-                        $_SESSION["localWarnings"][] = "Warning: Logout failure; no user logged in; How'd you even manage to trigger this error???";
+                {
+                    /*
+                     * I have no clue why this line needs to be here, but it does (for now). If you try to log out of
+                     * the site while logged in as a user (may only affect students?), it is highly likely that you will
+                     * get something that amounts to a page refresh, without actually logging you out. If the line of
+                     * code below ($_SESSION["test"] = here;) is left in, then the logout properly functions... beats me
+                     * why it does that.
+                     */
+                    $_SESSION["test"] = "here";
+                    try {
+                        $success = Authenticator::logout();
+                        if ($success) {
+                            header("Location: " . $this->getHomeDir());
+                            $_SESSION["localNotifications"][] = "Logout successful";
+                            unset($_SESSION["test"]); //You can even have this line here, and it'll still work! Crazy!
+                            exit;
+                        } else {
+                            $_SESSION["localWarnings"][] = "Warning: Logout failure; no user logged in; How'd you even manage to trigger this error???";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = $e;
                     }
-                } catch (Exception | Error $e) {
-                    $_SESSION["localErrors"][] = $e;
+                    break;
                 }
-                break;
             /**
              * Required POST variables for this case:
              *      requestType : "updateContactInfo"
@@ -603,89 +621,179 @@ class Controller
              *         gradYear : int 4 digits in length
              */
             case "updateContactInfo":
-                $originalUser = Controller::getLoggedInUser()->getEmail();
-                try {
-                    $args = [
-                        $this->scrubbed["firstName"],
-                        $this->scrubbed["lastName"],
-                        $this->scrubbed["email"],
-                        $this->scrubbed["altEmail"],
-                        $this->scrubbed["streetAddress"],
-                        $this->scrubbed["city"],
-                        new Province($this->scrubbed["province"], Province::MODE_ISO),
-                        ((int)$this->scrubbed["postalCode"]),
-                        ((int)$this->scrubbed["phoneNumber"]),
-                        ((int)$this->scrubbed["gradYear"]),
-                    ];
-                    $functions = [
-                        "setFirstName",
-                        "setLastName",
-                        "setEmail",
-                        "setAltEmail",
-                        "setStreetAddress",
-                        "setCity",
-                        "setProvince",
-                        "setPostalCode",
-                        "setPhone",
-                        "setGradYear"
-                    ];
-                    $user = Controller::getLoggedInUser();
-                    for ($i = 0; $i < count($args); $i++) {
-                        call_user_func([$user, $functions[$i]], $args[$i]);
+                {
+                    try {
+                        $originalUser = Controller::getLoggedInUser()->getEmail();
+                        $args = [
+                            $this->scrubbed["firstName"],
+                            $this->scrubbed["lastName"],
+                            $this->scrubbed["email"],
+                            $this->scrubbed["altEmail"],
+                            $this->scrubbed["streetAddress"],
+                            $this->scrubbed["city"],
+                            new Province($this->scrubbed["province"], Province::MODE_ISO),
+                            ((int)$this->scrubbed["postalCode"]),
+                            ((int)$this->scrubbed["phoneNumber"]),
+                            ((int)$this->scrubbed["gradYear"]),
+                        ];
+                        $functions = [
+                            "setFirstName",
+                            "setLastName",
+                            "setEmail",
+                            "setAltEmail",
+                            "setStreetAddress",
+                            "setCity",
+                            "setProvince",
+                            "setPostalCode",
+                            "setPhone",
+                            "setGradYear"
+                        ];
+                        $user = Controller::getLoggedInUser();
+                        for ($i = 0; $i < count($args); $i++) {
+                            call_user_func([$user, $functions[$i]], $args[$i]);
+                        }
+                        $success = $user->updateToDatabase();
+                        if ($success) {
+                            $_SESSION["localNotifications"][] = "Contact information updated";
+                        } else {
+                            Controller::setLoggedInUser(User::load($originalUser));
+                            $_SESSION["localErrors"][] = "Error: Unable to save changes";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = $e;
                     }
-                    $success = $user->updateToDatabase();
-                    if ($success) {
-                        $_SESSION["localNotifications"][] = "Contact information updated";
-                    } else {
-                        Controller::setLoggedInUser(User::load($originalUser));
-                        $_SESSION["localErrors"][] = "Error: Unable to save changes";
-                    }
-                } catch (Exception | Error $e) {
-                    $_SESSION["localErrors"][] = $e;
+                    break;
                 }
-                break;
+            /**
+             * Required POST variables for this case:
+             *      requestType : "updateEduProfile"
+             *              gpa : float
+             *              act : int
+             *              sat : int
+             *               ap : bool
+             *           income : int
+             *            entry : int
+             *           length : int
+             *     desiredMajor : int
+             *  preferredMajors : int[]
+             */
+            case "updateEduProfile":
+                {
+                    try {
+                        $originalUser = Controller::getLoggedInUser()->getEmail();
+                        $args = [
+                            ((float)$this->scrubbed["gpa"]),
+                            ($this->scrubbed["act"] == "" ? null : (int)$this->scrubbed["act"]),
+                            ($this->scrubbed["sat"] == "" ? null : (int)$this->scrubbed["sat"]),
+                            ($this->scrubbed["ap"] == "true" ? 1 : 0),
+                            ((int)$this->scrubbed["income"]),
+                            ((new DateTime())->setDate((int)$this->scrubbed["entry"], 1, 1)),
+                            (new DateInterval("P" . $this->scrubbed["length"] . "Y")),
+                            (new Major((int)$this->scrubbed["desiredMajor"]))
+                        ];
+                        $functions = [
+                            "setGPA",
+                            "setACT",
+                            "setSAT",
+                            "setAP",
+                            "setHouseholdIncome",
+                            "setDesiredCollegeEntry",
+                            "setDesiredCollegeLength",
+                            "setDesiredMajor"
+                        ];
+                        $this->scrubbed["preferredMajors"] = $this->scrubbed["preferredMajors"] == "" ? [] : explode(",", $this->scrubbed["preferredMajors"]);
+                        foreach ($this->scrubbed["preferredMajors"] as &$preferredMajor) {
+                            $args[] = new Major((int)$preferredMajor);
+                            $functions[] = "addPreferredMajor";
+                        }
+                        $user = Controller::getLoggedInUser();
+                        if ($user->hasPermission(new Permission(Permission::PERMISSION_STUDENT))) {
+                            $student = Student::load($user->getEmail());
+                            if (isset($student)) {
+                                $success = true;
+                                $success = ($success and $student->removeAllPreferredMajors());
+                                for ($i = 0; $i < count($args); $i++) {
+                                    $success = ($success and call_user_func([$student, $functions[$i]], $args[$i]));
+                                }
+                                $success = ($success and $student->updateToDatabase());
+                                if ($success) {
+                                    Controller::setLoggedInUser($student);
+                                    $_SESSION["localNotifications"][] = "Educational information updated";
+                                } else {
+                                    Controller::setLoggedInUser(Student::load($originalUser));
+                                    $_SESSION["localErrors"][] = "Error: Unable to save changes";
+                                }
+                            } else {
+                                $_SESSION["localErrors"][] = "Error: Unable to query database for student information";
+                            }
+                        } else {
+                            $_SESSION["localErrors"][] = "Error: Logged-in user is not a student";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = $e;
+                    }
+                    break;
+                }
             /**
              * Required POST variables for this case:
              *     requestType : "sentResetEmail"
              *           email : string (email format)
              */
             case "sentResetEmail":
-                $email = $this->scrubbed["email"];
-                //check if user exists
-                $user = User::load($email);
-                if ($user == null) {
-                    $_SESSION["resetFail"] = true;
-                    $_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
+                {
+                    try {
+                        $email = $this->scrubbed["email"];
+                        //check if user exists
+                        $user = User::load($email);
+                        if ($user == null) {
+                            $_SESSION["resetFail"] = true;
+                            $_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
+                            break;
+                        }
+                        //create a DateTime representing 24 hours in the future
+                        $dateInterval = new DateInterval("P1D");
+                        $expiration = (new DateTime())->add($dateInterval);
+                        //Create a token representing a temporary link to reset password
+                        $token = new Token("resetPasswordLink", $expiration, $user);
+                        //send email to user
+                        $mailman = new Mailman();
+                        //create email body
+                        //create a link to password reset page with the token ID as a parameter
+                        $path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
+                        //create the body of the email
+                        $body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
+                        $body .= "<a href=\"{$path}\">Click Me!";
+                        //send email
+                        $success = $mailman->sendEmail($email, "MyCollege Password Reset", $body);
+                        $_SESSION["resetFail"] = !$success;
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = "Error: Unable to send password reset email";
+                    }
                     break;
                 }
-                //create a DateTime representing 24 hours in the future
-                try {
-                    $dateInterval = new DateInterval("P1D");
-                } catch (Exception $e) {
-                    return false;
-                }
-                $expiration = (new DateTime())->add($dateInterval);
-                //Create a token representing a temporary link to reset password
-                $token = new Token("resetPasswordLink", $expiration, $user);
-                //send email to user
-                $mailman = new Mailman();
-                //create email body
-                //create a link to password reset page with the token ID as a parameter
-                $path = "http://localhost/mycollege/pages/passwordreset/passwordreset.php?tokenID={$token->getTokenID()}";
-                //create the body of the email
-                $body = "Congrats on losing your password, here is your second chance don't screw it up this time.\n";
-                $body .= "<a href=\"{$path}\">Click Me!";
-                //send email
-                $success = $mailman->sendEmail($email, "MyCollege Password Reset", $body);
-                $_SESSION["resetFail"] = !$success;
-                break;
+            /**
+             * Required POST variables for this case:
+             *            password : string
+             *     confirmpassword : string
+             */
             case "resetPassword":
-                $args = [
-                    $this->scrubbed["password"],
-                    $this->scrubbed["confirmPassword"]
-                ];
-                $success = call_user_func_array("Authenticator::resetPassword", $args);
-                $_SESSION["resetPasswordFail"] = !$success;
+                {
+                    try {
+                        $args = [
+                            $this->scrubbed["password"],
+                            $this->scrubbed["confirmPassword"]
+                        ];
+                        $success = call_user_func_array("Authenticator::resetPassword", $args);
+                        if ($success) {
+                            $_SESSION["localNotifications"][] = "Contact information updated";
+                        } else {
+                            $_SESSION["localErrors"][] = "Error: Unable to reset password; passwords may not match or user may not exist";
+                        }
+                    } catch (Exception | Error $e) {
+                        $_SESSION["localErrors"][] = "Error: Unable to reset password";
+                    }
+                    break;
+                }
         }
         return true; //temporary return value
     }

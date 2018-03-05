@@ -38,7 +38,7 @@ if (!empty($_POST)) {
         <link rel="stylesheet" href="css/register.min.css" type="text/css">
     </head>
     <body>
-        <img class="bg-image" src="css/UniOfChi.jpg">
+        <img class="bg-image" src="css/IndianaUni.jpg">
         <div>
             <?php
             if (isset($registerFail)) {

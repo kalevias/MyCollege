@@ -16,6 +16,8 @@ $controller->processREQUEST();
         <script src="javascript/login.js"></script>
     </head>
     <body>
+    <img class="bg-image" src="css/IndianaUni.jpg">
+
         <?php
         include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/alerts/alerts.php";
         ?>

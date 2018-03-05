@@ -158,7 +158,7 @@ class Authenticator
     public static function resetPassword($email, $password, $confirmPassword): bool
     {
         //check if password matches
-        if ($password == $confirmPassword) {
+        if ($password === $confirmPassword) {
             $user = User::load($email);
             if ($user != null) {
                 //add the new password to the current user
@@ -170,7 +170,7 @@ class Authenticator
                 return false;
             }
         } else {
-			$_SESSION["localWarnings"][] = "Passwords do not match, check to make sure you have typed correctly or if Caps Lock is on.";
+			$_SESSION["localWarnings"][] = "Warning: Passwords do not match";
             return false;
         }
     }

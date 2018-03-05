@@ -11,6 +11,10 @@ $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 $controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION_STUDENT]));
+/**
+ * @var $student Student
+ */
+$student = Controller::getLoggedInUser();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -130,10 +134,6 @@ $controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION
                                             $majors = $dbc->query("select multiple", "SELECT pkmajorid, nmname FROM tblmajor WHERE 1 ORDER BY nmname ASC");
                                             //Could potentially instantiate a bunch of Major objects here, but with exception handling,
                                             //this slows the webpage down a _crazy_ amount (like by 3 seconds of load time; it's nuts, I know)
-                                            /**
-                                             * @var $student Student
-                                             */
-                                            $student = Controller::getLoggedInUser();
                                             $studentMajor = $student->getDesiredMajor()->getPkID();
                                             foreach ($majors as $major) {
                                                 if ($studentMajor === $major["pkmajorid"]) {
@@ -152,39 +152,30 @@ $controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION
                                 </div>
                             </div>
                             <h5 style="text-align: center;">Other preferred areas of study</h5>
-                            <?php
-                            $i = 1;
-                            foreach ($student->getPreferredMajors() as $preferredMajor) {
-                                ?>
-                                <div class="form-group">
-                                    <div>
-                                        <div class="input-group">
-                                            <div class="input-group-addon">
-                                                <i class="fa fa-book"></i>
-                                            </div>
-                                            <select id="preferredMajor<?php echo $i; ?>" class="chosen-ones">
-                                                <?php
-                                                $studentMajor = $preferredMajor->getPkID();
-                                                foreach ($majors as $major) {
-                                                    if ($studentMajor === $major["pkmajorid"]) {
-                                                        $selected = " selected";
-                                                        $savedMajor = $major["pkmajorid"];
-                                                    } else {
-                                                        $selected = "";
-                                                    }
-                                                    ?>
-                                                    <option value="<?php echo $major["pkmajorid"]; ?>"<?php echo $selected; ?>><?php echo $major["nmname"]; ?></option>
-                                                    <?php
+                            <div class="form-group">
+                                <div>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-book"></i>
+                                        </div>
+                                        <select id="preferredMajors" class="chosen-ones" multiple>
+                                            <?php
+                                            $preferredMajors = array_map(function($obj){ return $obj->getPkID(); },$student->getPreferredMajors());
+                                            foreach ($majors as $major) {
+                                                if (in_array($major["pkmajorid"],$preferredMajors)) {
+                                                    $selected = " selected";
+                                                } else {
+                                                    $selected = "";
                                                 }
                                                 ?>
-                                            </select>
-                                        </div>
+                                                <option value="<?php echo $major["pkmajorid"]; ?>"<?php echo $selected; ?>><?php echo $major["nmname"]; ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
                                 </div>
-                                <?php
-                                $i++;
-                            }
-                            ?>
+                            </div>
                             <div class="form-group">
                                 <div>
                                     <a href="#" class="btn btn-success" id="updateEduProfile">

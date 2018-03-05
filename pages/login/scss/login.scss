@@ -5,48 +5,71 @@
 }
 
 body {
-  background: #ecf1f4;
   font-family: sans-serif;
+}
+
+.bg-image {
+  //From https://stackoverflow.com/a/8981374
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+label {
+  color: #0f4869;
 }
 
 input {
   width: 100%;
-  background: none;
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid #fff;
   border-radius: 3px;
   padding: 6px 15px;
   box-sizing: border-box;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-size: 16px;
-  color: #005959;
-}
+  color: #fff;
 
-input[type="button"] {
-  background: #ffffff;
-  border: 0;
-  cursor: pointer;
-  color: #3e3d3d;
-}
+  &.chosen-search-input {
+    color: #000;
+  }
+  &[type="button"] {
+    background: #ffffff;
+    border: 0;
+    cursor: pointer;
+    color: #696868;
 
-input[type="button"]:hover {
-  background: #ffffff;
-  transition: .6s;
+    &:hover {
+      background: #ffffff;
+      transition: .6s;
+    }
+  }
+  &::placeholder {
+    color: #ffffff;
+  }
 }
-
-::placeholder {
-  color: #005959;
-}
-
 .rcorners2 {
-  border-radius: 25px;
-  border: 2px solid #436980;
-  padding: 40px;
-  width: 200px;
-  height: 250px;
+  color: #115569;
+
+  padding: 10px;
+  width: 320px;
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: -1;
 }
 
 
