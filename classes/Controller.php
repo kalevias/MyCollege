@@ -594,7 +594,8 @@ class Controller
                     try {
                         $success = Authenticator::logout();
                         if ($success) {
-                            header("Location: " . $this->getHomeDir());
+							//header("Location: " . "index.php");
+                        	header("Location: " . $this->getHomeDir() . "index.php");
                             $_SESSION["localNotifications"][] = "Logout successful";
                             unset($_SESSION["test"]); //You can even have this line here, and it'll still work! Crazy!
                             exit;
