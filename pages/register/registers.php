@@ -58,7 +58,6 @@ $controller->checkPermissions(!$controller->userHasAccess()); //checks to see if
             <input id="gradYear" type="number" min="1900" max="2100" placeholder="Graduation year" data-clevermask="0000">
             <input id="password" type="password" title="Password must contain at least 6 characters, including UPPER/lowercase and numbers" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" placeholder="Password">
             <input id="confirmPassword" type="password" placeholder="Confirm password">
-            <input type="hidden" value="registerStudent" name="requestType" id="requestType">
             <input id="registerButton" type="submit" value="Sign Up">
         </div>
     </body>

@@ -108,8 +108,8 @@ class Student extends User
             $result = [
                 $this->setACT($student["nact"]),
                 $this->setAP($student["hadap"]),
-                $this->setDesiredCollegeEntry((new DateTime())->setDate($student["dtentry"],0,0)),
-                $this->setDesiredCollegeLength(new DateInterval("P".$student["ncollegelength"]."Y")),
+                $this->setDesiredCollegeEntry((new DateTime())->setDate($student["dtentry"], 1, 1)),
+                $this->setDesiredCollegeLength(new DateInterval("P" . $student["ncollegelength"] . "Y")),
                 $this->setDesiredMajor(new Major($student["fkmajorid"])),
                 $this->setGPA($student["ngpa"]),
                 $this->setHouseholdIncome($student["nhouseincome"]),
@@ -119,9 +119,9 @@ class Student extends User
                 throw new Exception("Student->__construct2($identifier, $mode) - Unable to construct Student object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
             $this->removeAllPreferredMajors();
-            $this->addPreferredMajor(new Major($student["fkmajor1"]));
-            $this->addPreferredMajor(new Major($student["fkmajor2"]));
-            $this->addPreferredMajor(new Major($student["fkmajor3"]));
+            is_null($student["fkmajor1"]) ?: $this->addPreferredMajor(new Major($student["fkmajor1"]));
+            is_null($student["fkmajor2"]) ?: $this->addPreferredMajor(new Major($student["fkmajor2"]));
+            is_null($student["fkmajor3"]) ?: $this->addPreferredMajor(new Major($student["fkmajor3"]));
 
             $this->inDatabase = true;
             $this->synced = true;
@@ -187,43 +187,41 @@ class Student extends User
         //Check if current object is already syncronized to database
         if ($this->isSynced()) {
             return true;
+        } else if (!$this->isInDatabase()) {
+            return false;
         }
-        //open database connection
         $dbc = new DatabaseConnection();
+        $preferredMajors = $this->getPreferredMajors();
+        while (count($preferredMajors) < 3) {
+            $preferredMajors[] = null;
+        }
+        foreach ($preferredMajors as &$preferredMajor) {
+            if (gettype($preferredMajor) == "object") {
+                $preferredMajor = $preferredMajor->getPkID();
+            }
+        }
         $params = [
-            "ibfissiii",
+            "iidiiiiiiiii",
             $this->getACT(),
             $this->isAP(),
             $this->getGPA(),
             $this->getSAT(),
-            $this->getDesiredCollegeEntry(),
-            $this->getDesiredCollegeLength(),
-            $this->getDesiredMajor(),
+            ((int)$this->getDesiredCollegeEntry()->format("Y")),
+            $this->getDesiredCollegeLength()->y,
+            $this->getDesiredMajor()->getPkID(),
+            $preferredMajors[0],
+            $preferredMajors[1],
+            $preferredMajors[2],
             $this->getHouseholdIncome(),
             $this->getPkID()
         ];
-        $result = $dbc->query("update", "UPDATE tblEduProfile SET nACT=?, hadAP=?, nGPA=?, nSAT=?, 
-							  dtEntry=?, nCollegeLength=?, fkMajorID=?, nHouseIncome=?, WHERE fkuserid=?", $params);
+        $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
+							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
+							  nhouseincome=? WHERE fkuserid=?", $params);
         $this->inDatabase = $result;
         $this->synced = $result;
         return (bool)$result;
 
-    }
-
-    /**
-     * @param bool $AP
-     * @param int $ACT
-     * @param DateTime $desiredCollegeEntry
-     * @param DateInterval $desiredCollegeLength
-     * @param Major $desiredMajor
-     * @param float $GPA
-     * @param int $householdIncome
-     * @param int $SAT
-     */
-    public function __construct8(bool $AP, int $ACT, DateTime $desiredCollegeEntry, DateInterval $desiredCollegeLength, Major $desiredMajor, float $GPA, int $householdIncome, int $SAT)
-    {
-        //TODO: finish implementation of function.
-        //need to add a bunch of arguments so that the parent constructor can be called.
     }
 
     /**
