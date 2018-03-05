@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Feb 26, 2018 at 01:49 AM
--- Server version: 5.7.14
--- PHP Version: 7.1.4
+-- Host: 127.0.0.1:3306
+-- Generation Time: Mar 05, 2018 at 05:36 PM
+-- Server version: 5.7.19
+-- PHP Version: 7.1.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,8 +19,95 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `mycollege`
+-- Database: `1college`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblanswer`
+--
+
+DROP TABLE IF EXISTS `tblanswer`;
+CREATE TABLE IF NOT EXISTS `tblanswer` (
+  `pkanswerid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fkquestionid` int(10) UNSIGNED NOT NULL,
+  `txanswer` json NOT NULL,
+  PRIMARY KEY (`pkanswerid`),
+  KEY `fkquestionid` (`fkquestionid`)
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblanswer`
+--
+
+INSERT INTO `tblanswer` (`pkanswerid`, `fkquestionid`, `txanswer`) VALUES
+(1, 1, '\"Commute\"'),
+(2, 1, '\"Live On Campus\"'),
+(3, 2, '5'),
+(4, 2, '10'),
+(5, 2, '20'),
+(6, 2, '30'),
+(7, 2, '40'),
+(8, 2, '60'),
+(9, 2, '\"More than 60\"'),
+(10, 3, '\"On-Campus Dorm\"'),
+(11, 3, '\"On-Campus Apartment\"'),
+(12, 3, '\"Off-Campus\"'),
+(13, 4, '\"Roommates\"'),
+(14, 4, '\"Live by Myself\"'),
+(15, 5, '\"Academia\"'),
+(16, 5, '\"Athletics\"'),
+(17, 5, '\"Social Life\"'),
+(18, 6, '\"Yes\"'),
+(19, 6, '\"No\"'),
+(20, 7, '\"Yes\"'),
+(21, 7, '\"No\"'),
+(22, 8, '\"Yes\"'),
+(23, 8, '\"No\"'),
+(24, 9, '\"Yes\"'),
+(25, 9, '\"No\"'),
+(26, 10, '\"Yes\"'),
+(27, 10, '\"No\"'),
+(28, 11, '\"Urban\"'),
+(29, 11, '\"Suburban\"'),
+(30, 11, '\"Rural\"'),
+(31, 11, '\"Small Town\"'),
+(32, 12, '\"Private\"'),
+(33, 12, '\"Public\"'),
+(34, 13, '\"Small (<= 5000)\"'),
+(35, 13, '\"Medium (<= 15000)\"'),
+(36, 13, '\"Large (<= 30000)\"'),
+(37, 13, '\"Huge (>30000)\"'),
+(38, 14, '\"In-State\"'),
+(39, 14, '\"Out-Of-State\"'),
+(40, 15, '\"Yes\"'),
+(41, 15, '\"No\"'),
+(42, 16, '\"<=$10,000\"'),
+(43, 16, '\"<=$50,000\"'),
+(44, 16, '\"<=$100,000\"'),
+(45, 16, '\">100,000\"'),
+(46, 17, '\"Yes\"'),
+(47, 17, '\"No\"'),
+(48, 18, '\"Majority Men\"'),
+(49, 18, '\"Majority Women\"'),
+(50, 18, '\"Balanced\"'),
+(51, 19, '\"Air Force\"'),
+(52, 19, '\"Army\"'),
+(53, 19, '\"Navy\"'),
+(54, 19, '\"Marines\"'),
+(55, 19, '\"Coast Guard\"'),
+(56, 19, '\"Air National Guard\"'),
+(57, 19, '\"Army National Guard\"'),
+(58, 20, '\"Yes\"'),
+(59, 20, '\"No\"'),
+(60, 21, '\"Visual\"'),
+(61, 21, '\"Hearing/Auditory\"'),
+(62, 21, '\"Physical\"'),
+(63, 21, '\"Cognitive/Learning\"'),
+(64, 21, '\"Psychological\"'),
+(65, 21, '\"Invisible\"'),
+(66, 21, '\"Cancer/Chronic Illness\"');
 
 -- --------------------------------------------------------
 
@@ -470,6 +557,7 @@ CREATE TABLE IF NOT EXISTS `tbleduprofile` (
   `nhouseincome` int(10) UNSIGNED NOT NULL,
   `dtentry` year(4) NOT NULL,
   `ncollegelength` int(2) UNSIGNED NOT NULL,
+  `isgender` tinyint(1) UNSIGNED NOT NULL,
   PRIMARY KEY (`fkuserid`) USING BTREE,
   KEY `fkmajor1` (`fkmajor1`),
   KEY `fkmajor2` (`fkmajor2`),
@@ -483,8 +571,8 @@ CREATE TABLE IF NOT EXISTS `tbleduprofile` (
 -- Dumping data for table `tbleduprofile`
 --
 
-INSERT INTO `tbleduprofile` (`fkuserid`, `fkmajorid`, `fkmajor1`, `fkmajor2`, `fkmajor3`, `ngpa`, `nact`, `nsat`, `hadap`, `fkresumeid`, `fktranscriptid`, `nhouseincome`, `dtentry`, `ncollegelength`) VALUES
-(1, 2, 72, 79, 51, 3.34, 29, 1492, 1, NULL, NULL, 159000, 2020, 4);
+INSERT INTO `tbleduprofile` (`fkuserid`, `fkmajorid`, `fkmajor1`, `fkmajor2`, `fkmajor3`, `ngpa`, `nact`, `nsat`, `hadap`, `fkresumeid`, `fktranscriptid`, `nhouseincome`, `dtentry`, `ncollegelength`, `isgender`) VALUES
+(1, 2, 72, 79, 51, 3.34, 29, 1492, 1, NULL, NULL, 159000, 2020, 4, 0);
 
 -- --------------------------------------------------------
 
@@ -5190,6 +5278,33 @@ INSERT INTO `tblprovince` (`pkstateid`, `idiso`, `nmname`, `fkcountryid`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tblquestionorder`
+--
+
+DROP TABLE IF EXISTS `tblquestionorder`;
+CREATE TABLE IF NOT EXISTS `tblquestionorder` (
+  `fkquestionid` int(10) UNSIGNED NOT NULL,
+  `fkqparent` int(10) UNSIGNED NOT NULL,
+  `jsanswer` json DEFAULT NULL,
+  KEY `fkqparent` (`fkqparent`),
+  KEY `tblquestionorder_ibfk_2` (`fkquestionid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblquestionorder`
+--
+
+INSERT INTO `tblquestionorder` (`fkquestionid`, `fkqparent`, `jsanswer`) VALUES
+(2, 1, '\"Commute\"'),
+(4, 1, '\"Live On Campus\"'),
+(5, 7, NULL),
+(2, 14, '\"In-State\"'),
+(21, 20, '\"Yes\"'),
+(19, 15, '\"Yes\"');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tblquestions`
 --
 
@@ -5198,12 +5313,6 @@ CREATE TABLE IF NOT EXISTS `tblquestions` (
   `pkquestionid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `txquestion` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('number','multiple choice','freeform') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `txanswer1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `txanswer2` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `txanswer3` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `txanswer4` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `txanswer5` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `txanswer6` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`pkquestionid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -5211,51 +5320,28 @@ CREATE TABLE IF NOT EXISTS `tblquestions` (
 -- Dumping data for table `tblquestions`
 --
 
-INSERT INTO `tblquestions` (`pkquestionid`, `txquestion`, `entype`, `txanswer1`, `txanswer2`, `txanswer3`, `txanswer4`, `txanswer5`, `txanswer6`) VALUES
-(1, 'Would you rather commute or live on campus?', 'multiple choice', 'Commute', 'Live on Campus', NULL, NULL, NULL, NULL),
-(2, 'How long would you be willing to drive when commuting?', 'multiple choice', '5 minutes', '10 minutes', '20 minutes', '30 minutes', '40 minutes', '60+ minutes'),
-(3, 'Where would you like to live when going to college?', 'multiple choice', 'On-campus Dorm', 'On-campus Apartment', 'Off-campus Apartment', 'At my own House', 'Other', NULL),
-(4, 'Would you like to have roommates or live by yourself?', 'multiple choice', 'Roommates', 'Live By Myself', NULL, NULL, NULL, NULL),
-(5, 'How much would you be willing to spend on housing?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(6, 'What is the minimum amount of money you would accept from the school to stay on campus? ', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(7, 'What is the most important thing about housing?', 'multiple choice', 'Cost', 'Furnishing', 'Location', 'Roommates/Suitemates', NULL, NULL),
-(8, 'Would you like the option to choose your roommate?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(9, 'What would be your main focus in college?', 'multiple choice', 'Academia', 'Athletics', 'Social Life', 'Other', NULL, NULL),
-(10, 'What is the minimum amount of money you would accept from the a college for good grades?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(11, 'Are you interested in a fraternity or sorority?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(12, 'Please Clarify', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
-(13, 'Are you interested in playing sports, either as a club or on a team?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(14, 'Are you interested in playing in a college sports team for a scholarship?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(15, 'Are you interested in joining clubs?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(16, 'Would you like to join a sorority?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(17, 'Would you like to join a fraternity?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(18, 'What clubs are you looking for to join?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
-(19, 'How often would you like to meet up for a club?', 'multiple choice', 'Weekly', 'Biweekly', 'Monthly', 'Not Interested', NULL, NULL),
-(20, 'Would you consider to go study abroad if given the opportunity?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(21, 'What major are you interested in?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
-(22, 'What would be your top 3 majors you would consider?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
-(23, 'Would you consider going to a vocational or trade school?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(24, 'What Student resources would you like to use at college?', 'freeform', '', '', NULL, NULL, NULL, NULL),
-(25, 'What kind of area would you like your college to be located at?', 'multiple choice', 'Urban', 'Suburban', 'Rural', 'Small Town', NULL, NULL),
-(26, 'Would you like to go to a Private or Public college?', 'multiple choice', 'Private', 'Public', NULL, NULL, NULL, NULL),
-(27, 'What would be the maximum student population you would consider going to?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(28, 'What is the minimum student population you would consider going to?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(29, 'Is having 24 hour access to the on-campus library necessary?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(30, 'Should libraries be quiet, or available for group work and projects?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(31, 'Would you like to be able to walk into town from campus?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(32, 'How would you like to travel between classes?', 'multiple choice', 'Bike', 'Walk', 'Car', 'On-Campus Transport System', 'Public Transport System', 'Other'),
-(33, 'Will you have a car at college?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(34, 'Would you rather go to an in-state or out-of-state college', 'multiple choice', 'In-State', 'In State', 'Out-Of-State', NULL, NULL, NULL),
-(35, 'What is the minimum amount of money would would like to receive from financial aid?', 'number', NULL, NULL, NULL, NULL, NULL, NULL),
-(36, 'Would you like to have an on-campus job while at college?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(37, 'Are you a veteran of the Armed Forces of the United States?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(38, 'How much in student loans would you be comfortable with having paying off after graduation?', 'multiple choice', '<=$10,000', '<=$50,000', '<=$100,000', '>100,000', NULL, NULL),
-(39, 'What type of scholarship are you most interested in?', 'multiple choice', 'Academia', 'Athletics', 'Both', 'Neither', 'Other', NULL),
-(40, 'Do you want to go to a religious college?  ', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(41, 'What kind of college would you rather go to?', 'multiple choice', 'Co-ed', 'All-Men', 'All-Women', NULL, NULL, NULL),
-(42, 'As a US Veteran, what branch did you serve under?', 'freeform', NULL, NULL, NULL, NULL, NULL, NULL),
-(43, 'Do you have a disability?', 'multiple choice', 'Yes', 'No', NULL, NULL, NULL, NULL),
-(44, 'What type of disability do you have?', 'multiple choice', 'Visual/Auditory', 'Physical', 'Cognitive/Learning', 'Psychological', 'Invisible', 'Other');
+INSERT INTO `tblquestions` (`pkquestionid`, `txquestion`, `entype`) VALUES
+(1, 'Would you rather commute or live on campus?', 'multiple choice'),
+(2, 'How long would you be willing to drive in minutes when commuting?', 'multiple choice'),
+(3, 'Where would you like to live when going to college?', 'multiple choice'),
+(4, 'Would you like to have roommates or live by yourself?', 'multiple choice'),
+(5, 'What would be your main focus in college?', 'multiple choice'),
+(6, 'Are you interested in a fraternity or sorority?', 'multiple choice'),
+(7, 'Are you interested in playing sports, either as a club or on a team?', 'multiple choice'),
+(8, 'Are you interested in joining clubs?', 'multiple choice'),
+(9, 'Would you consider to go study abroad if given the opportunity?', 'multiple choice'),
+(10, 'Would you like to go to a vocational school?', 'multiple choice'),
+(11, 'What kind of area would you like your college to be located at?', 'multiple choice'),
+(12, 'Would you like to go to a Private or Public college?', 'multiple choice'),
+(13, 'How big of the school would you like to go to?', 'multiple choice'),
+(14, 'Would you rather go to an in-state or out-of-state college?', 'multiple choice'),
+(15, 'Are you a veteran of the Armed Forces of the United States?', 'multiple choice'),
+(16, 'How much in student loans would you be comfortable with having to pay off after graduation?', 'multiple choice'),
+(17, 'Do you want to go to a religious college?  ', 'multiple choice'),
+(18, 'What kind of college would you rather go to?', 'multiple choice'),
+(19, 'As a US Veteran, what branch did you serve under?', 'multiple choice'),
+(20, 'Do you have a disability?', 'multiple choice'),
+(21, 'What type of disability do you have?', 'multiple choice');
 
 -- --------------------------------------------------------
 
@@ -6246,9 +6332,38 @@ CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
 INSERT INTO `tbluserpermissions` (`fkpermissionid`, `fkuserid`) VALUES
 (1, 1);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblweightconversion`
+--
+
+DROP TABLE IF EXISTS `tblweightconversion`;
+CREATE TABLE IF NOT EXISTS `tblweightconversion` (
+  `nimportant` int(2) UNSIGNED NOT NULL,
+  `nweight` int(2) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblweightconversion`
+--
+
+INSERT INTO `tblweightconversion` (`nimportant`, `nweight`) VALUES
+(1, 1),
+(2, 2),
+(3, 4),
+(4, 8),
+(5, 16);
+
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `tblanswer`
+--
+ALTER TABLE `tblanswer`
+  ADD CONSTRAINT `tblanswer_ibfk_1` FOREIGN KEY (`fkquestionid`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblcollege`
@@ -6313,6 +6428,13 @@ ALTER TABLE `tblprofileanswers`
 --
 ALTER TABLE `tblprovince`
   ADD CONSTRAINT `tblprovince_ibfk_1` FOREIGN KEY (`fkcountryid`) REFERENCES `tblcountry` (`pkcountryid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblquestionorder`
+--
+ALTER TABLE `tblquestionorder`
+  ADD CONSTRAINT `tblquestionorder_ibfk_1` FOREIGN KEY (`fkqparent`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `tblquestionorder_ibfk_2` FOREIGN KEY (`fkquestionid`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbluser`
