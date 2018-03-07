@@ -111,13 +111,14 @@ class User extends DataBasedEntity
             $this->setPhone($phone),
             $this->setGradYear($gradYear),
             $this->updatePassword($password),
-            $this->setActive($active),
+            $this->setActive($active)
         ];
         if (in_array(false, $result, true)) {
             throw new Exception("User->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, ".$province->getISO().", $postalCode, $phone, $gradYear, $password, $active) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
         $this->permissions = [];
         $this->inDatabase = false;
+        $this->synced = false;
     }
 
     /**
