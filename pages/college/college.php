@@ -10,7 +10,7 @@ $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 //TODO: move this code into the controller class's processGET function
-if(isset($_GET["c"]) and is_numeric($_GET["c"])) {
+if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
     $college = new College($_GET["c"]);
 } else {
     $_SESSION["localErrors"][] = "Error: Unable to query for a college; please try again";
@@ -34,7 +34,8 @@ if(isset($_GET["c"]) and is_numeric($_GET["c"])) {
 
 <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
 <!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+     id="myOverlay"></div>
 
 <!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
 <div class="w3-main" style="margin-left:200px">
@@ -43,60 +44,59 @@ if(isset($_GET["c"]) and is_numeric($_GET["c"])) {
     <div class="borderStyle">
 
 
-    <div class="w3-row w3-padding-64">
+        <div class="w3-row w3-padding-64">
 
-        <div class="w3-twothird w3-container">
-            <h1 class="w3-text-teal"><?php echo $college->getName(); ?></h1>
+            <div class="w3-twothird w3-container">
+                <h1 class="w3-text-teal"><?php echo $college->getName(); ?></h1>
 
+            </div>
+            <table>
+
+                <tbody>
+                <tr>
+                    <td><i class="fa fa-globe fa-lg"></i> <?php echo $college->getProvince()->getName().", ". $college->getCity(); ?></td>
+                    <td>Type: <?php echo $college->getType(); ?></td>
+                    <td>Setting: <?php echo $college->getSetting(); ?></td>
+                </tr>
+                <tr>
+                    <td><i class="fas fa-male fa-lg"></i><?php echo (1-$college->getWomenRatio())*100; ?>
+                        <i class="fas fa-female fa-lg"></i><?php echo ($college->getWomenRatio())*100; ?>
+                    </td>
+                    <td>Number of Students: <?php echo $college->getStudentCount(); ?></td>
+                    <td><i class="far fa-money-bill-alt fa-lg"></i> In-State: $<?php echo $college->getTuitionIn(); ?><br>
+                        <i class="far fa-money-bill-alt fa-lg"></i> Out of State: $<?php echo $college->getTuitionOut(); ?>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Acceptance Rate: <?php echo ($college->getAcceptRate())*100 . "%"; ?></td>
+                    <td><i class="fas fa-first-aid fa-lg"></i>Average Finalcial Aid Package: <?php echo $college->getFinAid(); ?></td>
+                    <td>Number of Professors: <?php echo $college->getProfCount(); ?></td>
+
+                </tr>
+
+
+                </tbody>
+            </table>
+
+
+            <div class="w3-third w3-container">
+                <p class="w3-border w3-padding-large w3-padding-64 w3-center">Picture or logo of school</p>
+                <p>List of Sports</p>
+            </div>
         </div>
-        <table>
-
-            <tbody>
-            <tr>
-            <td><i class="fas fa-globe fa-lg"></i>Location of College</td>
-            <td>ENType</td>
-            <td>ENSetting</td>
-            </tr>
-            <tr>
-                <td><i class="fas fa-male fa-lg"></i>Male %<i class="fas fa-female fa-lg"></i>
-                    Female %</td>
-                <td>Number of Students</td>
-                <td><i class="far fa-money-bill-alt fa-lg"></i>Tuition Cost</td>
-
-            </tr>
-            <tr>
-                <td>Acceptance Rate</td>
-                <td><i class="fas fa-first-aid fa-lg"></i>AVG Financial Aid</td>
-                <td># Of Professors</td>
-
-            </tr>
-
-
-            </tbody>
-        </table>
-
-
-
-        <div class="w3-third w3-container">
-            <p class="w3-border w3-padding-large w3-padding-64 w3-center">Picture or logo of school</p>
-            <p>List of Sports</p>
-        </div>
-    </div>
 
     </div>
-
 
 
     <!-- END MAIN -->
 </div>
 
 
-
-
-
 <!-- Sidebar -->
 <nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
-    <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+    <a href="javascript:void(0)" onclick="w3_close()"
+       class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
         <i class="fa fa-remove"></i>
     </a>
     <h4 class="w3-bar-item"><b>Links to school website, etc</b></h4>
