@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Mar 05, 2018 at 09:34 PM
+-- Generation Time: Mar 07, 2018 at 07:11 PM
 -- Server version: 5.7.19
 -- PHP Version: 7.1.9
 
@@ -119,12 +119,11 @@ DROP TABLE IF EXISTS `tblcollege`;
 CREATE TABLE IF NOT EXISTS `tblcollege` (
   `pkcollegeid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nmcollege` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `entype` enum('2-year','4-year','vocational','online','Grad School') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `entype` enum('Public','Private') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txstreetaddress` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txcity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fkprovinceid` int(10) UNSIGNED NOT NULL,
   `nzip` int(5) UNSIGNED NOT NULL,
-  `txwebsite` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nphone` int(10) UNSIGNED DEFAULT NULL,
   `ninstate` int(7) UNSIGNED NOT NULL,
   `noutstate` int(7) UNSIGNED NOT NULL,
@@ -144,16 +143,16 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
 -- Dumping data for table `tblcollege`
 --
 
-INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nphone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
-(1, 'Wayne State', NULL, '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 0.56, NULL, NULL, 'Urban'),
-(2, 'Michigan State University', NULL, '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 0.51, 26, NULL, 'Suburban'),
-(3, 'Fordham University', NULL, '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 0.57, 29, NULL, 'Urban'),
-(4, 'Hocking College', NULL, '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, NULL, 4390, 8780, NULL, 1, 281, 4094, 0.51, NULL, NULL, 'Rural'),
-(5, 'Kettering University ', NULL, '1700 University Avenue ', 'Flint', 3656, 48504, NULL, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 0.18, NULL, NULL, 'Urban'),
-(6, 'King\'s College ', NULL, '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 0.48, NULL, NULL, 'Urban'),
-(7, 'Central Michigan University', NULL, '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 0.57, 23, NULL, 'Small Town'),
-(8, 'Eastern Michigan University', NULL, '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 0.59, NULL, NULL, 'Suburban'),
-(9, 'University of Michigan', NULL, '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 0.5, NULL, NULL, 'Urban');
+INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nphone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
+(1, 'Wayne State', 'Public', '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 0.56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', 'Public', '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, 14460, 39405, 13202, 0.65, NULL, 39090, 0.51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', 'Private', '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 0.57, 29, NULL, 'Urban'),
+(4, 'Hocking College', 'Public', '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, 4390, 8780, NULL, 1, 281, 4094, 0.51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', 'Private', '1700 University Avenue ', 'Flint', 3656, 48504, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 0.18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', 'Private', '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 0.48, NULL, NULL, 'Urban'),
+(7, 'Central Michigan University', 'Public', '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 0.57, 23, NULL, 'Small Town'),
+(8, 'Eastern Michigan University', 'Public', '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 0.59, NULL, NULL, 'Suburban'),
+(9, 'University of Michigan', 'Public', '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 0.5, NULL, NULL, 'Urban');
 
 -- --------------------------------------------------------
 
@@ -177,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `tblcollegecampus` (
   `hascounseling` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `hasreccenter` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`fkcollegeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblcollegecampus`
@@ -187,7 +186,11 @@ INSERT INTO `tblcollegecampus` (`fkcollegeid`, `haslibrary`, `hasdorm`, `hasapar
 (1, 1, 1, 1, 6308, 10106, 1, 1, 1, 1, 1, 1, 1),
 (3, 0, 1, 1, NULL, 17445, 1, 1, 1, 0, 0, 1, 1),
 (4, 1, 1, 0, NULL, 8560, 1, 1, 1, 0, 0, 1, 1),
-(5, 1, 1, 0, NULL, 7780, 1, 0, 1, 0, 1, 1, 1);
+(5, 1, 1, 0, NULL, 7780, 1, 0, 1, 0, 1, 1, 1),
+(6, 0, 1, 1, 6240, 12410, 1, 1, 1, 1, 0, 1, 1),
+(7, 1, 1, 1, 4868, 9736, 1, 1, 1, 1, 0, 1, 1),
+(8, 1, 1, 1, NULL, NULL, 1, 1, 1, 1, 1, 1, 1),
+(9, 1, 1, 0, NULL, 11198, 0, 0, 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -273,7 +276,30 @@ INSERT INTO `tblcollegesite` (`fkcollegeid`, `txsite`, `txlink`) VALUES
 (5, 'Main Page', 'https://www.kettering.edu/'),
 (5, 'Residence Life', 'https://www.kettering.edu/undergraduate-admissions/campus-life/reslife'),
 (5, 'Tuition ', 'https://www.kettering.edu/undergraduate-admissions/affordability/finaid-cost-tuition'),
-(5, 'Financial Ail', 'https://www.kettering.edu/undergraduate-admissions/affordability');
+(5, 'Financial Ail', 'https://www.kettering.edu/undergraduate-admissions/affordability'),
+(6, 'Main Page', 'https://www.kings.edu/'),
+(6, 'Admission', 'https://www.kings.edu/admissions'),
+(6, 'Financial Aid', 'https://www.kings.edu/admissions/financial_aid'),
+(6, 'Off Campus Housing', 'https://www.kings.edu/aboutkings/lodging-and-transportation'),
+(6, 'Housing', 'https://www.kings.edu/life_at_kings/campus_living'),
+(6, 'Dining', 'https://www.dineoncampus.com/kings'),
+(7, 'Main Page', 'https://www.cmich.edu/Pages/default.aspx'),
+(7, 'Housing', 'https://www.cmich.edu/ess/ResLife/Pages/default.aspx'),
+(7, 'Financial Aid', 'https://www.cmich.edu/ess/OSFA/Pages/default.aspx'),
+(7, 'Library', 'https://www.cmich.edu/library/Pages/default.aspx'),
+(8, 'Main Page', 'http://www.emich.edu/'),
+(8, 'Housing', 'http://www.emich.edu/residencelife/index.php'),
+(8, 'Housing Cost', 'http://www.emich.edu/residencelife/campusliving/rates.php'),
+(8, 'Roommate', 'http://www.emich.edu/residencelife/applications/fy_roommategroups.php'),
+(8, 'Library', 'https://www.emich.edu/library/'),
+(8, 'Rec Center', 'https://www.emich.edu/recim/'),
+(9, 'Main Page', 'https://www.umich.edu/'),
+(9, 'Student Clubs', 'https://maizepages.umich.edu/'),
+(9, 'Housing', 'http://housing.umich.edu/options'),
+(9, 'Dining', 'https://dining.umich.edu/'),
+(9, 'Off-Campus Housing', 'https://offcampushousing.umich.edu/'),
+(9, 'Library', 'https://www.lib.umich.edu/'),
+(9, 'Rec Center', 'https://recsports.umich.edu/facility/ccrb/');
 
 -- --------------------------------------------------------
 
@@ -680,13 +706,14 @@ CREATE TABLE IF NOT EXISTS `tblfile` (
 
 DROP TABLE IF EXISTS `tblfinalcialaid`;
 CREATE TABLE IF NOT EXISTS `tblfinalcialaid` (
-  `fkcollegeid` int(10) NOT NULL,
-  `naverage` int(7) DEFAULT NULL,
-  `navefresh` int(7) DEFAULT NULL,
-  `naveinternational` int(7) DEFAULT NULL,
-  `nloan` int(7) DEFAULT NULL,
-  `ngrant` int(7) DEFAULT NULL,
-  `naveawarded` int(7) DEFAULT NULL
+  `fkcollegeid` int(10) UNSIGNED NOT NULL,
+  `naverage` int(7) UNSIGNED DEFAULT NULL,
+  `navefresh` int(7) UNSIGNED DEFAULT NULL,
+  `naveinternational` int(7) UNSIGNED DEFAULT NULL,
+  `nloan` int(7) UNSIGNED DEFAULT NULL,
+  `ngrant` int(7) UNSIGNED DEFAULT NULL,
+  `naveawarded` int(7) UNSIGNED DEFAULT NULL,
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -696,7 +723,11 @@ CREATE TABLE IF NOT EXISTS `tblfinalcialaid` (
 INSERT INTO `tblfinalcialaid` (`fkcollegeid`, `naverage`, `navefresh`, `naveinternational`, `nloan`, `ngrant`, `naveawarded`) VALUES
 (1, 11110, 13659, 9430, 4291, 5273, 7032),
 (3, 33566, 34004, 31704, 6396, 15724, 25493),
-(5, 21047, 21687, 6203, 4336, 13804, 16951);
+(5, 21047, 21687, 6203, 4336, 13804, 16951),
+(6, 24694, 25853, 12334, 4760, 14708, 19407),
+(7, 13708, 13990, 5979, 7824, 4908, 6661),
+(8, 8785, 2068, 18693, 6756, 5427, 5423),
+(9, 24323, 24025, NULL, 5401, 7442, 17673);
 
 -- --------------------------------------------------------
 
@@ -1497,7 +1528,7 @@ CREATE TABLE IF NOT EXISTS `tblprofileanswers` (
   `txanswer` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `boolanswer` tinyint(1) UNSIGNED NOT NULL,
   `nanswer` int(10) UNSIGNED DEFAULT NULL,
-  `enimportant` enum('Irrelavent','Less','Average','Very') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Irrelavent',
+  `nimportant` int(2) UNSIGNED NOT NULL,
   PRIMARY KEY (`fkuserid`,`fkquestionid`),
   KEY `fkuserid` (`fkuserid`) USING BTREE,
   KEY `fkquestionid` (`fkquestionid`)
@@ -5439,7 +5470,7 @@ CREATE TABLE IF NOT EXISTS `tblquestions` (
   `txquestion` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('number','multiple choice','freeform') COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`pkquestionid`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tblquestions`
@@ -6396,13 +6427,14 @@ INSERT INTO `tblsports` (`pksportsid`, `nmsport`) VALUES
 DROP TABLE IF EXISTS `tblstudentlife`;
 CREATE TABLE IF NOT EXISTS `tblstudentlife` (
   `fkcollegeid` int(10) UNSIGNED NOT NULL,
-  `hasgreek` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `hasnewspaper` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `hasdrama` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `hasradio` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `hastv` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `hasband` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-  `haschoral` tinyint(1) UNSIGNED NOT NULL DEFAULT '0'
+  `hasgreek` tinyint(1) UNSIGNED NOT NULL,
+  `hasnewspaper` tinyint(1) UNSIGNED NOT NULL,
+  `hasdrama` tinyint(1) UNSIGNED NOT NULL,
+  `hasradio` tinyint(1) UNSIGNED NOT NULL,
+  `hastv` tinyint(1) UNSIGNED NOT NULL,
+  `hasband` tinyint(1) UNSIGNED NOT NULL,
+  `haschoral` tinyint(1) UNSIGNED NOT NULL,
+  KEY `fkcollegeid` (`fkcollegeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -6412,7 +6444,12 @@ CREATE TABLE IF NOT EXISTS `tblstudentlife` (
 INSERT INTO `tblstudentlife` (`fkcollegeid`, `hasgreek`, `hasnewspaper`, `hasdrama`, `hasradio`, `hastv`, `hasband`, `haschoral`) VALUES
 (1, 1, 1, 1, 1, 0, 1, 1),
 (3, 0, 1, 1, 1, 1, 1, 1),
-(5, 1, 1, 0, 1, 0, 0, 1);
+(5, 1, 1, 0, 1, 0, 0, 1),
+(4, 0, 0, 1, 0, 0, 0, 1),
+(6, 0, 1, 1, 1, 0, 0, 1),
+(7, 1, 1, 1, 1, 1, 1, 1),
+(8, 1, 1, 1, 1, 1, 1, 1),
+(9, 1, 1, 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -6484,29 +6521,6 @@ CREATE TABLE IF NOT EXISTS `tbluserpermissions` (
 INSERT INTO `tbluserpermissions` (`fkpermissionid`, `fkuserid`) VALUES
 (1, 1);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `tblweightconversion`
---
-
-DROP TABLE IF EXISTS `tblweightconversion`;
-CREATE TABLE IF NOT EXISTS `tblweightconversion` (
-  `nimportant` int(2) UNSIGNED NOT NULL,
-  `nweight` int(2) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `tblweightconversion`
---
-
-INSERT INTO `tblweightconversion` (`nimportant`, `nweight`) VALUES
-(1, 1),
-(2, 2),
-(3, 4),
-(4, 8),
-(5, 16);
-
 --
 -- Constraints for dumped tables
 --
@@ -6575,6 +6589,12 @@ ALTER TABLE `tbleduprofile`
   ADD CONSTRAINT `tbleduprofile_ibfk_7` FOREIGN KEY (`fkuserid`) REFERENCES `tbluser` (`pkuserid`) ON UPDATE CASCADE;
 
 --
+-- Constraints for table `tblfinalcialaid`
+--
+ALTER TABLE `tblfinalcialaid`
+  ADD CONSTRAINT `tblfinalcialaid_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `tblmajorcollege`
 --
 ALTER TABLE `tblmajorcollege`
@@ -6606,6 +6626,12 @@ ALTER TABLE `tblprovince`
 ALTER TABLE `tblquestionorder`
   ADD CONSTRAINT `tblquestionorder_ibfk_1` FOREIGN KEY (`fkqparent`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE,
   ADD CONSTRAINT `tblquestionorder_ibfk_2` FOREIGN KEY (`fkquestionid`) REFERENCES `tblquestions` (`pkquestionid`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tblstudentlife`
+--
+ALTER TABLE `tblstudentlife`
+  ADD CONSTRAINT `tblstudentlife_ibfk_1` FOREIGN KEY (`fkcollegeid`) REFERENCES `tblcollege` (`pkcollegeid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbluser`
