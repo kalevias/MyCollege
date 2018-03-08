@@ -59,8 +59,8 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                     <td>Setting: <?php echo $college->getSetting(); ?></td>
                 </tr>
                 <tr>
-                    <td><i class="fas fa-male fa-lg"></i><?php echo (1-$college->getWomenRatio())*100; ?>
-                        <i class="fas fa-female fa-lg"></i><?php echo ($college->getWomenRatio())*100; ?>
+                    <td><i class="fas fa-male fa-lg"></i><?php echo (1-$college->getWomenRatio())*100 . "%"; ?>
+                        <i class="fas fa-female fa-lg"></i><?php echo ($college->getWomenRatio())*100 . "%"; ?>
                     </td>
                     <td>Number of Students: <?php echo $college->getStudentCount(); ?></td>
                     <td><i class="far fa-money-bill-alt fa-lg"></i> In-State: $<?php echo $college->getTuitionIn(); ?><br>
