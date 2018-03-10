@@ -5,26 +5,24 @@ html, body, h1, h2, h3, h4, h5, h6 {
 .w3-sidebar {
   z-index: 3;
   width: 250px;
-  top: 43px;
+  padding-top: 43px;
   bottom: 0;
   height: inherit;
 }
 
-
-
-.borderStyle{
-  background-color:#ffffff;
+#main {
+  background-color: #ffffff;
   opacity: .9;
-  width: 700px !important;
-
-
+  min-width: 700px;
+  width: 50%;
+  margin-left:200px;
 }
 
 #bg {
   position: fixed;
   top: 0;
   left: 0;
-z-index: -1;
+  z-index: -1;
   opacity: .3;
   filter: blur(2px);
   /* Preserve aspet ratio */
@@ -33,23 +31,23 @@ z-index: -1;
 }
 
 table {
-  font-family: 'Arial';
-  margin:15px 45px 15px 15px;
+  font-family: 'Arial', sans-serif;
+  width: 90%;
+  margin: 0 auto;
   border-collapse: collapse;
   border: 1px solid #eee;
   border-top: 2px solid #00cccc;
   border-bottom: 2px solid #00cccc;
-  box-shadow: 0px 0px 20px rgba(0,0,0,0.10),
-  0px 10px 20px rgba(0,0,0,0.05),
-  0px 20px 20px rgba(0,0,0,0.05),
-  0px 30px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.10),
+  0 10px 20px rgba(0, 0, 0, 0.05),
+  0 20px 20px rgba(0, 0, 0, 0.05),
+  0 30px 20px rgba(0, 0, 0, 0.05);
   tr {
-    &:nth-child(odd){
-background: #f9f9f9;
+    &:nth-child(odd) {
+      background: #f9f9f9;
     }
     &:hover {
       background: #f4f4f4;
-
       td {
         color: #555;
       }
@@ -65,9 +63,15 @@ background: #f9f9f9;
     background: #00cccc;
     color: #fff;
     text-transform: uppercase;
+    text-align: center;
     font-size: 12px;
     &.last {
       border-right: none;
+    }
+  }
+  &.table-condensed {
+    th, td {
+      padding: 4px 12px;
     }
   }
 }

@@ -13,11 +13,8 @@ class College extends DataBasedEntity
     const SETTING_SMALL_TOWN = "Small Town";
     const SETTING_SUBURBAN = "Suburban";
     const SETTING_URBAN = "Urban";
-    const TYPE_2YEAR = "2-year";
-    const TYPE_4YEAR = "4-year";
-    const TYPE_GRAD = "Grad School";
-    const TYPE_ONLINE = "online";
-    const TYPE_VOCATIONAL = "vocational";
+    const TYPE_PRIVATE = "Private";
+    const TYPE_PUBLIC = "Public";
     /**
      * The average rate of student acceptance at the college
      * @var float
@@ -74,6 +71,10 @@ class College extends DataBasedEntity
      */
     private $setting;
     /**
+     * @var CollegeSport[]
+     */
+    private $sports;
+    /**
      * @var string
      */
     private $streetAddress;
@@ -98,9 +99,9 @@ class College extends DataBasedEntity
      */
     private $type;
     /**
-     * @var string
+     * @var CollegeWebsite[]
      */
-    private $website;
+    private $websites;
     /**
      * @var float
      */
@@ -125,7 +126,6 @@ class College extends DataBasedEntity
                 $this->setCity($college["txcity"]),
                 $this->setProvince(new Province($college["fkprovinceid"], Province::MODE_DbID)),
                 $this->setPostalCode($college["nzip"]),
-                $this->setWebsite($college["txwebsite"]),
                 $this->setPhone($college["nphone"]),//must occur after setProvince
                 $this->setTuitionIn($college["ninstate"]),
                 $this->setTuitionOut($college["noutstate"]),
@@ -138,17 +138,33 @@ class College extends DataBasedEntity
                 $this->setSAT($college["nsat"]),
                 $this->setSetting($college["ensetting"])
             ];
-            if (in_array(false, $result, true)) {
-                throw new Exception("College->__construct1($PkID) - Unable to construct College object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
-            }
             $this->inDatabase = true;
             $this->removeAllMajors();
-            $params = ["i", $college["pkcollegeid"]];
+            $params = ["i", $this->getPkID()];
             $majors = $dbc->query("select multiple", "SELECT `fkmajorid` FROM `tblmajorcollege` WHERE `fkcollegeid` = ?", $params);
             if ($majors) {
                 foreach ($majors as $major) {
-                    $this->addMajor(new CollegeMajor($major["fkmajorid"], $college["pkcollegeid"]));
+                    $result[] = $this->addMajor(new CollegeMajor($major["fkmajorid"], $college["pkcollegeid"]));
                 }
+            }
+            $this->removeAllWebsites();
+            $params = ["i", $this->getPkID()];
+            $websites = $dbc->query("select multiple", "SELECT `txsite` FROM `tblcollegesite` WHERE `fkcollegeid` = ?", $params);
+            if ($websites) {
+                foreach ($websites as $website) {
+                    $result[] = $this->addWebsite(new CollegeWebsite($this, $website["txsite"]));
+                }
+            }
+            $this->removeAllSports();
+            $params = ["i", $this->getPkID()];
+            $sports = $dbc->query("select multiple", "SELECT * FROM `tblcollegesports` WHERE `fkcollegeid` = ?", $params);
+            if ($sports) {
+                foreach ($sports as $sport) {
+                    $result[] = $this->addSport(new CollegeSport($sport["fksportsid"], $this, $sport["iswomen"]));
+                }
+            }
+            if (in_array(false, $result, true)) {
+                throw new Exception("College->__construct1($PkID) - Unable to construct College object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
             $this->synced = true;
         } else {
@@ -220,6 +236,33 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @param CollegeSport $sport
+     * @return bool|int
+     */
+    public function addSport(CollegeSport $sport) {
+        if (in_array($sport, $this->getSports())) {
+            return false;
+        } else {
+            $this->synced = false;
+            return array_push($this->sports, $sport);
+        }
+    }
+
+    /**
+     * @param CollegeWebsite $website
+     * @return bool
+     */
+    public function addWebsite(CollegeWebsite $website): bool
+    {
+        if (in_array($website, $this->getWebsites())) {
+            return false;
+        } else {
+            $this->synced = false;
+            return array_push($this->websites, $website);
+        }
+    }
+
+    /**
      * @return int|null
      */
     public function getACT()
@@ -280,7 +323,6 @@ class College extends DataBasedEntity
      */
     public function getPhone()
     {
-        //TODO: get the country code based on provinceID
         return $this->phone;
     }
 
@@ -325,6 +367,13 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @return CollegeSport[]
+     */
+    public function getSports() {
+        return $this->sports;
+    }
+
+    /**
      * @return string|null
      */
     public function getStreetAddress()
@@ -365,11 +414,11 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @return string|null
+     * @return CollegeWebsite[]
      */
-    public function getWebsite()
+    public function getWebsites()
     {
-        return $this->website;
+        return $this->websites;
     }
 
     /**
@@ -386,6 +435,24 @@ class College extends DataBasedEntity
     public function removeAllMajors(): bool
     {
         $this->syncHandler($this->majors, $this->getMajors(), []);
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function removeAllSports(): bool
+    {
+        $this->syncHandler($this->sports, $this->getSports(), []);
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function removeAllWebsites(): bool
+    {
+        $this->syncHandler($this->websites, $this->getWebsites(), []);
         return true;
     }
 
@@ -448,14 +515,13 @@ class College extends DataBasedEntity
         $dbc = new DatabaseConnection();
         if ($this->isInDatabase()) {
             $params = [
-                "ssssissiiiidiidiisi",
+                "ssssisiiiidiidiisi",
                 $this->getName(),
                 $this->getType(),
                 $this->getStreetAddress(),
                 $this->getCity(),
                 $this->getProvince()->getPkID(),
                 $this->getPostalCode(),
-                $this->getWebsite(),
                 $this->getPhone(),
                 $this->getTuitionIn(),
                 $this->getTuitionOut(),
@@ -471,7 +537,7 @@ class College extends DataBasedEntity
             ];
             $result = $dbc->query("update", "UPDATE `tblcollege` SET 
                                   `nmcollege`=?,`entype`=?,`txstreetaddress`=?,`txcity`=?,`fkprovinceid`=?,`nzip`=?,
-                                  `txwebsite`=?,`nphone`=?,`ninstate`=?,`noutstate`=?,`nfinancialave`=?,`nacceptrate`=?,
+                                  `nphone`=?,`ninstate`=?,`noutstate`=?,`nfinancialave`=?,`nacceptrate`=?,
                                   `nprof`=?,`nsize`=?,`nwomenratio`=?,`nact`=?,`nsat`=?,`ensetting`=?
                                   WHERE pkcollegeid = ?", $params);
 
@@ -490,17 +556,46 @@ class College extends DataBasedEntity
                 ];
                 $result = ($result and $dbc->query("insert", "INSERT INTO `tblmajorcollege` (`fkmajorid`,`fkcollegeid`,isassociate,isbachelor,ismaster,isdoctoral) VALUES (?,?,?,?,?,?)", $params));
             }
+
+            $params = ["i", $this->getPkID()];
+            $result = ($result and $dbc->query("delete", "DELETE FROM `tblcollegesports` WHERE `fkcollegeid`=?", $params));
+
+            foreach ($this->getSports() as $sport) {
+                $params = [
+                    "iiiiii",
+                    $sport->getPkID(),
+                    $this->getPkID(),
+                    $sport->isWomen(),
+                    $sport->isTeam(),
+                    $sport->isClub(),
+                    $sport->isScholarship()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblcollegesports` (`fksportsid`,`fkcollegeid`,iswomen,isteam,isclub,isscholarship) VALUES (?,?,?,?,?,?)", $params));
+            }
+
+            $params = ["i", $this->getPkID()];
+            $result = ($result and $dbc->query("delete", "DELETE FROM `tblcollegesite` WHERE `fkcollegeid`=?", $params));
+
+            foreach ($this->getWebsites() as $website) {
+                $params = [
+                    "iss",
+                    $this->getPkID(),
+                    $website->getName(),
+                    $website->getURL()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblcollegesite` (`fkcollegeid`,txsite,txlink) VALUES (?,?,?)", $params));
+            }
+
             $this->synced = $result;
         } else {
             $params = [
-                "ssssissiiiidiidiis",
+                "ssssisiiiidiidiis",
                 $this->getName(),
                 $this->getType(),
                 $this->getStreetAddress(),
                 $this->getCity(),
                 $this->getProvince()->getPkID(),
                 $this->getPostalCode(),
-                $this->getWebsite(),
                 $this->getPhone(),
                 $this->getTuitionIn(),
                 $this->getTuitionOut(),
@@ -514,7 +609,7 @@ class College extends DataBasedEntity
                 $this->getSetting()
             ];
             $result = $dbc->query("insert", "INSERT INTO `tblcollege`(`pkcollegeid`, `nmcollege`, `entype`, 
-                                          `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `txwebsite`, `nphone`, 
+                                          `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nphone`, 
                                           `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, 
                                           `nwomenratio`, `nact`, `nsat`, `ensetting`)
                                           VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
@@ -534,6 +629,27 @@ class College extends DataBasedEntity
                 ];
                 $result = ($result and $dbc->query("insert", "INSERT INTO `tblmajorcollege` (`fkmajorid`,`fkcollegeid`,isassociate,isbachelor,ismaster,isdoctoral) VALUES (?,?,?,?,?,?)", $params));
             }
+            foreach ($this->getSports() as $sport) {
+                $params = [
+                    "iiiiii",
+                    $sport->getPkID(),
+                    $this->getPkID(),
+                    $sport->isWomen(),
+                    $sport->isTeam(),
+                    $sport->isClub(),
+                    $sport->isScholarship()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblcollegesports` (`fksportsid`,`fkcollegeid`,iswomen,isteam,isclub,isscholarship) VALUES (?,?,?,?,?,?)", $params));
+            }
+            foreach ($this->getWebsites() as $website) {
+                $params = [
+                    "iss",
+                    $this->getPkID(),
+                    $website->getName(),
+                    $website->getURL()
+                ];
+                $result = ($result and $dbc->query("insert", "INSERT INTO `tblcollegesite` (`fkcollegeid`,txsite,txlink) VALUES (?,?,?)", $params));
+            }
 
             $this->inDatabase = $result;
             $this->synced = $result;
@@ -548,7 +664,7 @@ class College extends DataBasedEntity
      */
     public function setACT($act): bool
     {
-        if (is_null($act) or($act <= 36 and $act >= 1)) {
+        if (is_null($act) or ($act <= 36 and $act >= 1)) {
             $this->syncHandler($this->act, $this->getACT(), $act);
             return true;
         }
@@ -579,12 +695,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param $finAid
+     * @param int|null $finAid
      * @return bool
      */
-    public function setFinAid(int $finAid): bool
+    public function setFinAid($finAid): bool
     {
-        if ($finAid >= 0) {
+        if (is_null($finAid) or $finAid >= 0) {
             $this->syncHandler($this->finAid, $this->getFinAid(), $finAid);
             return true;
         }
@@ -592,7 +708,7 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool
      */
     public function setName(string $name): bool
@@ -607,7 +723,7 @@ class College extends DataBasedEntity
      */
     public function setPhone($phone): bool
     {
-        if(is_null($phone)) {
+        if (is_null($phone)) {
             $this->syncHandler($this->phone, $this->getPhone(), $phone);
             return true;
         }
@@ -637,12 +753,12 @@ class College extends DataBasedEntity
     }
 
     /**
-     * @param int $profCount
+     * @param int|null $profCount
      * @return bool
      */
-    public function setProfCount(int $profCount): bool
+    public function setProfCount($profCount): bool
     {
-        if ($profCount >= 1) {
+        if (is_null($profCount) or $profCount >= 1) {
             $this->syncHandler($this->profCount, $this->getProfCount(), $profCount);
             return true;
         }
@@ -747,11 +863,8 @@ class College extends DataBasedEntity
     public function setType($type): bool
     {
         switch ($type) {
-            case self::TYPE_2YEAR:
-            case self::TYPE_4YEAR:
-            case self::TYPE_GRAD:
-            case self::TYPE_ONLINE:
-            case self::TYPE_VOCATIONAL:
+            case self::TYPE_PRIVATE:
+            case self::TYPE_PUBLIC:
             case null:
                 $this->syncHandler($this->type, $this->getType(), $type);
                 return true;
@@ -759,19 +872,6 @@ class College extends DataBasedEntity
             default:
                 return false;
         }
-    }
-
-    /**
-     * @param string|null $website
-     * @return bool
-     */
-    public function setWebsite($website): bool
-    {
-        if (is_null($website) or filter_var($website, FILTER_VALIDATE_URL) === true) {
-            $this->syncHandler($this->website, $this->getWebsite(), $website);
-            return true;
-        }
-        return false;
     }
 
     /**

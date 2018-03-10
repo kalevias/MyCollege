@@ -36,21 +36,26 @@ class CollegeSport extends Sport
     {
         parent::__construct($pkID);
         $dbc = new DatabaseConnection();
-        $params = ["iii", $pkID, $college->getPkID(), $women];
-        $sport = $dbc->query("select", "SELECT * FROM tblcollegesports WHERE fksportsid = ? AND fkcollegeid = ? AND iswomen=?", $params);
-        if ($sport) {
-            $result = [
-                $this->setWomen($women),
-                $this->setTeam($sport["isteam"]),
-                $this->setClub($sport["isclub"]),
-                $this->setScholarship($sport["isscholarship"])
-            ];
-            if (in_array(false, $result, true)) {
-                throw new Exception("CollegeSport->__construct($pkID,".$college->getName()."$women) - Unable to construct CollegeSport object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+        if($college->isInDatabase()) {
+            $params = ["iii", $pkID, $college->getPkID(), $women];
+            $sport = $dbc->query("select", "SELECT * FROM tblcollegesports WHERE fksportsid = ? AND fkcollegeid = ? AND iswomen=?", $params);
+            if ($sport) {
+                $result = [
+                    $this->setWomen($women),
+                    $this->setTeam($sport["isteam"]),
+                    $this->setClub($sport["isclub"]),
+                    $this->setScholarship($sport["isscholarship"])
+                ];
+                if (in_array(false, $result, true)) {
+                    throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) - Unable to construct CollegeSport object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+                }
+            } else {
+                throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) - CollegeSport not found");
             }
         } else {
-            throw new Exception("CollegeSport->__construct($pkID,".$college->getName()."$women) - CollegeSport not found");
+            throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) -  College not stored in database; unable to query for sport");
         }
+
     }
 
     /**
