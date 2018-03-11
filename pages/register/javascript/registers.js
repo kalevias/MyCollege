@@ -49,7 +49,7 @@ $(document).on("click", "#registerButton", function () {
         streetAddress: $("#streetAddress").val(),
         city: $("#city").val(),
         province: $("#province").val(),
-        postalCode: $("#postalCode"),
+        postalCode: $("#postalCode").val(),
         phoneNumber: $("#phoneNumber").data("clevermaskout"),
         gradYear: $("#gradYear").data("clevermaskout"),
         password: $("#password").val(),

@@ -550,9 +550,9 @@ class Controller
                         "dist" => $dist,
                         "match" => isset($this->scrubbed["m"]) ? ($this->scrubbed["m"] === "y") : false
                     ];
-                    if($input["match"]) {
+                    if ($input["match"]) {
                         $colleges = $this->dbc->query("select multiple", "SELECT pkcollegeid FROM tblcollege");
-                        foreach($colleges as $college) {
+                        foreach ($colleges as $college) {
                             $college = new College($college["pkcollegeid"]);
                             $college->updateRating(Controller::getLoggedInUser());
                         }
@@ -572,7 +572,11 @@ class Controller
                     if ($schoolIDs) {
                         foreach ($schoolIDs as $schoolID) {
                             $college = new College($schoolID["pkcollegeid"]);
-                            $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
+                            if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                                $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
+                            } else {
+                                $schools[] = [$college, 0];
+                            }
                         }
                     }
                     $this->setLastGETRequest($input, $schools);

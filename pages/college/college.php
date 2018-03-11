@@ -45,10 +45,10 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                         <tbody>
                         <tr>
                             <td>
-                                <i class="fa fa-globe fa-lg"></i> <?php echo $college->getProvince()->getName() . ", " . $college->getCity(); ?>
+                                <i class="fa fa-globe fa-lg"></i> <?php echo $college->getCity() . ", " . $college->getProvince()->getName(); ?>
                             </td>
-                            <td>Type: <?php echo $college->getType(); ?></td>
-                            <td>Setting: <?php echo $college->getSetting(); ?></td>
+                            <td><?php echo $college->getType(); ?></td>
+                            <td><?php echo $college->getSetting(); ?></td>
                         </tr>
                         <tr>
                             <td>
@@ -64,8 +64,8 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                         </tr>
                         <tr>
                             <td>Acceptance Rate: <?php echo ($college->getAcceptRate()) * 100 . "%"; ?></td>
-                            <td><i class="fa fa-medkit fa-lg"></i>Mean Financial
-                                Aid: <?php echo $college->getFinAid(); ?></td>
+                            <td><i class="fa fa-medkit fa-lg"></i>
+                                Mean Financial Aid: $<?php echo $college->getFinAid(); ?></td>
                             <td>Professors: <?php echo $college->getProfCount(); ?></td>
                         </tr>
                         </tbody>
