@@ -21,7 +21,7 @@ define("SECURE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/../secure/");
  */
 class AutoLoader
 {
-    private const PROJECT_DIR = "mycollege" . DIRECTORY_SEPARATOR;
+    private const PROJECT_DIR = "mycollege" . "/";
 
     protected static $paths = [
         CLASSES_DIR,
@@ -55,4 +55,5 @@ class AutoLoader
 
 spl_autoload_register(array("AutoLoader", "load"));
 
-require $_SERVER["DOCUMENT_ROOT"] . DIRECTORY_SEPARATOR . AutoLoader::PROJECT_DIR() . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+//Using "/" instead of DIRECTORY_SEPARATOR for better cross-OS compatibility
+require $_SERVER["DOCUMENT_ROOT"] . "/" . AutoLoader::PROJECT_DIR() . "vendor" . "/" . "autoload.php";

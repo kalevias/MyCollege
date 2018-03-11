@@ -3,42 +3,16 @@ include "../../autoload.php";
 
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
-$controller->processREQUEST();
+$controller->processREQUEST("sc");
 
-$q = isset($_GET["q"]) ? "%" . $_GET["q"] . "%" : "%%";
-$size = isset($_GET["s"]) ? $_GET["s"] : 70000;
-$tuition = isset($_GET["t"]) ? $_GET["t"] : 60000;
-$sat = isset($_GET["sat"]) ? $_GET["sat"] : 0;
-$dist = isset($_GET["dist"]) ? $_GET["dist"] : 500;
-$difHigher = (isset($_GET["dif"]) and $_GET["dif"] != 1) ? $_GET["dif"] + 0.1 : 1;
-$difLower = (isset($_GET["dif"]) and $_GET["dif"] != 1) ? $_GET["dif"] - 0.1 : 0;
-//TODO: finish implementation of "distance from home" filter
-//TODO: finish implementation of tuition filter to consider in-state vs. out-of-state based on user address
-
-$dbc = new DatabaseConnection();
-$query = "SELECT pkcollegeid, nmcollege, txcity, nsize, p.nmname AS nmprovince, ensetting, MIN(m.nmname) AS firstmajor, MAX(m.nmname) AS lastmajor
-                                FROM tblcollege c
-                                JOIN tblprovince p ON c.fkprovinceid = p.pkstateid
-                                LEFT JOIN tblmajorcollege mc ON c.pkcollegeid = mc.fkcollegeid
-                                LEFT JOIN tblmajor m ON mc.fkmajorid = m.pkmajorid
-                                WHERE c.nmcollege LIKE ?
-                                  AND c.nsize < ?
-                                  AND c.ninstate < ?
-                                  AND (c.nsat > ? OR c.nsat IS NULL)
-                                  AND c.nacceptrate <= ?
-                                  AND c.nacceptrate >= ?
-                                GROUP BY c.pkcollegeid
-                                ORDER BY c.nmcollege";
-$params = [
-    "siiidd",
-    $q,
-    $size,
-    $tuition,
-    $sat,
-    $difHigher,
-    $difLower
-];
-$schools = $dbc->query("select multiple", $query, $params);
+$query = $controller->getLastGETRequest()["input"]["query"];
+$size = $controller->getLastGETRequest()["input"]["size"];
+$tuition = $controller->getLastGETRequest()["input"]["tuition"];
+$sat = $controller->getLastGETRequest()["input"]["sat"];
+$dist = $controller->getLastGETRequest()["input"]["dist"];
+$dif = $controller->getLastGETRequest()["input"]["dif"];
+$schools = $controller->getLastGETRequest()["output"];
+$isStudent = Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student";
 ?>
     <!DOCTYPE html>
     <html>
@@ -46,6 +20,7 @@ $schools = $dbc->query("select multiple", $query, $params);
             <title>MyCollege</title>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link href="https://fonts.googleapis.com/css?family=Rammetto+One" rel="stylesheet">
             <link rel="stylesheet" href="<?php echo $controller->getHomeDir(); ?>pages/search/css/search.min.css" type="text/css">
         </head>
         <body>
@@ -86,22 +61,22 @@ $schools = $dbc->query("select multiple", $query, $params);
                                 <select id="difficulty" name="dif">
                                     <?php /*the values for this select indicate the middle of the acceptable difficulty
                             range, with +/- 0.1 acceptance rate from the given value */ ?>
-                                    <option value="1"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 1) echo " selected"; ?>>
+                                    <option value="1"<?php if ($dif == 1) echo " selected"; ?>>
                                         No Preference
                                     </option>
-                                    <option value="0.9"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 0.9) echo " selected"; ?>>
+                                    <option value="0.9"<?php if ($dif == 0.9) echo " selected"; ?>>
                                         Minimally Competitive
                                     </option>
-                                    <option value="0.7"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 0.7) echo " selected"; ?>>
+                                    <option value="0.7"<?php if ($dif == 0.7) echo " selected"; ?>>
                                         Slightly Competitive
                                     </option>
-                                    <option value="0.5"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 0.5) echo " selected"; ?>>
+                                    <option value="0.5"<?php if ($dif == 0.5) echo " selected"; ?>>
                                         Moderately Competitive
                                     </option>
-                                    <option value="0.3"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 0.3) echo " selected"; ?>>
+                                    <option value="0.3"<?php if ($dif == 0.3) echo " selected"; ?>>
                                         Very Competitive
                                     </option>
-                                    <option value="0.1"<?php if (isset($_GET["dif"]) and $_GET["dif"] == 0.1) echo " selected"; ?>>
+                                    <option value="0.1"<?php if ($dif == 0.1) echo " selected"; ?>>
                                         Highly Competitive
                                     </option>
                                 </select>
@@ -109,39 +84,96 @@ $schools = $dbc->query("select multiple", $query, $params);
                             <br>
                             <br>
                             <div class="container">
-                                <?php if (isset($_GET["q"])) { ?>
-                                    <input type="hidden" name="q" value="<?php echo $_GET["q"]; ?>">
+                                <?php if (isset($query)) { ?>
+                                    <input type="hidden" name="q" value="<?php echo $query; ?>">
                                 <?php } ?>
                                 <input type="submit" class="btn btn-info" value="Update Filter">
+                                <?php
+                                if ($isStudent) {
+                                    ?>
+                                    <input type="submit" class="btn btn-info" value="Update Matches" id="updateMatch">
+                                    <input type="hidden" name="m" value="n" id="match">
+                                <?php } ?>
                             </div>
                         </form>
                     </div>
-                    <div class="col-lg-9 main">
+                    <div class="col-lg-9 main container-fluid">
                         <h1 class="page-header">Search Results</h1>
                         <?php
+                        /**
+                         * @var $schools College[]
+                         */
                         if ($schools) {
                             $styles = " background-size: cover; background-repeat: no-repeat; background-position: center;";
-                            foreach ($schools as $school) { ?>
-                                <div class="placeholders" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.6) 100%), url('<?php echo $controller->getWindowsHomeDir() . "files/" . $school["pkcollegeid"] . ".jpg"; ?>');<?php echo $styles; ?>">
-                                    <div style="opacity: 1">
-                                        <h3 data-id="<?php echo $school["pkcollegeid"]; ?>"><?php echo $school["nmcollege"]; ?></h3>
-                                        <dl>
-                                            <?php echo $school["txcity"] . ", " . $school["nmprovince"]; ?>
-                                            | <?php echo $school["nsize"]; ?>
-                                            students
-                                        </dl>
-                                        <p>
-                                            A<?php if ($school["ensetting"] == "Urban") echo "n"; ?>
-                                            <?php echo $school["ensetting"]; ?> school set in
-                                            <?php echo $school["txcity"] . ", " . $school["nmprovince"]; ?>
-                                            servicing students studying everything from
-                                            <?php echo $school["firstmajor"]; ?> to <?php echo $school["lastmajor"]; ?>
-                                        </p>
+                            foreach ($schools as [$school, $rating]) { ?>
+                                <div class="row">
+                                    <div class="placeholders col-lg-<?php echo($isStudent ? 11 : 12); ?>" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.6) 100%), url('<?php echo $controller->getHomeDir() . "files/" . $school->getPkID() . ".jpg"; ?>');<?php echo $styles; ?>">
+                                        <div>
+                                            <h3 data-id="<?php echo $school->getPkID(); ?>"><?php echo $school->getName(); ?></h3>
+                                            <dl>
+                                                <?php echo $school->getCity() . ", " . $school->getProvince()->getName(); ?>
+                                                | <?php echo $school->getStudentCount(); ?>
+                                                students
+                                            </dl>
+                                            <p>
+                                                A<?php if ($school->getSetting() == "Urban") echo "n"; ?>
+                                                <?php echo $school->getSetting(); ?> school set in
+                                                <?php echo $school->getCity() . ", " . $school->getProvince()->getName();
+                                                if (count($school->getMajors()) >= 2) {
+                                                    ?>
+                                                    servicing students studying everything from
+                                                    <?php
+                                                    echo $school->getMajors()[0]->getName(); ?> to <?php echo $school->getMajors()[count($school->getMajors()) - 1]->getName();
+                                                }
+                                                ?>
+                                            </p>
+                                        </div>
                                     </div>
+                                    <?php if ($isStudent) {
+                                        if ($rating === false) {
+                                            $output = "N/A";
+                                        } else {
+                                            $output = ((int) ($rating * 100));
+                                        }
+                                        switch (true) {
+                                            case $output <= 12:
+                                                $ratingStyle = "1";
+                                                break;
+                                            case $output <= 25:
+                                                $ratingStyle = "2";
+                                                break;
+                                            case $output <= 37:
+                                                $ratingStyle = "3";
+                                                break;
+                                            case $output <= 50:
+                                                $ratingStyle = "4";
+                                                break;
+                                            case $output <= 62:
+                                                $ratingStyle = "5";
+                                                break;
+                                            case $output <= 75:
+                                                $ratingStyle = "6";
+                                                break;
+                                            case $output <= 87:
+                                                $ratingStyle = "7";
+                                                break;
+                                            case $output <= 100:
+                                                $ratingStyle = "8";
+                                                break;
+                                            default:
+                                                $ratingStyle = "na";
+                                        }
+                                        ?>
+                                        <div class="col-lg-1 cr-<?php echo $ratingStyle; ?>">
+                                            <div class="collegeRating cr-<?php echo $ratingStyle; ?>">
+                                                <?php echo $output; ?>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             <?php }
                         } else { ?>
-                            <h3>No schools found</h3>
+                            <h2>No schools found</h2>
                         <?php } ?>
                     </div>
                 </div>

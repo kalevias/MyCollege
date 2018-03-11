@@ -80,7 +80,7 @@
                             </li>
                             <li>
                                 <div class="dropdown">
-                                    <button class="navbar-nav navbar-default dropdown-toggle" id="registermenu" type="button" data-toggle="dropdown">
+                                    <button class="navbar-nav navbar-default dropdown-toggle" id="registermenu" data-toggle="dropdown">
                                         Register
                                         <span class="caret"></span>
                                     </button>

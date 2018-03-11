@@ -222,6 +222,62 @@ class College extends DataBasedEntity
     }
 
     /**
+     * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if
+     * none existed already.
+     *
+     * @param Student $student
+     * @return float|bool
+     */
+    public function getRating(Student $student) {
+        $dbc = new DatabaseConnection();
+        $params = ["ii", $this->getPkID(), $student->getPkID()];
+        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+        if($rating) {
+            return $rating["npoints"];
+        } else {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
+            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Forcefully changes the current college's rating with a student, then returns the new rating
+     *
+     * @param Student $student
+     * @return bool|float
+     */
+    public function updateRating(Student $student) {
+        $dbc = new DatabaseConnection();
+        $params = ["ii", $this->getPkID(), $student->getPkID()];
+        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+        if($rating) {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["dii", $newRating, $this->getPkID(), $student->getPkID()];
+            $result = $dbc->query("insert", "UPDATE tblcollegepoints SET npoints=? WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        } else {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
+            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
      * @param CollegeMajor $major
      * @return bool|int
      */

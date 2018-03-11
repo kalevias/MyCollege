@@ -49,6 +49,10 @@ class Controller
      * @var int
      */
     private $tabIncrement;
+    /**
+     * @var array
+     */
+    private $lastGETRequest;
 
     /**
      * Controller constructor. A new Constructor instance should be created on each page in the site.
@@ -71,7 +75,7 @@ class Controller
     /**
      * Returns the currently logged in user's User object or null if no user is logged in.
      *
-     * @return User|null
+     * @return User|Student|null
      */
     public static function getLoggedInUser()
     {
@@ -262,7 +266,7 @@ class Controller
      * @param $field
      * @return bool|string false on failure; string otherwise
      */
-    function enum2Options($table, $field)
+    public function enum2Options($table, $field)
     {
         $column = $this->dbc->query("select", "SHOW COLUMNS FROM `$table` WHERE FIELD = '$field'");
 
@@ -300,7 +304,7 @@ class Controller
      * @param $field
      * @return bool|string false on failure; string otherwise
      */
-    function field2Options($table, $field)
+    public function field2Options($table, $field)
     {
 
         $columns = $this->dbc->query("select multiple", "SELECT `$field` FROM `$table`");
@@ -376,20 +380,40 @@ class Controller
 
     /**
      * A middle-man to handle requests of the http variety
+     * @param null $getRT
      * @return bool
      */
-    public function processREQUEST(): bool
+    public function processREQUEST($getRT = null): bool
     {
         switch (strtoupper($_SERVER["REQUEST_METHOD"])) {
             case "POST":
                 return $this->processPOST();
                 break;
             case "GET":
-                return $this->processGET();
+                return $this->processGET($getRT);
                 break;
             default:
                 return false;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getLastGETRequest()
+    {
+        return $this->lastGETRequest;
+    }
+
+    /**
+     * @param array $GET
+     * @param $output
+     * @return bool
+     */
+    private function setLastGETRequest(array $GET, $output): bool
+    {
+        $this->lastGETRequest = ["input" => $GET, "output" => $output];
+        return true;
     }
 
     /**
@@ -451,38 +475,115 @@ class Controller
     }
 
     /**
+     * @param null $getRT
      * @return bool
      */
-    private function processGET(): bool
+    private function processGET($getRT = null): bool
     {
         $this->scrubbed = array_map(array("Controller", "spamScrubber"), $_GET);
-        //TODO: Finish implementation via switch-case for various GET submit types.
-        //reset the password
-        if (isset($this->scrubbed["token"])) {
-            //Check if token is in database
-            $token = null;
-            try {
-                $token = new Token($this->scrubbed["token"]);
-            } catch (Exception $e) {
-                $_SESSION["resetToken"] = false;
+        switch ($getRT) {
+            /**
+             * Required GET variables for this case:
+             *    getRT : "rp"
+             *  tokenID : string
+             */
+            case "rp":
+                {
+                    //reset the password
+                    if (isset($this->scrubbed["tokenID"])) {
+                        //Check if token is in database
+                        $token = null;
+                        try {
+                            $token = new Token($this->scrubbed["tokenID"]);
+                        } catch (Exception $e) {
+                            $_SESSION["resetToken"] = false;
+                            return false;
+                        }
+                        //check if token has expired by subtracting current time from experation time
+                        $timeDiff = $token->getExpiration()->diff(new DateTime("now"));
+                        //if token is expired kick out
+                        if ($timeDiff <= 0) {
+                            $result = false;
+                        } else {
+                            $result = true;
+                        }
+                        //remove token
+                        $token->removeFromDatabase();
+                        unset($token);
+                        $_SESSION["resetToken"] = $result;
+                        return (bool)$result; //temporary return value
+                    } else {
+                        return false;
+                    }
+                    break;
+                }
+            /**
+             * Required GET variables for this case:
+             * getRT : "sc"
+             *     q : string
+             *     s : int
+             *     t : int
+             *   sat : int
+             *  dist : int
+             *   dif : float
+             */
+            case "sc":
+                try {
+                    //TODO: finish implementation of "distance from home" filter
+                    $dist = isset($this->scrubbed["dist"]) ? $this->scrubbed["dist"] : 500;
+                    //TODO: finish implementation of tuition filter to consider in-state vs. out-of-state based on user address
+                    $params = [
+                        "siiidd",
+                        isset($this->scrubbed["q"]) ? "%" . $this->scrubbed["q"] . "%" : "%%",
+                        isset($this->scrubbed["s"]) ? $this->scrubbed["s"] : 70000,
+                        isset($this->scrubbed["t"]) ? $this->scrubbed["t"] : 60000,
+                        isset($this->scrubbed["sat"]) ? $this->scrubbed["sat"] : 0,
+                        (isset($this->scrubbed["dif"]) and $this->scrubbed["dif"] != 1) ? $this->scrubbed["dif"] + 0.1 : 1,
+                        (isset($this->scrubbed["dif"]) and $this->scrubbed["dif"] != 1) ? $this->scrubbed["dif"] - 0.1 : 0
+                    ];
+                    $input = [
+                        "query" => isset($this->scrubbed["q"]) ? $this->scrubbed["q"] : null,
+                        "size" => $params[2],
+                        "tuition" => $params[3],
+                        "sat" => $params[4],
+                        "dif" => isset($this->scrubbed["dif"]) ? $this->scrubbed["dif"] : null,
+                        "dist" => $dist,
+                        "match" => isset($this->scrubbed["m"]) ? ($this->scrubbed["m"] === "y") : false
+                    ];
+                    if($input["match"]) {
+                        $colleges = $this->dbc->query("select multiple", "SELECT pkcollegeid FROM tblcollege");
+                        foreach($colleges as $college) {
+                            $college = new College($college["pkcollegeid"]);
+                            $college->updateRating(Controller::getLoggedInUser());
+                        }
+                    }
+                    $query = "SELECT pkcollegeid
+                                FROM tblcollege c
+                                LEFT JOIN tblcollegepoints p ON c.pkcollegeid = p.fkcollegeid
+                                WHERE c.nmcollege LIKE ?
+                                  AND c.nsize < ?
+                                  AND c.ninstate < ?
+                                  AND (c.nsat > ? OR c.nsat IS NULL)
+                                  AND c.nacceptrate <= ?
+                                  AND c.nacceptrate >= ?
+                                ORDER BY p.npoints DESC, c.nmcollege ASC";
+                    $schoolIDs = $this->dbc->query("select multiple", $query, $params);
+                    $schools = [];
+                    if ($schoolIDs) {
+                        foreach ($schoolIDs as $schoolID) {
+                            $college = new College($schoolID["pkcollegeid"]);
+                            $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
+                        }
+                    }
+                    $this->setLastGETRequest($input, $schools);
+                } catch (Error | Exception $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
+            default:
                 return false;
-            }
-            //check if token has expired by subtracting current time from experation time
-            $timeDiff = $token->getExpiration()->diff(new DateTime("now"));
-            //if token is expired kick out
-            if ($timeDiff <= 0) {
-                $result = false;
-            } else {
-                $result = true;
-            }
-            //remove token
-            $token->removeFromDatabase();
-            unset($token);
-            $_SESSION["resetToken"] = $result;
-            return (bool)$result; //temporary return value
-        } else {
-            return false;
         }
+        return true; //temporary return value
     }
 
     /**
@@ -594,8 +695,8 @@ class Controller
                     try {
                         $success = Authenticator::logout();
                         if ($success) {
-							//header("Location: " . "index.php");
-                        	header("Location: " . $this->getHomeDir() . "index.php");
+                            //header("Location: " . "index.php");
+                            header("Location: " . $this->getHomeDir() . "index.php");
                             $_SESSION["localNotifications"][] = "Logout successful";
                             unset($_SESSION["test"]); //You can even have this line here, and it'll still work! Crazy!
                             exit;
@@ -710,6 +811,9 @@ class Controller
                         $user = Controller::getLoggedInUser();
                         if ($user->hasPermission(new Permission(Permission::PERMISSION_STUDENT))) {
                             $student = Student::load($user->getEmail());
+                            /**
+                             * @var $student Student
+                             */
                             if (isset($student)) {
                                 $success = true;
                                 $success = ($success and $student->removeAllPreferredMajors());
@@ -809,8 +913,8 @@ class Controller
         $path = explode("/", dirname($_SERVER["SCRIPT_NAME"]));
         $homeDir = "";
         foreach ($path as $dir) {
-            if ($dir != "" and $dir != rtrim(AutoLoader::PROJECT_DIR(), DIRECTORY_SEPARATOR)) {
-                $homeDir .= ".." . DIRECTORY_SEPARATOR;
+            if ($dir != "" and $dir != rtrim(AutoLoader::PROJECT_DIR(), "/")) {
+                $homeDir .= ".." . "/";
             }
         }
         $this->homeDir = $homeDir;
