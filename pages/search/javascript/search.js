@@ -41,3 +41,6 @@ $(document).on("click", "h3", function () {
     };
     post("/mycollege/pages/college/college.php", params, "GET");
 });
+$(document).on("click", "#updateMatch", function() {
+    $("#match").val("y");
+});

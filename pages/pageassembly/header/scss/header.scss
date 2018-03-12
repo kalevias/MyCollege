@@ -39,6 +39,7 @@
 
   nav .dropdown {
     position: static !important;
+    color: #777;
 
     /* Set a style for all buttons */
     & button {
@@ -68,11 +69,17 @@
   }
 
   /* Modal Content/Box */
-  .modal2-content {
-    background-color: #71a0b8;
-    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
-    border: 1px solid #888;
-    width: 410px; /* Could be more or less, depending on screen size */
-    height: 150px;
+  .modal-content {
+    input {
+      margin-bottom: 20px;
+    }
   }
+}
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
 }

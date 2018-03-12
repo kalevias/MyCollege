@@ -24,6 +24,10 @@ class CollegeMajor extends Major
      * @var bool
      */
     private $master;
+    /**
+     * @var bool
+     */
+    private $vocational;
 
     /**
      * Major constructor.
@@ -31,7 +35,7 @@ class CollegeMajor extends Major
      * @param int $fkCollegeID
      * @throws Exception
      */
-    public function __construct(int $pkID, int $fkCollegeID = 0)
+    public function __construct(int $pkID, int $fkCollegeID)
     {
         parent::__construct($pkID);
         $dbc = new DatabaseConnection();
@@ -42,7 +46,8 @@ class CollegeMajor extends Major
                 $this->setAssociate($collegeMajor["isassociate"]),
                 $this->setBachelor($collegeMajor["isbachelor"]),
                 $this->setMaster($collegeMajor["ismaster"]),
-                $this->setDoctoral($collegeMajor["isdoctoral"])
+                $this->setDoctoral($collegeMajor["isdoctoral"]),
+                $this->setVocational($collegeMajor["isvocational"])
             ];
             if (in_array(false, $result, true)) {
                 throw new Exception("CollegeMajor->__construct($pkID, $fkCollegeID) -  Unable to construct CollegeMajor object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
@@ -85,6 +90,14 @@ class CollegeMajor extends Major
     }
 
     /**
+     * @return bool
+     */
+    public function isVocational(): bool
+    {
+        return $this->vocational;
+    }
+
+    /**
      * @param bool $associate
      * @return bool
      */
@@ -121,6 +134,16 @@ class CollegeMajor extends Major
     public function setMaster(bool $master): bool
     {
         $this->master = $master;
+        return true;
+    }
+
+    /**
+     * @param bool $vocational
+     * @return bool
+     */
+    public function setVocational(bool $vocational): bool
+    {
+        $this->vocational = $vocational;
         return true;
     }
 }

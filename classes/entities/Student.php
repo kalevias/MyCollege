@@ -64,6 +64,10 @@ class Student extends User
      * @var Major[]
      */
     private $preferredMajors;
+    /**
+     * @var bool
+     */
+    private $gender;
 
     /**
      * Loads a user from the database.
@@ -131,6 +135,25 @@ class Student extends User
     }
 
     /**
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string $altEmail
+     * @param string $streetAddress
+     * @param string $city
+     * @param Province $province
+     * @param int $postalCode
+     * @param int $phone
+     * @param int $gradYear
+     * @param string $password
+     * @param bool $active
+     * @throws Exception
+     */
+    public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active) {
+        parent::__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active);
+    }
+
+    /**
      * Removes the current object from the database.
      * Returns true if the update was completed successfully, false otherwise.
      *
@@ -177,6 +200,13 @@ class Student extends User
     }
 
     /**
+     * @return bool
+     */
+    public function isGender() {
+        return $this->gender;
+    }
+
+    /**
      * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
      * true.
      *
@@ -187,41 +217,82 @@ class Student extends User
         //Check if current object is already syncronized to database
         if ($this->isSynced()) {
             return true;
-        } else if (!$this->isInDatabase()) {
-            return false;
-        }
-        $dbc = new DatabaseConnection();
-        $preferredMajors = $this->getPreferredMajors();
-        while (count($preferredMajors) < 3) {
-            $preferredMajors[] = null;
-        }
-        foreach ($preferredMajors as &$preferredMajor) {
-            if (gettype($preferredMajor) == "object") {
-                $preferredMajor = $preferredMajor->getPkID();
+        } else if ($this->isInDatabase()) {
+            $dbc = new DatabaseConnection();
+            $preferredMajors = $this->getPreferredMajors();
+            while (count($preferredMajors) < 3) {
+                $preferredMajors[] = null;
             }
-        }
-        $params = [
-            "iidiiiiiiiii",
-            $this->getACT(),
-            $this->isAP(),
-            $this->getGPA(),
-            $this->getSAT(),
-            ((int)$this->getDesiredCollegeEntry()->format("Y")),
-            $this->getDesiredCollegeLength()->y,
-            $this->getDesiredMajor()->getPkID(),
-            $preferredMajors[0],
-            $preferredMajors[1],
-            $preferredMajors[2],
-            $this->getHouseholdIncome(),
-            $this->getPkID()
-        ];
-        $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
+            foreach ($preferredMajors as &$preferredMajor) {
+                if (gettype($preferredMajor) == "object") {
+                    $preferredMajor = $preferredMajor->getPkID();
+                }
+            }$params = [
+                "iidiiiiiiiiii",
+                $this->getACT(),
+                $this->isAP(),
+                $this->getGPA(),
+                $this->getSAT(),
+                ((int)$this->getDesiredCollegeEntry()->format("Y")),
+                $this->getDesiredCollegeLength()->y,
+                $this->getDesiredMajor()->getPkID(),
+                $preferredMajors[0],
+                $preferredMajors[1],
+                $preferredMajors[2],
+                $this->getHouseholdIncome(),
+                $this->isGender(),
+                $this->getPkID()
+            ];
+            $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
 							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
-							  nhouseincome=? WHERE fkuserid=?", $params);
-        $this->inDatabase = $result;
-        $this->synced = $result;
-        return (bool)$result;
+							  nhouseincome=?, isgender=? WHERE fkuserid=?", $params);
+            $this->inDatabase = $result;
+            $this->synced = $result;
+            return (bool)$result;
+        } else {
+            $dbc = new DatabaseConnection();
+            $preferredMajors = $this->getPreferredMajors();
+            while (count($preferredMajors) < 3) {
+                $preferredMajors[] = null;
+            }
+            foreach ($preferredMajors as &$preferredMajor) {
+                if (gettype($preferredMajor) == "object") {
+                    $preferredMajor = $preferredMajor->getPkID();
+                }
+            }
+            $params = [
+                "iiiiidiiiiiii",
+                $this->getPkID(),
+                is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
+                $preferredMajors[0],
+                $preferredMajors[1],
+                $preferredMajors[2],
+                $this->getGPA(),
+                $this->getACT(),
+                $this->getSAT(),
+                $this->isAP(),
+                $this->getHouseholdIncome(),
+                is_null($this->getDesiredCollegeEntry()) ? null : ((int)$this->getDesiredCollegeEntry()->format("Y")),
+                is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
+                $this->isGender()
+            ];
+            $result = $dbc->query("insert", "INSERT INTO tbleduprofile (fkuserid, fkmajorid, fkmajor1, 
+                                                        fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
+                                                        dtentry, ncollegelength, isgender) VALUES 
+                                                        (?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
+            $this->inDatabase = $result;
+            $this->synced = $result;
+            return (bool)$result;
+        }
+    }
 
+    /**
+     * @param bool $women
+     * @return bool
+     */
+    public function setGender(bool $women) {
+        $this->syncHandler($this->gender, $this->isGender(), $women);
+        return true;
     }
 
     /**

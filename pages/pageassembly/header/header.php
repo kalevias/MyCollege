@@ -80,7 +80,7 @@
                             </li>
                             <li>
                                 <div class="dropdown">
-                                    <button class="navbar-nav navbar-default dropdown-toggle" id="registermenu" type="button" data-toggle="dropdown">
+                                    <button class="navbar-nav navbar-default dropdown-toggle" id="registermenu" data-toggle="dropdown">
                                         Register
                                         <span class="caret"></span>
                                     </button>
@@ -114,7 +114,7 @@
                         </div>
                         <div class="modal-body mb-0">
                             <div class="md-form form-sm">
-                                <input type="text" id="form27" class="form-control">
+                                <input type="text" name="q" class="form-control">
                             </div>
                             <div class="text-center mt-1-half">
                                 <button class="btn btn-info mb-1">Submit <i class="fa fa-check ml-1"></i></button>
