@@ -649,14 +649,19 @@ class Controller
              * //TODO: fill in other required fields
              */
             case "registerRepresentative":
-                {
-                    //TODO: complete representative registration handling
-                    $args = [
+            	//TODO: complete representative registration handling
+				$args = [
 
-                    ];
+				];
 //                call_user_func_array("Authenticator::registerRepresentative", $args);
-                    break;
-                }
+				break;
+			case "activateUser":
+
+				$args = [
+					$this->scrubbed["email"],
+					$this->scrubbed["password"]
+				];
+				$success = call_user_func_array("Authenticator::login", $args);
             /**
              * Required POST variables for this case:
              *      requestType : "login"

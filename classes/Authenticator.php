@@ -136,18 +136,54 @@ class Authenticator
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
+<<<<<<< HEAD
+            $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false);
+            $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
+            if (self::userExists($user)) {
+=======
             $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
             $student->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($student)) {
+>>>>>>> 1e9e37920c2fa8b5425621ba597ee30fe7bed142
                 return false;
             } else {
-                $student->updateToDatabase();
-                return self::login($student->getEmail(), $password);
             }
         } else {
             return false;
         }
     }
+
+    public static function sendRegistrationEmail($email){
+		try{
+			//check if user exists
+			$user = User::load($email);
+			if($user == null){
+				$_SESSION["resetFail"] = true;
+				$_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
+				break;
+			}
+			//Create a token representing a temporary link to reset password
+			$token = new Token("loginFirstTime", null, $user);
+			//send email to user
+			$mailman = new Mailman();
+			//create email body
+			//create a link to password reset page with the token ID as a parameter
+			$path = "http://localhost/mycollege/pages/login/login.php?tokenID={$token->getTokenID()}";
+			//create the body of the email
+			$body = "Welcome to MyCollege, click on the link to log in.\n";
+			$body .= "<a href=\"{$path}\">Click Me!";
+			//send email
+			$success = $mailman->sendEmail($email, "Welcome to MyCollege", $body);
+			$_SESSION["resetFail"] = !$success;
+		} catch (Exception | Error $e) {
+			$_SESSION["localErrors"][] = "Error: Unable to send registration email";
+		}
+	}
+
+	public static function activateUser($email, $password, $tokenID){
+
+	}
+
 
     /**
      * @param $email

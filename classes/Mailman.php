@@ -54,4 +54,10 @@ class Mailman
         return $success;
     }
 
+    function registrationEmail($toAddress){
+    	$subject = "Welcome to MyCollege!";
+    	$body = "Link here";
+    	return sendEmail($toAddress, $subject, $body);
+	}
+
 }
