@@ -175,7 +175,7 @@ class Authenticator
 	}
 
 	public static function activateUser($email, $password, $tokenID){
-        
+
 	}
 
 

@@ -13,7 +13,7 @@ class CollegeRanker
     const BASE_WEIGHT = 4;
 
     /**
-     * Returns an inorder list of college IDs
+     * Returns an in order list of college IDs
      * @param Student $student
      * @param College $college
      * @return float
@@ -73,6 +73,8 @@ class CollegeRanker
                 break;
             }
         }
+
+
 
 //        foreach($student->answers as $answer){
 //            $question = $answer->getQuestion();
