@@ -136,17 +136,12 @@ class Authenticator
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
-<<<<<<< HEAD
-            $user = new User($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false);
-            $user->addPermission(new Permission(Permission::PERMISSION_STUDENT));
-            if (self::userExists($user)) {
-=======
-            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, true);
+            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false);
             $student->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($student)) {
->>>>>>> 1e9e37920c2fa8b5425621ba597ee30fe7bed142
                 return false;
             } else {
+                return true;
             }
         } else {
             return false;
@@ -160,7 +155,6 @@ class Authenticator
 			if($user == null){
 				$_SESSION["resetFail"] = true;
 				$_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
-				break;
 			}
 			//Create a token representing a temporary link to reset password
 			$token = new Token("loginFirstTime", null, $user);
