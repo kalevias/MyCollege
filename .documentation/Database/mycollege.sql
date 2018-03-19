@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Mar 19, 2018 at 04:41 PM
+-- Generation Time: Mar 19, 2018 at 06:00 PM
 -- Server version: 5.7.19
 -- PHP Version: 7.1.9
 
@@ -249,14 +249,41 @@ CREATE TABLE IF NOT EXISTS `tblcollegescholarship` (
   `fkcollegeid` int(10) UNSIGNED NOT NULL,
   `nmscholarship` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `entype` enum('Grant','Loan','Merit based') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `txdescription` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txdescription` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `txrequirements` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enfield` enum('Liberal Arts','Medical and Life Science','Visual and Performance Arts','Engineering and Technology','Business') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ngpa` float UNSIGNED DEFAULT NULL,
+  `nact` int(2) UNSIGNED DEFAULT NULL,
+  `nsat` int(4) UNSIGNED DEFAULT NULL,
   `namount` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`pkcscholarship`),
   KEY `fkcollegeid` (`fkcollegeid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tblcollegescholarship`
+--
+
+INSERT INTO `tblcollegescholarship` (`pkcscholarship`, `fkcollegeid`, `nmscholarship`, `entype`, `txdescription`, `txrequirements`, `enfield`, `ngpa`, `nact`, `nsat`, `namount`) VALUES
+(1, 10, 'Presidential Scholar Award', 'Merit based', 'A full tuition award for 4 years', '', NULL, 3.9, 31, 1420, 48000),
+(2, 10, 'Distinguished Scholar Award', 'Merit based', '$24,000 for four years ($6,000 per year)', '', NULL, 3.8, 27, 1280, 24000),
+(3, 10, 'Talented Scholar Award', 'Merit based', '$16,000 for 4 years ($4,000 per yea', '', NULL, 3.8, 25, 1200, 16000),
+(4, 10, 'Talented Scholar Award', 'Merit based', '$16,000 for 4 years ($4,000 per year) \r\n', '', NULL, 3.7, 27, 1200, 16000),
+(5, 10, 'Academic Achievement Award', 'Merit based', '$12,000 for four years ($3,000 per year) ', '', NULL, 3.7, 23, 1130, 12000),
+(6, 10, 'Academic Achievement Award', 'Merit based', '$12,000 for four years ($3,000 per year)', '', NULL, 3.4, 23, 1130, 12000),
+(7, 10, 'University Recognition Award', 'Merit based', '$6,000 for four years ($1,500 per year)\r\n', '', NULL, 3.4, 20, 1020, 6000),
+(8, 10, 'University Recognition Award', 'Merit based', '$6,000 for four years ($1,500 per year)', '', NULL, 3, 20, 1020, 6000),
+(9, 10, 'Geographic Region Award', 'Grant', '$6,000 for four years ($1,500 per year)', 'Resident of Michigan counties outside of Macomb, Oakland or Wayne who wish to live on campus, Must live in university housing\r\n', NULL, 3, NULL, NULL, 6000),
+(12, 10, 'Wayne County Housing Award', 'Grant', '$6,000 for four years ($1,500 per year)', 'Resident of Wayne County, Michigan who wishes to live on campus, Must live in university housing', NULL, 3, NULL, NULL, 6000),
+(13, 10, 'Non-Resident Award', 'Grant', 'For students who do not live in Michigan', 'U.S. citizen (citizens of Canada and Mexico seeking an F-1 visa may also qualify), Non-Michigan resident \r\nRecipient must live in university housing for their first two years\r\n', NULL, 2.5, NULL, NULL, 12420),
+(16, 1, 'President\'s Award', 'Merit based', 'A reserved seat in the Irvin D. Reid Honors College, $12,000 per year for up to four consecutive years, $5,000 per year toward on-campus room and board, One-time Study Abroad funding\r\n', '', NULL, NULL, NULL, NULL, 68000),
+(17, 1, 'Warior Award', 'Merit based', '', 'The Warrior Award is up to $6,000 per year for four consecutive years and is offered to the strongest admissions applicants based on GPA and ACT/SAT scores.', NULL, NULL, NULL, NULL, 24000),
+(20, 1, 'Gold Award', 'Merit based', 'The Gold Award is up to $4,000 per year for four consecutive years of study.', '', NULL, NULL, NULL, NULL, 16000),
+(21, 1, 'Green Award', 'Merit based', 'The Green Award is up to $2,000 per year for four consecutive years.', '', NULL, NULL, NULL, NULL, 8000),
+(24, 1, 'Scholar Award', 'Merit based', 'The Wayne State Scholar Award is up to $500 per year for four consecutive years.', '', NULL, NULL, NULL, NULL, 2000),
+(25, 1, 'Anthony Wayne Scholarship', 'Grant', '$9,000 each year for four consecutive years of study – a total of $36,000\r\nFree on-campus, double-occupancy room for the first two years, if available \r\n', 'Anthony Wayne Scholarships are awarded to out-of-state applicants who do not qualify for in-state tuition or the Great Lakes Award', NULL, NULL, NULL, NULL, 36000),
+(26, 1, 'Wayne State Promise Award', 'Grant', 'The Promise Award is up to $3,000 for up to four consecutive years, beginning the semester of admission. This award is renewable for up to four years, with the option to apply for a fifth year, provided you are on track to graduate. This is a need-based award that may be reduced or cancelled if you are receiving merit, talent or endowed scholarship awards.\r\n', 'Incoming freshmen who demonstrate need as determined by the FAFSA with an Expected Family Contribution (EFC) of 5001-9000 will automatically be considered for this award. WSU must receive your 2018-19 FAFSA by March 1, 2018. Awards will be given until funding is exhausted. This award is for fall and winter semesters and is disbursed only to students who attend full-time.\r\nThe sum of all aid received cannot exceed your financial aid cost of attendance (COA).\r\n', NULL, NULL, NULL, NULL, 12000),
+(27, 1, 'Wayne Access', 'Grant', 'Wayne State is committed to helping students cover the cost of tuition and fees in combination with federal, state and other institutional aid. As a Wayne Access recipient, you will receive scholarship or grant funding up to the full cost of tuition and standard fees and will not have any out-of-pocket expenses for these costs.', 'Incoming freshmen who demonstrate need as determined by the FAFSA with an Expected Family Contribution (EFC) of 0-5000 will automatically be considered for this award. WSU must receive your 2018-19 FAFSA by March 1, 2018. Awards will be given until funding is exhausted. Funding is for fall and winter semesters and is disbursed only to students who attend full-time. The sum of all aid received cannot exceed your financial aid cost of attendance (COA). Must be admitted to WSU by December 1, 2017\r\n', NULL, NULL, NULL, NULL, 48000);
 
 -- --------------------------------------------------------
 
