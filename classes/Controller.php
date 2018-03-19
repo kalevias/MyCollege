@@ -26,6 +26,10 @@ class Controller
      */
     private $homeDir;
     /**
+     * @var array
+     */
+    private $lastGETRequest;
+    /**
      * String containing a relative path to the subdirectory of the "pages" directory that the current page lies within.
      *
      * @var string
@@ -49,10 +53,6 @@ class Controller
      * @var int
      */
     private $tabIncrement;
-    /**
-     * @var array
-     */
-    private $lastGETRequest;
 
     /**
      * Controller constructor. A new Constructor instance should be created on each page in the site.
@@ -339,6 +339,14 @@ class Controller
     }
 
     /**
+     * @return array
+     */
+    public function getLastGETRequest()
+    {
+        return $this->lastGETRequest;
+    }
+
+    /**
      * @return string
      */
     public function getModuleDir(): string
@@ -395,25 +403,6 @@ class Controller
             default:
                 return false;
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getLastGETRequest()
-    {
-        return $this->lastGETRequest;
-    }
-
-    /**
-     * @param array $GET
-     * @param $output
-     * @return bool
-     */
-    private function setLastGETRequest(array $GET, $output): bool
-    {
-        $this->lastGETRequest = ["input" => $GET, "output" => $output];
-        return true;
     }
 
     /**
@@ -655,13 +644,30 @@ class Controller
 				];
 //                call_user_func_array("Authenticator::registerRepresentative", $args);
 				break;
+            /**
+             * Required POST variables for this case:
+             *      requestType : "activateUser"
+             *            email : string
+             *         password : string
+             *          tokenID : string
+             */
 			case "activateUser":
-
-				$args = [
-					$this->scrubbed["email"],
-					$this->scrubbed["password"]
-				];
-				$success = call_user_func_array("Authenticator::login", $args);
+                try {
+                    $args = [
+                        $this->scrubbed["email"],
+                        $this->scrubbed["password"],
+                        $this->scrubbed["tokenID"]
+                    ];
+                    $success = call_user_func_array("Authenticator::activateUser", $args);
+                    if ($success) {
+                        //TODO: something here???
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: account activation failure";
+                    }
+                } catch (Error | Exception $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+				break;
             /**
              * Required POST variables for this case:
              *      requestType : "login"
@@ -927,6 +933,17 @@ class Controller
             }
         }
         $this->homeDir = $homeDir;
+        return true;
+    }
+
+    /**
+     * @param array $GET
+     * @param $output
+     * @return bool
+     */
+    private function setLastGETRequest(array $GET, $output): bool
+    {
+        $this->lastGETRequest = ["input" => $GET, "output" => $output];
         return true;
     }
 }
