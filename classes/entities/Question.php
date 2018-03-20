@@ -9,6 +9,10 @@
 abstract class Question
 {
     /**
+     * @var Dependency[]
+     */
+    private $dependencies;
+    /**
      * @var int
      */
     private $pkID;
@@ -32,12 +36,30 @@ abstract class Question
                 $this->setPkID($pkID),
                 $this->setQuestionText($question["txquestion"])
             ];
+
+            $this->setDependencies([]);
+            $params = ["i", $this->getPkID()];
+            $dependencies = $dbc->query("select multiple", "SELECT fkqparent FROM tblquestionorder WHERE fkquestionid = ?", $params);
+            if ($dependencies) {
+                foreach ($dependencies as $dependency) {
+                    $result[] = $this->addDependency(new Dependency($this, $dependency["fkqparent"]));
+                }
+            }
+
             if (in_array(false, $result, true)) {
                 throw new Exception("Question->__construct($pkID) - Unable to construct Question object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
         } else {
             throw new Exception("Question->__construct($pkID) - Question not found");
         }
+    }
+
+    /**
+     * @return Dependency[]
+     */
+    public function getDependencies()
+    {
+        return $this->dependencies;
     }
 
     /**
@@ -54,6 +76,25 @@ abstract class Question
     public function getQuestionText(): string
     {
         return $this->questionText;
+    }
+
+    /**
+     * @param Dependency $dependency
+     * @return bool
+     */
+    private function addDependency(Dependency $dependency): bool
+    {
+        return array_push($this->dependencies, $dependency);
+    }
+
+    /**
+     * @param $dependencies
+     * @return bool
+     */
+    private function setDependencies($dependencies): bool
+    {
+        $this->dependencies = $dependencies;
+        return true;
     }
 
     /**

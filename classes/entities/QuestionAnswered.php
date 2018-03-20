@@ -106,7 +106,7 @@ class QuestionAnswered extends DataBasedEntity
     }
 
     /**
-     * @return string|int}null
+     * @return string|int|null
      */
     public function getAnswer()
     {
@@ -140,7 +140,6 @@ class QuestionAnswered extends DataBasedEntity
             default:
                 return false;
         }
-        $this->answer = $answer;
         return true;
     }
 
@@ -171,7 +170,7 @@ class QuestionAnswered extends DataBasedEntity
     /**
      * @return int|null
      */
-    public function getImportance(): int
+    public function getImportance()
     {
         return $this->importance;
     }
