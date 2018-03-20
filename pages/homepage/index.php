@@ -111,8 +111,6 @@ $controller->processREQUEST();
                             <li> Account/profile management</li>
                             <li> College browsing & searching</li>
                             <li> College matching & ranking</li>
-                            <li> College Event Management</li>
-                            <li>Notifications Management</li>
                         </ul>
                     </div>
                 </div>
