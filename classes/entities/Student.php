@@ -89,7 +89,7 @@ class Student extends User
      * @param bool $women
      * @throws Exception
      */
-    public function __construct13(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active, bool $women)
+    public function __construct13(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, bool $women, string $password, bool $active)
     {
         parent::__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active);
         $result = [
@@ -238,27 +238,30 @@ class Student extends User
         if ($this->isSynced()) {
             return true;
         } else if (parent::updateToDatabase()) {
-            if ($this->isInDatabase()) {
+        	//Connect to database
+			$dbc = new DatabaseConnection();
+			//Get the prefered majors and set to null if they don't exist
+			$preferredMajors = $this->getPreferredMajors();
+			while (count($preferredMajors) < 3) {
+				$preferredMajors[] = null;
+			}
+			//If the prefered majors exist then get their ids
+			foreach ($preferredMajors as &$preferredMajor) {
+				if (gettype($preferredMajor) == "object") {
+					$preferredMajor = $preferredMajor->getPkID();
+				}
+			}
 
-                $dbc = new DatabaseConnection();
-                $preferredMajors = $this->getPreferredMajors();
-                while (count($preferredMajors) < 3) {
-                    $preferredMajors[] = null;
-                }
-                foreach ($preferredMajors as &$preferredMajor) {
-                    if (gettype($preferredMajor) == "object") {
-                        $preferredMajor = $preferredMajor->getPkID();
-                    }
-                }
+            if ($this->isInDatabase()) {
                 $params = [
                     "iidiiiiiiiiii",
                     $this->getACT(),
                     $this->isAP(),
                     $this->getGPA(),
                     $this->getSAT(),
-                    ((int)$this->getDesiredCollegeEntry()->format("Y")),
-                    $this->getDesiredCollegeLength()->y,
-                    $this->getDesiredMajor()->getPkID(),
+					is_null($this->getDesiredCollegeEntry()) ? null : (int)($this->getDesiredCollegeEntry()->format("Y")),
+					is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
+					is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
                     $preferredMajors[0],
                     $preferredMajors[1],
                     $preferredMajors[2],
@@ -270,16 +273,6 @@ class Student extends User
 							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
 							  nhouseincome=?, isgender=? WHERE fkuserid=?", $params);
             } else {
-                $dbc = new DatabaseConnection();
-                $preferredMajors = $this->getPreferredMajors();
-                while (count($preferredMajors) < 3) {
-                    $preferredMajors[] = null;
-                }
-                foreach ($preferredMajors as &$preferredMajor) {
-                    if (gettype($preferredMajor) == "object") {
-                        $preferredMajor = $preferredMajor->getPkID();
-                    }
-                }
                 $params = [
                     "iiiiidiiiiiii",
                     $this->getPkID(),
@@ -365,9 +358,12 @@ class Student extends User
     /**
      * @return DateTime|null
      */
-    public function getDesiredCollegeEntry()
-    {
-        return $this->desiredCollegeEntry;
+    public function getDesiredCollegeEntry(){
+    	if(is_null($this->desiredCollegeEntry)){
+    		return (new DateTime())->setTimestamp(0);
+		}else{
+			return $this->desiredCollegeEntry;
+		}
     }
 
     /**

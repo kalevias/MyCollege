@@ -137,13 +137,14 @@ class Authenticator
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
-            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false, $women);
+            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $women, $password, false);
             $student->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($student)) {
                 return false;
             } else {
                 $student->updateToDatabase();
-                return self::login($student->getEmail(), $password);
+                return self::sendRegistrationEmail($email);
+                #return self::login($student->getEmail(), $password);
             }
         } else {
             return false;
@@ -152,6 +153,7 @@ class Authenticator
 
     public static function sendRegistrationEmail($email){
 		try{
+
 			//check if user exists
 			$user = User::load($email);
 			if($user == null){
@@ -173,7 +175,9 @@ class Authenticator
 			$_SESSION["resetFail"] = !$success;
 		} catch (Exception | Error $e) {
 			$_SESSION["localErrors"][] = "Error: Unable to send registration email";
+			return false;
 		}
+		return true;
 	}
 
 	public static function activateUser($email, $password, $tokenID){

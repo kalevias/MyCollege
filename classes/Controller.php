@@ -604,7 +604,7 @@ class Controller
              *  confirmPassword : string
              */
             case "registerStudent":
-                {
+				{
                     try {
                         $args = [
                             $this->scrubbed["firstName"],
