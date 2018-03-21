@@ -25,18 +25,50 @@ class College extends DataBasedEntity
      */
     private $act;
     /**
+     * @var bool
+     */
+    private $apartments;
+    /**
+     * @var int|null
+     */
+    private $boardCost;
+    /**
      * @var string
      */
     private $city;
+    /**
+     * @var bool
+     */
+    private $counseling;
+    /**
+     * @var bool
+     */
+    private $dorms;
     /**
      * The average amount of financial aid given to students in USD
      * @var int
      */
     private $finAid;
     /**
+     * @var bool
+     */
+    private $healthCenter;
+    /**
+     * @var bool
+     */
+    private $legal;
+    /**
+     * @var bool
+     */
+    private $library;
+    /**
      * @var CollegeMajor[]
      */
     private $majors;
+    /**
+     * @var bool
+     */
+    private $mealPlan;
     /**
      * @var string
      */
@@ -60,6 +92,22 @@ class College extends DataBasedEntity
      * @var Province
      */
     private $province;
+    /**
+     * @var bool
+     */
+    private $recCenter;
+    /**
+     * @var int|null
+     */
+    private $roomCost;
+    /**
+     * @var bool
+     */
+    private $roommates;
+    /**
+     * @var bool
+     */
+    private $roommatesChoosable;
     /**
      * @var int
      */
@@ -116,8 +164,9 @@ class College extends DataBasedEntity
         $dbc = new DatabaseConnection();
         $params = ["i", $PkID];
         $college = $dbc->query("select", "SELECT * FROM `tblcollege` WHERE `pkcollegeid`=?", $params);
+        $campus = $dbc->query("select", "SELECT * FROM tblcollegecampus WHERE fkcollegeid=?", $params);
 
-        if ($college) {
+        if ($college and $campus) {
             $result = [
                 $this->setPkID($college["pkcollegeid"]),
                 $this->setName($college["nmcollege"]),
@@ -136,7 +185,19 @@ class College extends DataBasedEntity
                 $this->setWomenRatio($college["nwomenratio"]),
                 $this->setACT($college["nact"]),
                 $this->setSAT($college["nsat"]),
-                $this->setSetting($college["ensetting"])
+                $this->setSetting($college["ensetting"]),
+                $this->setLibrary($campus["haslibrary"]),
+                $this->setDorms($campus["hasdorm"]),
+                $this->setApartments($campus["hasapartments"]),
+                $this->setRoomCost($campus["nroomcost"]),
+                $this->setBoardCost(((is_null($campus["nroomboardcost"]) or is_null($campus["nroomcost"])) ? $campus["nroomboardcost"] : ($campus["nroomboardcost"] - $campus["nroomcost"]))),
+                $this->setRoommates($campus["hasroommates"]),
+                $this->setRoommatesChoosable($campus["chooseroommates"]),
+                $this->setMealPlan($campus["hasmealplan"]),
+                $this->setHealthCenter($campus["hashealthcenter"]),
+                $this->setLegal($campus["haslegal"]),
+                $this->setCounseling($campus["hascounseling"]),
+                $this->setRecCenter($campus["hasreccenter"])
             ];
             $this->inDatabase = true;
             $this->removeAllMajors();
@@ -172,6 +233,7 @@ class College extends DataBasedEntity
         }
     }
 
+    //TODO: update constructor 17 for handling college campus info
     /**
      * College constructor.
      * @param string $name
@@ -219,62 +281,6 @@ class College extends DataBasedEntity
         }
         $this->inDatabase = false;
         $this->synced = false;
-    }
-
-    /**
-     * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if
-     * none existed already.
-     *
-     * @param Student $student
-     * @return float|bool
-     */
-    public function getRating(Student $student) {
-        $dbc = new DatabaseConnection();
-        $params = ["ii", $this->getPkID(), $student->getPkID()];
-        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
-        if($rating) {
-            return $rating["npoints"];
-        } else {
-            $newRating = CollegeRanker::scoreCollege($student, $this);
-            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
-            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
-            if($result) {
-                return $newRating;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * Forcefully changes the current college's rating with a student, then returns the new rating
-     *
-     * @param Student $student
-     * @return bool|float
-     */
-    public function updateRating(Student $student) {
-        $dbc = new DatabaseConnection();
-        $params = ["ii", $this->getPkID(), $student->getPkID()];
-        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
-        if($rating) {
-            $newRating = CollegeRanker::scoreCollege($student, $this);
-            $params = ["dii", $newRating, $this->getPkID(), $student->getPkID()];
-            $result = $dbc->query("insert", "UPDATE tblcollegepoints SET npoints=? WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
-            if($result) {
-                return $newRating;
-            } else {
-                return false;
-            }
-        } else {
-            $newRating = CollegeRanker::scoreCollege($student, $this);
-            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
-            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
-            if($result) {
-                return $newRating;
-            } else {
-                return false;
-            }
-        }
     }
 
     /**
@@ -332,6 +338,14 @@ class College extends DataBasedEntity
     public function getAcceptRate()
     {
         return $this->acceptRate;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getBoardCost(): ?int
+    {
+        return $this->boardCost;
     }
 
     /**
@@ -404,6 +418,39 @@ class College extends DataBasedEntity
     public function getProvince()
     {
         return $this->province;
+    }
+
+    /**
+     * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if
+     * none existed already.
+     *
+     * @param Student $student
+     * @return float|bool
+     */
+    public function getRating(Student $student) {
+        $dbc = new DatabaseConnection();
+        $params = ["ii", $this->getPkID(), $student->getPkID()];
+        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+        if($rating) {
+            return $rating["npoints"];
+        } else {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
+            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRoomCost(): ?int
+    {
+        return $this->roomCost;
     }
 
     /**
@@ -486,6 +533,86 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @return bool|null
+     */
+    public function hasApartments(): ?bool
+    {
+        return $this->apartments;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasCounseling(): ?bool
+    {
+        return $this->counseling;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasDorms(): ?bool
+    {
+        return $this->dorms;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasHealthCenter(): ?bool
+    {
+        return $this->healthCenter;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasLegal(): ?bool
+    {
+        return $this->legal;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasLibrary(): ?bool
+    {
+        return $this->library;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasMealPlan(): ?bool
+    {
+        return $this->mealPlan;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasRecCenter(): ?bool
+    {
+        return $this->recCenter;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasRoommates(): ?bool
+    {
+        return $this->roommates;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function hasRoommatesChoosable(): ?bool
+    {
+        return $this->roommatesChoosable;
+    }
+
+    /**
      * @return bool
      */
     public function removeAllMajors(): bool
@@ -557,6 +684,7 @@ class College extends DataBasedEntity
         }
     }
 
+    //TODO: update function with support for college campus information
     /**
      * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
      * true.
@@ -741,12 +869,59 @@ class College extends DataBasedEntity
     }
 
     /**
+     * @param bool $apartments
+     * @return bool
+     */
+    public function setApartments(bool $apartments): bool
+    {
+        $this->syncHandler($this->apartments, $this->hasApartments(), $apartments);
+        return true;
+    }
+
+    /**
+     * @param int|null $boardCost
+     * @return bool
+     */
+    public function setBoardCost(?int $boardCost): bool
+    {
+        if(is_null($boardCost)) {
+            $this->syncHandler($this->boardCost, $this->getBoardCost(), $boardCost);
+            return true;
+        } else if($boardCost >= 0) {
+            $this->syncHandler($this->boardCost, $this->getBoardCost(), $boardCost);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @param string $city
      * @return bool
      */
     public function setCity(string $city): bool
     {
         $this->syncHandler($this->city, $this->getCity(), $city);
+        return true;
+    }
+
+    /**
+     * @param bool $counseling
+     * @return bool
+     */
+    public function setCounseling(bool $counseling): bool
+    {
+        $this->syncHandler($this->counseling, $this->hasCounseling(), $counseling);
+        return true;
+    }
+
+    /**
+     * @param bool $dorms
+     * @return bool
+     */
+    public function setDorms(bool $dorms): bool
+    {
+        $this->syncHandler($this->dorms, $this->hasDorms(), $dorms);
         return true;
     }
 
@@ -761,6 +936,46 @@ class College extends DataBasedEntity
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param bool $healthCenter
+     * @return bool
+     */
+    public function setHealthCenter(bool $healthCenter): bool
+    {
+        $this->syncHandler($this->healthCenter, $this->hasHealthCenter(), $healthCenter);
+        return true;
+    }
+
+    /**
+     * @param bool $legal
+     * @return bool
+     */
+    public function setLegal(bool $legal): bool
+    {
+        $this->syncHandler($this->legal, $this->hasLegal(), $legal);
+        return true;
+    }
+
+    /**
+     * @param bool $library
+     * @return bool
+     */
+    public function setLibrary(bool $library): bool
+    {
+        $this->syncHandler($this->library, $this->hasLibrary(), $library);
+        return true;
+    }
+
+    /**
+     * @param bool $mealPlan
+     * @return bool
+     */
+    public function setMealPlan(bool $mealPlan): bool
+    {
+        $this->syncHandler($this->mealPlan, $this->hasMealPlan(), $mealPlan);
+        return true;
     }
 
     /**
@@ -828,6 +1043,53 @@ class College extends DataBasedEntity
     public function setProvince(Province $province): bool
     {
         $this->syncHandler($this->province, $this->getProvince(), $province);
+        return true;
+    }
+
+    /**
+     * @param bool $recCenter
+     * @return bool
+     */
+    public function setRecCenter(bool $recCenter): bool
+    {
+        $this->syncHandler($this->recCenter, $this->hasRecCenter(), $recCenter);
+        return true;
+    }
+
+    /**
+     * @param int|null $roomCost
+     * @return bool
+     */
+    public function setRoomCost(?int $roomCost): bool
+    {
+        if(is_null($roomCost)) {
+            $this->syncHandler($this->roomCost, $this->getRoomCost(), null);
+            return true;
+        } else if($roomCost >= 0) {
+            $this->syncHandler($this->roomCost, $this->getRoomCost(), $roomCost);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param bool $roommates
+     * @return bool
+     */
+    public function setRoommates(bool $roommates): bool
+    {
+        $this->syncHandler($this->roommates, $this->hasRoommates(), $roommates);
+        return true;
+    }
+
+    /**
+     * @param bool $roommatesChoosable
+     * @return bool
+     */
+    public function setRoommatesChoosable(bool $roommatesChoosable): bool
+    {
+        $this->syncHandler($this->roommatesChoosable, $this->hasRoommatesChoosable(), $roommatesChoosable);
         return true;
     }
 
@@ -941,5 +1203,36 @@ class College extends DataBasedEntity
             return true;
         }
         return false;
+    }
+
+    /**
+     * Forcefully changes the current college's rating with a student, then returns the new rating
+     *
+     * @param Student $student
+     * @return bool|float
+     */
+    public function updateRating(Student $student) {
+        $dbc = new DatabaseConnection();
+        $params = ["ii", $this->getPkID(), $student->getPkID()];
+        $rating = $dbc->query("select", "SELECT npoints from tblcollegepoints WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+        if($rating) {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["dii", $newRating, $this->getPkID(), $student->getPkID()];
+            $result = $dbc->query("insert", "UPDATE tblcollegepoints SET npoints=? WHERE fkcollegeid=? AND fkeduprofileid=?", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        } else {
+            $newRating = CollegeRanker::scoreCollege($student, $this);
+            $params = ["iid", $this->getPkID(), $student->getPkID(), $newRating];
+            $result = $dbc->query("insert", "INSERT INTO tblcollegepoints (fkcollegeid, fkeduprofileid, npoints) VALUES (?,?,?)", $params);
+            if($result) {
+                return $newRating;
+            } else {
+                return false;
+            }
+        }
     }
 }
