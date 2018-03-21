@@ -52,6 +52,7 @@ $(document).on("click", "#registerButton", function () {
         postalCode: $("#postalCode").val(),
         phoneNumber: $("#phoneNumber").data("clevermaskout"),
         gradYear: $("#gradYear").data("clevermaskout"),
+        women: $("#gender").val(),
         password: $("#password").val(),
         confirmPassword: $("#confirmPassword").val(),
         requestType: "registerStudent"

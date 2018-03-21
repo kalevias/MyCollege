@@ -26,8 +26,8 @@ class QuestionMC extends Question
         $params = ["i", $this->getPkID()];
         $answers = $dbc->query("select multiple", "SELECT txanswer FROM tblanswer WHERE fkquestionid = ?", $params);
         if ($answers) {
-            $result = [];
-            foreach($answers as $answer) {
+            $result = [$this->removeAllAnswers()];
+            foreach ($answers as $answer) {
                 $result[] = $this->addAnswer($answer["txanswer"]);
             }
             if (in_array(false, $result, true)) {
@@ -42,7 +42,8 @@ class QuestionMC extends Question
      * @param string $json
      * @return bool|int
      */
-    public function addAnswer(string $json) {
+    public function addAnswer(string $json)
+    {
         $answer = json_decode($json, true);
         if (in_array($answer, $this->getAnswers())) {
             return false;
@@ -54,7 +55,17 @@ class QuestionMC extends Question
     /**
      * @return array
      */
-    public function getAnswers(): array {
+    public function getAnswers(): array
+    {
         return $this->answers;
+    }
+
+    /**
+     * @return bool
+     */
+    private function removeAllAnswers(): bool
+    {
+        $this->answers = [];
+        return true;
     }
 }

@@ -26,6 +26,10 @@ class Controller
      */
     private $homeDir;
     /**
+     * @var array
+     */
+    private $lastGETRequest;
+    /**
      * String containing a relative path to the subdirectory of the "pages" directory that the current page lies within.
      *
      * @var string
@@ -49,10 +53,6 @@ class Controller
      * @var int
      */
     private $tabIncrement;
-    /**
-     * @var array
-     */
-    private $lastGETRequest;
 
     /**
      * Controller constructor. A new Constructor instance should be created on each page in the site.
@@ -339,6 +339,14 @@ class Controller
     }
 
     /**
+     * @return array
+     */
+    public function getLastGETRequest()
+    {
+        return $this->lastGETRequest;
+    }
+
+    /**
      * @return string
      */
     public function getModuleDir(): string
@@ -395,25 +403,6 @@ class Controller
             default:
                 return false;
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getLastGETRequest()
-    {
-        return $this->lastGETRequest;
-    }
-
-    /**
-     * @param array $GET
-     * @param $output
-     * @return bool
-     */
-    private function setLastGETRequest(array $GET, $output): bool
-    {
-        $this->lastGETRequest = ["input" => $GET, "output" => $output];
-        return true;
     }
 
     /**
@@ -610,6 +599,7 @@ class Controller
              *       postalCode : string <=10 characters in length
              *      phoneNumber : int <=15 digits in length
              *         gradYear : int 4 digits in length
+             *            women : int (0 or 1)
              *         password : string
              *  confirmPassword : string
              */
@@ -627,6 +617,7 @@ class Controller
                             ((int)$this->scrubbed["postalCode"]),
                             ((int)$this->scrubbed["phoneNumber"]),
                             ((int)$this->scrubbed["gradYear"]),
+                            (((int)$this->scrubbed["women"]) === 1 ? true : false),
                             $this->scrubbed["password"],
                             $this->scrubbed["confirmPassword"]
                         ];
@@ -649,19 +640,36 @@ class Controller
              * //TODO: fill in other required fields
              */
             case "registerRepresentative":
-            	//TODO: complete representative registration handling
-				$args = [
+                //TODO: complete representative registration handling
+                $args = [
 
-				];
+                ];
 //                call_user_func_array("Authenticator::registerRepresentative", $args);
-				break;
-			case "activateUser":
-
-				$args = [
-					$this->scrubbed["email"],
-					$this->scrubbed["password"]
-				];
-				$success = call_user_func_array("Authenticator::login", $args);
+                break;
+            /**
+             * Required POST variables for this case:
+             *      requestType : "activateUser"
+             *            email : string
+             *         password : string
+             *          tokenID : string
+             */
+            case "activateUser":
+                try {
+                    $args = [
+                        $this->scrubbed["email"],
+                        $this->scrubbed["password"],
+                        $this->scrubbed["tokenID"]
+                    ];
+                    $success = call_user_func_array("Authenticator::activateUser", $args);
+                    if ($success) {
+                        //TODO: something here???
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: account activation failure";
+                    }
+                } catch (Error | Exception $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
             /**
              * Required POST variables for this case:
              *      requestType : "login"
@@ -887,6 +895,7 @@ class Controller
                 }
             /**
              * Required POST variables for this case:
+             *         requestType : "resetPassword"
              *            password : string
              *     confirmpassword : string
              */
@@ -908,6 +917,56 @@ class Controller
                     }
                     break;
                 }
+            /**
+             * Required POST variables for this case:
+             *         requestType : "nextQuestion"
+             *            question : int
+             *              answer : string
+             *          importance : int
+             */
+            case "nextQuestion":
+                try {
+                    $success = QuestionHandler::saveAnswer(
+                        self::getLoggedInUser(),
+                        new QuestionMC($this->scrubbed["question"]),
+                        $_POST["answer"],
+                        ((int)$this->scrubbed["importance"])
+                    );
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Question response successfully saved";
+                        $_SESSION["nextQuestion"] = true;
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: unable to save question data";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
+            /**
+             * Required POST variables for this case:
+             *         requestType : "prevQuestion"
+             *            question : int
+             *              answer : string
+             *          importance : int
+             */
+            case "prevQuestion":
+                try {
+                    $success = QuestionHandler::saveAnswer(
+                        self::getLoggedInUser(),
+                        new QuestionMC($this->scrubbed["question"]),
+                        $_POST["answer"],
+                        ((int)$this->scrubbed["importance"])
+                    );
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Question response successfully saved";
+                        $_SESSION["prevQuestion"] = true;
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: unable to save question data";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
         }
         return true; //temporary return value
     }
@@ -927,6 +986,17 @@ class Controller
             }
         }
         $this->homeDir = $homeDir;
+        return true;
+    }
+
+    /**
+     * @param array $GET
+     * @param $output
+     * @return bool
+     */
+    private function setLastGETRequest(array $GET, $output): bool
+    {
+        $this->lastGETRequest = ["input" => $GET, "output" => $output];
         return true;
     }
 }

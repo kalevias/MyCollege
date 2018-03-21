@@ -36,7 +36,7 @@
                             <a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>search/search.php">Schools</a>
                         </li>
                         <li>
-                            <a href="#">Scholarships</a>
+                            <a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>scholarships/scholarships.php">Scholarships</a>
                         </li>
                         <li>
                             <a href="#">Events</a>

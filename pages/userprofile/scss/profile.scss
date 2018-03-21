@@ -6,6 +6,11 @@ h2 {
   text-align: center;
 }
 
+h6 {
+  @extend h2;
+  padding-bottom: 15px;
+}
+
 .profileNav {
   margin-bottom: 30px;
   @media screen and (max-width: 767px) {
@@ -28,4 +33,48 @@ h2 {
 
 .chosen-single {
   border-radius: 0 5px 5px 0 !important;
+}
+
+#question {
+  text-align: center;
+}
+
+#questionID {
+  font-style: italic;
+  font-size: 12pt;
+  padding-right: 20px;
+  color: #aaa;
+}
+
+#questionText {
+  font-family: "Times New Roman", serif;
+  font-size: 16pt;
+}
+
+#questionAnswers {
+  text-align: center;
+  color: #6f000e;
+  label {
+    display: inline-block;
+  }
+}
+
+#importanceText {
+  margin-top: 20px;
+  text-align: center;
+  @extend #questionText;
+}
+
+#questionImportance {
+  @extend #questionAnswers;
+}
+
+.form-group {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.qnav-button {
+  display: inline-block;
+  margin-right: 20px;
 }

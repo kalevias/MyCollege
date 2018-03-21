@@ -35,6 +35,10 @@ class Student extends User
      */
     private $SAT;
     /**
+     * @var QuestionAnswered[]
+     */
+    private $answeredQuestions;
+    /**
      * When (usually a year) would the student like to enter higher education?
      *
      * @var DateTime
@@ -53,6 +57,10 @@ class Student extends User
      */
     private $desiredMajor;
     /**
+     * @var bool
+     */
+    private $gender;
+    /**
      * How much money can the student and their family expect to save, per year, for educational expenses?
      *
      * @var int
@@ -64,24 +72,31 @@ class Student extends User
      * @var Major[]
      */
     private $preferredMajors;
-    /**
-     * @var bool
-     */
-    private $gender;
 
     /**
-     * Loads a user from the database.
-     *
-     * @param string|int $identifier May be either user email or ID
-     * @param int $mode
-     * @return null|User
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param string $altEmail
+     * @param string $streetAddress
+     * @param string $city
+     * @param Province $province
+     * @param int $postalCode
+     * @param int $phone
+     * @param int $gradYear
+     * @param string $password
+     * @param bool $active
+     * @param bool $women
+     * @throws Exception
      */
-    public static function load($identifier, int $mode = self::MODE_NAME)
+    public function __construct13(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active, bool $women)
     {
-        try {
-            return new Student($identifier, $mode);
-        } catch (InvalidArgumentException $iae) {
-            return null;
+        parent::__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active);
+        $result = [
+            $this->setGender($women)
+        ];
+        if (in_array(false, $result, true)) {
+            throw new Exception("Student->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, ".$province->getISO().", $postalCode, $phone, $gradYear, $password, $active, $women) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
     }
 
@@ -117,15 +132,30 @@ class Student extends User
                 $this->setDesiredMajor(new Major($student["fkmajorid"])),
                 $this->setGPA($student["ngpa"]),
                 $this->setHouseholdIncome($student["nhouseincome"]),
-                $this->setSAT($student["nsat"])
+                $this->setSAT($student["nsat"]),
+                $this->setGender($student["isgender"])
             ];
+
+            $this->removeAllPreferredMajors();
+            is_null($student["fkmajor1"]) ?: $result[] = $this->addPreferredMajor(new Major($student["fkmajor1"]));
+            is_null($student["fkmajor2"]) ?: $result[] = $this->addPreferredMajor(new Major($student["fkmajor2"]));
+            is_null($student["fkmajor3"]) ?: $result[] = $this->addPreferredMajor(new Major($student["fkmajor3"]));
+
+            $this->removeAllAnsweredQuestions();
+            $params = ["i", $this->getPkID()];
+            $answeredQuestions = $dbc->query("select multiple", "SELECT fkquestionid FROM tblprofileanswers WHERE fkuserid = ?", $params);
+
+            if ($answeredQuestions) {
+                foreach ($answeredQuestions as $answeredQuestion) {
+                    $question = new QuestionMC($answeredQuestion["fkquestionid"]);
+                    $answer = new QuestionAnswered($question, $this);
+                    $result[] = $this->addAnsweredQuestion($answer);
+                }
+            }
+
             if (in_array(false, $result, true)) {
                 throw new Exception("Student->__construct2($identifier, $mode) - Unable to construct Student object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
             }
-            $this->removeAllPreferredMajors();
-            is_null($student["fkmajor1"]) ?: $this->addPreferredMajor(new Major($student["fkmajor1"]));
-            is_null($student["fkmajor2"]) ?: $this->addPreferredMajor(new Major($student["fkmajor2"]));
-            is_null($student["fkmajor3"]) ?: $this->addPreferredMajor(new Major($student["fkmajor3"]));
 
             $this->inDatabase = true;
             $this->synced = true;
@@ -135,22 +165,19 @@ class Student extends User
     }
 
     /**
-     * @param string $firstName
-     * @param string $lastName
-     * @param string $email
-     * @param string $altEmail
-     * @param string $streetAddress
-     * @param string $city
-     * @param Province $province
-     * @param int $postalCode
-     * @param int $phone
-     * @param int $gradYear
-     * @param string $password
-     * @param bool $active
-     * @throws Exception
+     * Loads a user from the database.
+     *
+     * @param string|int $identifier May be either user email or ID
+     * @param int $mode
+     * @return null|User
      */
-    public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active) {
-        parent::__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active);
+    public static function load($identifier, int $mode = self::MODE_NAME)
+    {
+        try {
+            return new Student($identifier, $mode);
+        } catch (InvalidArgumentException $iae) {
+            return null;
+        }
     }
 
     /**
@@ -200,13 +227,6 @@ class Student extends User
     }
 
     /**
-     * @return bool
-     */
-    public function isGender() {
-        return $this->gender;
-    }
-
-    /**
      * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
      * true.
      *
@@ -217,82 +237,99 @@ class Student extends User
         //Check if current object is already syncronized to database
         if ($this->isSynced()) {
             return true;
-        } else if ($this->isInDatabase()) {
-            $dbc = new DatabaseConnection();
-            $preferredMajors = $this->getPreferredMajors();
-            while (count($preferredMajors) < 3) {
-                $preferredMajors[] = null;
-            }
-            foreach ($preferredMajors as &$preferredMajor) {
-                if (gettype($preferredMajor) == "object") {
-                    $preferredMajor = $preferredMajor->getPkID();
+        } else if (parent::updateToDatabase()) {
+            if ($this->isInDatabase()) {
+
+                $dbc = new DatabaseConnection();
+                $preferredMajors = $this->getPreferredMajors();
+                while (count($preferredMajors) < 3) {
+                    $preferredMajors[] = null;
                 }
-            }$params = [
-                "iidiiiiiiiiii",
-                $this->getACT(),
-                $this->isAP(),
-                $this->getGPA(),
-                $this->getSAT(),
-                ((int)$this->getDesiredCollegeEntry()->format("Y")),
-                $this->getDesiredCollegeLength()->y,
-                $this->getDesiredMajor()->getPkID(),
-                $preferredMajors[0],
-                $preferredMajors[1],
-                $preferredMajors[2],
-                $this->getHouseholdIncome(),
-                $this->isGender(),
-                $this->getPkID()
-            ];
-            $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
+                foreach ($preferredMajors as &$preferredMajor) {
+                    if (gettype($preferredMajor) == "object") {
+                        $preferredMajor = $preferredMajor->getPkID();
+                    }
+                }
+                $params = [
+                    "iidiiiiiiiiii",
+                    $this->getACT(),
+                    $this->isAP(),
+                    $this->getGPA(),
+                    $this->getSAT(),
+                    ((int)$this->getDesiredCollegeEntry()->format("Y")),
+                    $this->getDesiredCollegeLength()->y,
+                    $this->getDesiredMajor()->getPkID(),
+                    $preferredMajors[0],
+                    $preferredMajors[1],
+                    $preferredMajors[2],
+                    $this->getHouseholdIncome(),
+                    $this->isGender(),
+                    $this->getPkID()
+                ];
+                $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
 							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
 							  nhouseincome=?, isgender=? WHERE fkuserid=?", $params);
+            } else {
+                $dbc = new DatabaseConnection();
+                $preferredMajors = $this->getPreferredMajors();
+                while (count($preferredMajors) < 3) {
+                    $preferredMajors[] = null;
+                }
+                foreach ($preferredMajors as &$preferredMajor) {
+                    if (gettype($preferredMajor) == "object") {
+                        $preferredMajor = $preferredMajor->getPkID();
+                    }
+                }
+                $params = [
+                    "iiiiidiiiiiii",
+                    $this->getPkID(),
+                    is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
+                    $preferredMajors[0],
+                    $preferredMajors[1],
+                    $preferredMajors[2],
+                    $this->getGPA(),
+                    $this->getACT(),
+                    $this->getSAT(),
+                    $this->isAP(),
+                    $this->getHouseholdIncome(),
+                    is_null($this->getDesiredCollegeEntry()) ? null : ((int)$this->getDesiredCollegeEntry()->format("Y")),
+                    is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
+                    $this->isGender()
+                ];
+                $result = $dbc->query("insert", "INSERT INTO tbleduprofile (fkuserid, fkmajorid, fkmajor1, 
+                                                        fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
+                                                        dtentry, ncollegelength, isgender) VALUES 
+                                                        (?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
+            }
+            $this->inDatabase = $result;
+
+            if(!is_null($this->getAnsweredQuestions())) {
+                foreach($this->getAnsweredQuestions() as $answeredQuestion) {
+                    $answeredQuestion->removeFromDatabase();
+                    $result = ($result and $answeredQuestion->updateToDatabase());
+                }
+            }
+
             $this->inDatabase = $result;
             $this->synced = $result;
             return (bool)$result;
         } else {
-            $dbc = new DatabaseConnection();
-            $preferredMajors = $this->getPreferredMajors();
-            while (count($preferredMajors) < 3) {
-                $preferredMajors[] = null;
-            }
-            foreach ($preferredMajors as &$preferredMajor) {
-                if (gettype($preferredMajor) == "object") {
-                    $preferredMajor = $preferredMajor->getPkID();
-                }
-            }
-            $params = [
-                "iiiiidiiiiiii",
-                $this->getPkID(),
-                is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
-                $preferredMajors[0],
-                $preferredMajors[1],
-                $preferredMajors[2],
-                $this->getGPA(),
-                $this->getACT(),
-                $this->getSAT(),
-                $this->isAP(),
-                $this->getHouseholdIncome(),
-                is_null($this->getDesiredCollegeEntry()) ? null : ((int)$this->getDesiredCollegeEntry()->format("Y")),
-                is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
-                $this->isGender()
-            ];
-            $result = $dbc->query("insert", "INSERT INTO tbleduprofile (fkuserid, fkmajorid, fkmajor1, 
-                                                        fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
-                                                        dtentry, ncollegelength, isgender) VALUES 
-                                                        (?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
-            $this->inDatabase = $result;
-            $this->synced = $result;
-            return (bool)$result;
+            return false;
         }
     }
 
     /**
-     * @param bool $women
-     * @return bool
+     * @param QuestionAnswered $answeredQuestion
+     * @return bool|int
      */
-    public function setGender(bool $women) {
-        $this->syncHandler($this->gender, $this->isGender(), $women);
-        return true;
+    public function addAnsweredQuestion(QuestionAnswered $answeredQuestion)
+    {
+        if (in_array($answeredQuestion, $this->getAnsweredQuestions())) {
+            return false;
+        } else {
+            $this->synced = false;
+            return array_push($this->answeredQuestions, $answeredQuestion);
+        }
     }
 
     /**
@@ -315,6 +352,14 @@ class Student extends User
     public function getACT()
     {
         return $this->ACT;
+    }
+
+    /**
+     * @return QuestionAnswered[]|null
+     */
+    public function getAnsweredQuestions()
+    {
+        return $this->answeredQuestions;
     }
 
     /**
@@ -384,6 +429,23 @@ class Student extends User
     /**
      * @return bool
      */
+    public function isGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @return bool
+     */
+    public function removeAllAnsweredQuestions(): bool
+    {
+        $this->syncHandler($this->answeredQuestions, $this->getAnsweredQuestions(), []);
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
     public function removeAllPreferredMajors(): bool
     {
         $this->syncHandler($this->preferredMajors, $this->getPreferredMajors(), []);
@@ -436,8 +498,6 @@ class Student extends User
         return true;
     }
 
-    //TODO: add in resume and transcript handling (if useful...?)
-
     /**
      * @param Major $desiredMajor
      * @return bool
@@ -447,6 +507,8 @@ class Student extends User
         $this->syncHandler($this->desiredMajor, $this->getDesiredMajor(), $desiredMajor);
         return true;
     }
+
+    //TODO: add in resume and transcript handling (if useful...?)
 
     /**
      * @param float $gpa
@@ -459,6 +521,16 @@ class Student extends User
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param bool $women
+     * @return bool
+     */
+    public function setGender(bool $women)
+    {
+        $this->syncHandler($this->gender, $this->isGender(), $women);
+        return true;
     }
 
     /**

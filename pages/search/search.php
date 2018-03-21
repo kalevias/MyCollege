@@ -98,7 +98,7 @@ $isStudent = Controller::isUserLoggedIn() and get_class(Controller::getLoggedInU
                         </form>
                     </div>
                     <div class="col-lg-9 main container-fluid">
-                        <h1 class="page-header">Search Results</h1>
+                        <h1 class="page-header">Results</h1>
                         <?php
                         /**
                          * @var $schools College[]
