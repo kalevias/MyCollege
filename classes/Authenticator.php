@@ -147,6 +147,8 @@ class Authenticator
 >>>>>>> 1e9e37920c2fa8b5425621ba597ee30fe7bed142
                 return false;
             } else {
+                $student->updateToDatabase();
+                return self::login($student->getEmail(), $password);
             }
         } else {
             return false;
