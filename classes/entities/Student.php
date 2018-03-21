@@ -86,11 +86,18 @@ class Student extends User
      * @param int $gradYear
      * @param string $password
      * @param bool $active
+     * @param bool $women
      * @throws Exception
      */
-    public function __construct12(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active)
+    public function __construct13(string $firstName, string $lastName, string $email, string $altEmail, string $streetAddress, string $city, Province $province, int $postalCode, int $phone, int $gradYear, string $password, bool $active, bool $women)
     {
         parent::__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, $province, $postalCode, $phone, $gradYear, $password, $active);
+        $result = [
+            $this->setGender($women)
+        ];
+        if (in_array(false, $result, true)) {
+            throw new Exception("Student->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, ".$province->getISO().", $postalCode, $phone, $gradYear, $password, $active, $women) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+        }
     }
 
     /**
@@ -125,7 +132,8 @@ class Student extends User
                 $this->setDesiredMajor(new Major($student["fkmajorid"])),
                 $this->setGPA($student["ngpa"]),
                 $this->setHouseholdIncome($student["nhouseincome"]),
-                $this->setSAT($student["nsat"])
+                $this->setSAT($student["nsat"]),
+                $this->setGender($student["isgender"])
             ];
 
             $this->removeAllPreferredMajors();
@@ -261,9 +269,6 @@ class Student extends User
                 $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
 							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
 							  nhouseincome=?, isgender=? WHERE fkuserid=?", $params);
-                $this->inDatabase = $result;
-                $this->synced = $result;
-                return (bool)$result;
             } else {
                 $dbc = new DatabaseConnection();
                 $preferredMajors = $this->getPreferredMajors();
@@ -295,10 +300,19 @@ class Student extends User
                                                         fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
                                                         dtentry, ncollegelength, isgender) VALUES 
                                                         (?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
-                $this->inDatabase = $result;
-                $this->synced = $result;
-                return (bool)$result;
             }
+            $this->inDatabase = $result;
+
+            if(!is_null($this->getAnsweredQuestions())) {
+                foreach($this->getAnsweredQuestions() as $answeredQuestion) {
+                    $answeredQuestion->removeFromDatabase();
+                    $result = ($result and $answeredQuestion->updateToDatabase());
+                }
+            }
+
+            $this->inDatabase = $result;
+            $this->synced = $result;
+            return (bool)$result;
         } else {
             return false;
         }
