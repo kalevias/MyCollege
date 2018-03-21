@@ -127,16 +127,17 @@ class Authenticator
      * @param $postalCode
      * @param $phone
      * @param $gradYear
+     * @param $women
      * @param $password
      * @param $confirmPassword
      * @return bool
      * @throws Exception
      */
-    public static function registerStudent($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $password, $confirmPassword)
+    public static function registerStudent($fName, $lName, $email, $altEmail, $address, $city, $province, $postalCode, $phone, $gradYear, $women, $password, $confirmPassword)
     {
         if ($password === $confirmPassword) {
             //TODO: upon implementing email verification, the "true" below should be changed to false
-            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false);
+            $student = new Student($fName, $lName, $email, $altEmail, $address, $city, new Province($province, Province::MODE_ISO), $postalCode, $phone, $gradYear, $password, false, $women);
             $student->addPermission(new Permission(Permission::PERMISSION_STUDENT));
             if (self::userExists($student)) {
                 return false;

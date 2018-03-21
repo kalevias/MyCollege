@@ -599,6 +599,7 @@ class Controller
              *       postalCode : string <=10 characters in length
              *      phoneNumber : int <=15 digits in length
              *         gradYear : int 4 digits in length
+             *            women : int (0 or 1)
              *         password : string
              *  confirmPassword : string
              */
@@ -616,6 +617,7 @@ class Controller
                             ((int)$this->scrubbed["postalCode"]),
                             ((int)$this->scrubbed["phoneNumber"]),
                             ((int)$this->scrubbed["gradYear"]),
+                            (((int)$this->scrubbed["women"]) === 1 ? true : false),
                             $this->scrubbed["password"],
                             $this->scrubbed["confirmPassword"]
                         ];
@@ -638,12 +640,12 @@ class Controller
              * //TODO: fill in other required fields
              */
             case "registerRepresentative":
-            	//TODO: complete representative registration handling
-				$args = [
+                //TODO: complete representative registration handling
+                $args = [
 
-				];
+                ];
 //                call_user_func_array("Authenticator::registerRepresentative", $args);
-				break;
+                break;
             /**
              * Required POST variables for this case:
              *      requestType : "activateUser"
@@ -651,7 +653,7 @@ class Controller
              *         password : string
              *          tokenID : string
              */
-			case "activateUser":
+            case "activateUser":
                 try {
                     $args = [
                         $this->scrubbed["email"],
@@ -667,7 +669,7 @@ class Controller
                 } catch (Error | Exception $e) {
                     $_SESSION["localErrors"][] = $e;
                 }
-				break;
+                break;
             /**
              * Required POST variables for this case:
              *      requestType : "login"
@@ -893,6 +895,7 @@ class Controller
                 }
             /**
              * Required POST variables for this case:
+             *         requestType : "resetPassword"
              *            password : string
              *     confirmpassword : string
              */
@@ -914,6 +917,56 @@ class Controller
                     }
                     break;
                 }
+            /**
+             * Required POST variables for this case:
+             *         requestType : "nextQuestion"
+             *            question : int
+             *              answer : string
+             *          importance : int
+             */
+            case "nextQuestion":
+                try {
+                    $success = QuestionHandler::saveAnswer(
+                        self::getLoggedInUser(),
+                        new QuestionMC($this->scrubbed["question"]),
+                        $_POST["answer"],
+                        ((int)$this->scrubbed["importance"])
+                    );
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Question response successfully saved";
+                        $_SESSION["nextQuestion"] = true;
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: unable to save question data";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
+            /**
+             * Required POST variables for this case:
+             *         requestType : "prevQuestion"
+             *            question : int
+             *              answer : string
+             *          importance : int
+             */
+            case "prevQuestion":
+                try {
+                    $success = QuestionHandler::saveAnswer(
+                        self::getLoggedInUser(),
+                        new QuestionMC($this->scrubbed["question"]),
+                        $_POST["answer"],
+                        ((int)$this->scrubbed["importance"])
+                    );
+                    if ($success) {
+                        $_SESSION["localNotifications"][] = "Question response successfully saved";
+                        $_SESSION["prevQuestion"] = true;
+                    } else {
+                        $_SESSION["localWarnings"][] = "Warning: unable to save question data";
+                    }
+                } catch (Exception | Error $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
         }
         return true; //temporary return value
     }

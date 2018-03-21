@@ -19,10 +19,11 @@ class QuestionHandler
     {
         $aq = $student->getAnsweredQuestions();
         if (!is_null($aq) and count($aq) > 0) {
-            $answered = array_reverse(array_map(function ($o) {
-                $o->getQuestion();
-            }, $aq));
-            foreach ($answered as $item) {
+            $answered = [];
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+            foreach (array_reverse($answered) as $item) {
                 if (self::checkQuestionDependency($student, $item)) {
                     return $item;
                 }
@@ -63,6 +64,35 @@ class QuestionHandler
     }
 
     /**
+     * Returns the index for the specified question, considering which questions have been answered already by the given
+     * student, and which have yet to be answered. Returns -1 if the question cannot be found.
+     *
+     * @param Student $student
+     * @param Question $question
+     * @return int
+     */
+    public static function getQuestionIndex(Student $student, Question $question): int
+    {
+        $aq = $student->getAnsweredQuestions();
+        $answered = [];
+        if (!is_null($aq) and count($aq) > 0) {
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+        }
+
+        $questions = array_merge($answered, self::getUnansweredQuestions($student));
+        $IDs = [];
+        /**
+         * @var $questions Question[]
+         */
+        foreach ($questions as $q) {
+            $IDs[] = $q->getPkID();
+        }
+        return array_search($question->getPkID(), $IDs, true);
+    }
+
+    /**
      * Returns the second most recently answered question from a user which could also be answered again based on
      * question dependencies.
      *
@@ -73,10 +103,11 @@ class QuestionHandler
     {
         $aq = $student->getAnsweredQuestions();
         if (!is_null($aq) and count($aq) > 0) {
-            $answered = array_reverse(array_map(function ($o) {
-                $o->getQuestion();
-            }, $aq));
-            foreach (array_slice($answered,1) as $item) {
+            $answered = [];
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+            foreach (array_reverse(array_slice($answered, 1)) as $item) {
                 if (self::checkQuestionDependency($student, $item)) {
                     return $item;
                 }
@@ -86,7 +117,31 @@ class QuestionHandler
     }
 
     /**
-     * Returns an array of questions that have yet to be answered by the
+     * Returns the QuestionAnswered object for the student if the student has responded to the given question.
+     *
+     * @param Student $student
+     * @param Question $question
+     * @return QuestionAnswered
+     */
+    public static function getStudentAnswer(Student $student, Question $question)
+    {
+        $aq = $student->getAnsweredQuestions();
+        if (!is_null($aq) and count($aq) > 0) {
+            $answered = [];
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+            for ($i = 0; $i < count($answered); $i++) {
+                if ($answered[$i] === $question) {
+                    return $aq[$i];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns an array of questions that have yet to be answered by the student
      *
      * @param Student $student
      * @return Question[]
@@ -103,13 +158,31 @@ class QuestionHandler
         if ($questionIDs) {
             try {
                 foreach ($questionIDs as $questionID) {
-                    $output[] = new QuestionMC($questionID);
+                    $output[] = new QuestionMC($questionID["pkquestionid"]);
                 }
             } catch (Exception | Error $e) {
                 return [];
             }
         }
         return $output;
+    }
+
+    /**
+     * Returns an array of questions that have yet to be answered by the student, taking account of depdendencies.
+     * For example, if a question's prerequisite's haven't been met, then it won't show up in the output list.
+     *
+     * @param Student $student
+     * @return Question[]
+     */
+    public static function getAvailableUnansweredQuestions(Student $student)
+    {
+        $output = self::getUnansweredQuestions($student);
+        foreach ($output as &$question) {
+            if (!self::checkQuestionDependency($student, $question)) {
+                unset($question);
+            }
+        }
+        return array_values($output);
     }
 
     /**
@@ -123,10 +196,11 @@ class QuestionHandler
     {
         $aq = $student->getAnsweredQuestions();
         if (!is_null($aq) and count($aq) > 0) {
-            $answered = array_reverse(array_map(function ($o) {
-                $o->getQuestion();
-            }, $aq));
-            return in_array($question, $answered, true);
+            $answered = [];
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion()->getPkID();
+            }
+            return in_array($question->getPkID(), $answered, true);
         }
         return false;
     }
@@ -136,11 +210,25 @@ class QuestionHandler
      * @param Question $question
      * @param $answer
      * @param int $importance
+     * @return bool
      */
-    public static function saveAnswer(Student $student, Question $question, $answer, int $importance): void
+    public static function saveAnswer(Student $student, Question $question, $answer, int $importance): bool
     {
-        $student->addAnsweredQuestion(new QuestionAnswered($student, $question, $answer, $importance));
-        $student->updateToDatabase();
+        if (self::isQuestionAnswered(Controller::getLoggedInUser(), $question)) {
+            $answered = $student->getAnsweredQuestions();
+            $student->removeAllAnsweredQuestions();
+            foreach ($answered as $item) {
+                if ($item->getQuestion()->getPkID() === $question->getPkID()) {
+                    $item->removeFromDatabase();
+                    $student->addAnsweredQuestion(new QuestionAnswered($question, $student, $answer, $importance));
+                } else {
+                    $student->addAnsweredQuestion($item);
+                }
+            }
+        } else {
+            $student->addAnsweredQuestion(new QuestionAnswered($question, $student, $answer, $importance));
+        }
+        return $student->updateToDatabase();
     }
 
     /**

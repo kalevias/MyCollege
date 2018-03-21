@@ -31,7 +31,7 @@ class QuestionAnswered extends DataBasedEntity
      * @param Student $student
      * @throws Exception
      */
-    public function __construct2(Question $question, Student &$student)
+    public function __construct2(Question $question, Student $student)
     {
         $dbc = new DatabaseConnection();
         $params = ["ii", $student->getPkID(), $question->getPkID()];
@@ -60,7 +60,7 @@ class QuestionAnswered extends DataBasedEntity
      * @param int $importance
      * @throws Exception
      */
-    public function __construct4(Question $question, Student &$student, $answer, int $importance)
+    public function __construct4(Question $question, Student $student, $answer, int $importance)
     {
         $result = [
             $this->setQuestion($question),
