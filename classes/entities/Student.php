@@ -261,9 +261,6 @@ class Student extends User
                 $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
 							  dtentry=?, ncollegelength=?, fkmajorid=?, fkmajor1=?, fkmajor2=?, fkmajor3=?, 
 							  nhouseincome=?, isgender=? WHERE fkuserid=?", $params);
-                $this->inDatabase = $result;
-                $this->synced = $result;
-                return (bool)$result;
             } else {
                 $dbc = new DatabaseConnection();
                 $preferredMajors = $this->getPreferredMajors();
@@ -295,10 +292,19 @@ class Student extends User
                                                         fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
                                                         dtentry, ncollegelength, isgender) VALUES 
                                                         (?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
-                $this->inDatabase = $result;
-                $this->synced = $result;
-                return (bool)$result;
             }
+            $this->inDatabase = $result;
+
+            if(!is_null($this->getAnsweredQuestions())) {
+                foreach($this->getAnsweredQuestions() as $answeredQuestion) {
+                    $answeredQuestion->removeFromDatabase();
+                    $result = ($result and $answeredQuestion->updateToDatabase());
+                }
+            }
+
+            $this->inDatabase = $result;
+            $this->synced = $result;
+            return (bool)$result;
         } else {
             return false;
         }

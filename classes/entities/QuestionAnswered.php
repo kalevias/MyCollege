@@ -60,7 +60,7 @@ class QuestionAnswered extends DataBasedEntity
      * @param int $importance
      * @throws Exception
      */
-    public function __construct3(Question $question, Student &$student, $answer, int $importance)
+    public function __construct4(Question $question, Student &$student, $answer, int $importance)
     {
         $result = [
             $this->setQuestion($question),
