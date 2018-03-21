@@ -36,37 +36,37 @@ $controller->processREQUEST();
                         <div class="item active">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/NWUni.jpg" alt="Los Angeles" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>Northwestern University</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=12"; ?>">Northwestern University</a></h3>
                             </div>
                         </div>
                         <div class="item">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/IndianaUni.jpg" alt="Chicago" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>Indiana University</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=13"; ?>">Indiana University</a></h3>
                             </div>
                         </div>
                         <div class="item">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/WashUni.jpg" alt="New york" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>Washington University</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=14"; ?>">Washington University</a></h3>
                             </div>
                         </div>
                         <div class="item">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/BrynMawrCollege.jpg" alt="New york" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>Bryn Mawr College</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=15"; ?>">Bryn Mawr College</a></h3>
                             </div>
                         </div>
                         <div class="item">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/UniOfChi.jpg" alt="New york" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>University Of Chicago</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=16"; ?>">University Of Chicago</a></h3>
                             </div>
                         </div>
                         <div class="item">
                             <img src="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR; ?>homepage/images/WellesleyCollege.jpg" alt="New york" style="width:100%;">
                             <div class="carousel-caption">
-                                <h3>Wellesley College</h3>
+                                <h3><a href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "college/college.php?c=17"; ?>">Wellesley College</a></h3>
                             </div>
                         </div>
                     </div>

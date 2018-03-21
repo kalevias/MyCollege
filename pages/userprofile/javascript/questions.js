@@ -17,8 +17,8 @@ $(document).on("click", "#prevQuestion", function () {
     var params = {
         requestType: "prevQuestion",
         question: $("#questionID").data("id"),
-        answer: $("input[name='answer']").val(),
-        importance: $("input[name='importance']").val()
+        answer: $("input[name='answer']:checked").val(),
+        importance: $("input[name='importance']:checked").val()
     };
     if(params.answer == null) {
         summonAlert("warning","You must supply an answer to the question to proceed");

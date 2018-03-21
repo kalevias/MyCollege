@@ -40,7 +40,7 @@ class QuestionHandler
      */
     public static function getNextQuestion(Student $student)
     {
-        $unanswered = self::getUnansweredQuestions($student);
+        $unanswered = self::getAvailableUnansweredQuestions($student);
         foreach ($unanswered as $question) {
             if (self::checkQuestionDependency($student, $question)) {
                 return $question;
@@ -64,6 +64,28 @@ class QuestionHandler
     }
 
     /**
+     * @param Student $student
+     * @param int $n
+     * @return null|Question
+     */
+    public static function getNthAvailableQuestion(Student $student, int $n)
+    {
+        $aq = $student->getAnsweredQuestions();
+        $answered = [];
+        if (!is_null($aq) and count($aq) > 0) {
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+        }
+        return array_merge($answered, self::getAvailableUnansweredQuestions($student))[$n];
+//        if ($n < count($student->getAnsweredQuestions())) {
+//            return $student->getAnsweredQuestions()[$n]->getQuestion();
+//        } else {
+//            return self::getAvailableUnansweredQuestions($student)[$n];
+//        }
+    }
+
+    /**
      * Returns the index for the specified question, considering which questions have been answered already by the given
      * student, and which have yet to be answered. Returns -1 if the question cannot be found.
      *
@@ -82,6 +104,32 @@ class QuestionHandler
         }
 
         $questions = array_merge($answered, self::getUnansweredQuestions($student));
+        $IDs = [];
+        /**
+         * @var $questions Question[]
+         */
+        foreach ($questions as $q) {
+            $IDs[] = $q->getPkID();
+        }
+        return array_search($question->getPkID(), $IDs, true);
+    }
+
+    /**
+     * @param Student $student
+     * @param Question $question
+     * @return int
+     */
+    public static function getAvailableQuestionIndex(Student $student, Question $question): int
+    {
+        $aq = $student->getAnsweredQuestions();
+        $answered = [];
+        if (!is_null($aq) and count($aq) > 0) {
+            foreach ($aq as $a) {
+                $answered[] = $a->getQuestion();
+            }
+        }
+
+        $questions = array_merge($answered, self::getAvailableUnansweredQuestions($student));
         $IDs = [];
         /**
          * @var $questions Question[]
@@ -176,10 +224,11 @@ class QuestionHandler
      */
     public static function getAvailableUnansweredQuestions(Student $student)
     {
-        $output = self::getUnansweredQuestions($student);
-        foreach ($output as &$question) {
-            if (!self::checkQuestionDependency($student, $question)) {
-                unset($question);
+        $input = self::getUnansweredQuestions($student);
+        $output = [];
+        foreach ($input as $question) {
+            if (self::checkQuestionDependency($student, $question)) {
+                $output[] = $question;
             }
         }
         return array_values($output);
@@ -243,7 +292,7 @@ class QuestionHandler
      * @param Question $question
      * @return bool
      */
-    private static function checkQuestionDependency(Student $student, Question $question): bool
+    public static function checkQuestionDependency(Student $student, Question $question): bool
     {
         if (empty($question->getDependencies())) {
             return true;
@@ -253,7 +302,8 @@ class QuestionHandler
                 $haystack[$i] = $haystack[$i]->getQuestion()->getPkID();
             }
             foreach ($question->getDependencies() as $dependency) {
-                if ($index = array_search($dependency->getParentID(), $haystack, true)) {
+                $index = array_search($dependency->getParentID(), $haystack, true);
+                if ($index !== false) {
                     $studentAnswer = $student->getAnsweredQuestions()[$index];
                     if ($dependency->getRequiredAnswer() !== $studentAnswer->getAnswer()) {
                         return false;

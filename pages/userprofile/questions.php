@@ -12,28 +12,46 @@ $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
 $controller->checkPermissions($controller->userHasAccess([Permission::PERMISSION_STUDENT]));
+
+if (isset($_SESSION["nextQuestion"]) or isset($_SESSION["prevQuestion"])) {
+    try {
+        $lastQuestion = new QuestionMC($_SESSION["question"]);
+        unset($_SESSION["question"]);
+    } catch (Exception $e) {
+        $_SESSION["localErrors"][] = $e;
+        if (isset($_SESSION["nextQuestion"])) {
+            unset($_SESSION["nextQuestion"]);
+        }
+        if (isset($_SESSION["prevQuestion"])) {
+            unset($_SESSION["prevQuestion"]);
+        }
+        unset($_SESSION["question"]);
+    }
+}
+
 if (isset($_SESSION["nextQuestion"])) {
+    //If the user is asking to answer the next question
     unset($_SESSION["nextQuestion"]);
-    if (is_null(QuestionHandler::getNextQuestion($controller::getLoggedInUser()))) {
-        $question = QuestionHandler::getCurrentQuestion($controller::getLoggedInUser());
+    $index = QuestionHandler::getAvailableQuestionIndex(Controller::getLoggedInUser(), $lastQuestion);
+    $question = QuestionHandler::getNthAvailableQuestion(Controller::getLoggedInUser(), $index + 1);
+    if(QuestionHandler::isQuestionAnswered(Controller::getLoggedInUser(), $question)) {
         $currentAnswer = QuestionHandler::getStudentAnswer($controller::getLoggedInUser(), $question);
-    } else {
-        $question = QuestionHandler::getNextQuestion($controller::getLoggedInUser());
     }
 } else if (isset($_SESSION["prevQuestion"])) {
+    //If the user is asking to answer the previous question
     unset($_SESSION["prevQuestion"]);
-    if (is_null(QuestionHandler::getPreviousQuestion($controller::getLoggedInUser()))) {
-        $question = QuestionHandler::getCurrentQuestion($controller::getLoggedInUser());
+    $index = QuestionHandler::getAvailableQuestionIndex(Controller::getLoggedInUser(), $lastQuestion);
+    $question = QuestionHandler::getNthAvailableQuestion(Controller::getLoggedInUser(), $index - 1);
+    if(QuestionHandler::isQuestionAnswered(Controller::getLoggedInUser(), $question)) {
         $currentAnswer = QuestionHandler::getStudentAnswer($controller::getLoggedInUser(), $question);
-    } else {
-        $question = QuestionHandler::getPreviousQuestion($controller::getLoggedInUser());
     }
 } else {
-    if (is_null(QuestionHandler::getCurrentQuestion($controller::getLoggedInUser()))) {
-        $question = QuestionHandler::getNextQuestion($controller::getLoggedInUser());
-    } else {
+    //If the user isn't asking to answer any particular question
+    if (!is_null(QuestionHandler::getCurrentQuestion($controller::getLoggedInUser()))) {
         $question = QuestionHandler::getCurrentQuestion($controller::getLoggedInUser());
         $currentAnswer = QuestionHandler::getStudentAnswer($controller::getLoggedInUser(), $question);
+    } else {
+        $question = QuestionHandler::getNextQuestion($controller::getLoggedInUser());
     }
 }
 ?>
@@ -75,7 +93,7 @@ if (isset($_SESSION["nextQuestion"])) {
                                 <div class="row">
                                     <div class="col-sm-2">
                                             <span id="questionID" data-id="<?php echo $question->getPkID(); ?>">
-                                                #<?php echo $question->getPkID(); ?>
+                                                #<?php echo QuestionHandler::getAvailableQuestionIndex(Controller::getLoggedInUser(), $question) + 1; ?>
                                                 <br>
                                                 <br>
                                                 (of <?php echo
@@ -97,7 +115,7 @@ if (isset($_SESSION["nextQuestion"])) {
                                                 foreach ($question->getAnswers() as $answer) {
                                                     ?>
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="answer" value="<?php echo htmlspecialchars($answer); ?>"<?php if (isset($currentAnswer) and $currentAnswer->getAnswer() === $answer) echo " checked"; ?>>
+                                                        <input type="radio" name="answer" value="<?php echo htmlspecialchars($answer); ?>"<?php if (isset($currentAnswer) and $currentAnswer->getAnswer() == $answer) echo " checked"; ?>>
                                                         <?php echo $answer; ?>
                                                     </label>
                                                     <?php
@@ -148,7 +166,7 @@ if (isset($_SESSION["nextQuestion"])) {
                         </div>
                         <div class="form-group">
                             <div class="qnav-button">
-                                <a href="#" class="btn btn-success<?php if (!is_null(QuestionHandler::getPreviousQuestion($controller::getLoggedInUser()))) {
+                                <a href="#" class="btn btn-success<?php if (QuestionHandler::getAvailableQuestionIndex(Controller::getLoggedInUser(), $question) !== 0) {
                                     echo "\" id=\"prevQuestion";
                                 } else {
                                     echo " disabled";
@@ -157,7 +175,7 @@ if (isset($_SESSION["nextQuestion"])) {
                                 </a>
                             </div>
                             <div class="qnav-button">
-                                <a href="#" class="btn btn-success<?php if (!is_null(QuestionHandler::getNextQuestion($controller::getLoggedInUser()))) {
+                                <a href="#" class="btn btn-success<?php if (QuestionHandler::getAvailableQuestionIndex(Controller::getLoggedInUser(), $question) !== (count(QuestionHandler::getAvailableUnansweredQuestions(Controller::getLoggedInUser())) + count(Controller::getLoggedInUser()->getAnsweredQuestions()) - 1)) {
                                     echo "\" id=\"nextQuestion";
                                 } else {
                                     echo " disabled";

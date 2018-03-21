@@ -935,6 +935,7 @@ class Controller
                     if ($success) {
                         $_SESSION["localNotifications"][] = "Question response successfully saved";
                         $_SESSION["nextQuestion"] = true;
+                        $_SESSION["question"] = $this->scrubbed["question"];
                     } else {
                         $_SESSION["localWarnings"][] = "Warning: unable to save question data";
                     }
@@ -960,6 +961,7 @@ class Controller
                     if ($success) {
                         $_SESSION["localNotifications"][] = "Question response successfully saved";
                         $_SESSION["prevQuestion"] = true;
+                        $_SESSION["question"] = $this->scrubbed["question"];
                     } else {
                         $_SESSION["localWarnings"][] = "Warning: unable to save question data";
                     }
