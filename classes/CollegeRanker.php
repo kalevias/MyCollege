@@ -81,13 +81,80 @@ class CollegeRanker
             $question = $answer->getQuestion();
             switch ($question->getPkID()) {
 
-
+                /**
+                 * 
+                 */
                 case 1:
 
                     break;
 
-                //What kind of area would you like your college to be located at?
-                //enum using [Urban, Suburban, Rural, Small Town]
+                /**
+                 *
+                 */
+                case 2:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 3:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 4:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 5:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 6:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 7:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 8:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 9:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 10:
+
+                    break;
+
+                /**
+                 * What kind of area would you like your college to be located at?
+                 * [Urban, Suburban, Rural, Small Town]
+                 */
                 case 11:
                     $maxScore += $answer->getWeight();
                     if ($answer->getAnswer() === $college->getSetting()) {
@@ -100,7 +167,79 @@ class CollegeRanker
                         $collegeScore += floor($answer->getWeight() / (2 ** $diff));
                     }
                     break;
+
+                /**
+                 *
+                 */
+                case 12:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 13:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 14:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 15:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 16:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 17:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 18:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 19:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 20:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 21:
+
+                    break;
+
                 default:
+
                     break;
             }
         }
