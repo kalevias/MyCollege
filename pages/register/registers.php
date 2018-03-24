@@ -1,7 +1,6 @@
 <?php
 
 include "../../autoload.php";
-
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();

@@ -39,27 +39,27 @@ class CollegeRanker
         //Average college admissions GPA not stored in Database
 
         //=======  MAJORS =======
-        $maxScore += CollegeRanker::BASE_WEIGHT*2;
+        $maxScore += CollegeRanker::BASE_WEIGHT * 2;
         $collegeMajors = [];
         foreach ($college->getMajors() as $major) {
             $collegeMajors[] = $major->getPkID();
         }
-        $collegeScore += ((int) in_array($student->getDesiredMajor()->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT * 2;
+        $collegeScore += ((int)in_array($student->getDesiredMajor()->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT * 2;
 
-        foreach($student->getPreferredMajors() as $major) {
+        foreach ($student->getPreferredMajors() as $major) {
             $maxScore += CollegeRanker::BASE_WEIGHT;
-            $collegeScore += ((int) in_array($major->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT;
+            $collegeScore += ((int)in_array($major->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT;
         }
 
         //== Duration of degree =
         $maxScore += CollegeRanker::BASE_WEIGHT;
-        foreach($college->getMajors() as $major) {
+        foreach ($college->getMajors() as $major) {
             $majorMatch = ($major->getPkID() == $student->getDesiredMajor()->getPkID());
-            foreach($student->getPreferredMajors() as $preferredMajor) {
+            foreach ($student->getPreferredMajors() as $preferredMajor) {
                 $majorMatch = ($majorMatch or $preferredMajor->getPkID() == $major->getPkID());
-                if($majorMatch) break;
+                if ($majorMatch) break;
             }
-            if($student->getDesiredCollegeLength()->y <= 2 and $major->isAssociate() and $majorMatch) {
+            if ($student->getDesiredCollegeLength()->y <= 2 and $major->isAssociate() and $majorMatch) {
                 $collegeScore += CollegeRanker::BASE_WEIGHT;
                 break;
             } elseif ($student->getDesiredCollegeLength()->y <= 4 and ($major->isAssociate() or $major->isBachelor() or $major->isVocational()) and $majorMatch) {
@@ -74,30 +74,177 @@ class CollegeRanker
             }
         }
 
+        foreach ($student->getAnsweredQuestions() as $answer) {
+            /**
+             * @var $question QuestionMC
+             */
+            $question = $answer->getQuestion();
+            switch ($question->getPkID()) {
 
+                /**
+                 * 
+                 */
+                case 1:
 
-//        foreach($student->answers as $answer){
-//            $question = $answer->getQuestion();
-//            switch($question->getPkID()){
-//                //What kind of area would you like your college to be located at?
-//                //enum using [Urban, Suburban, Rural, Small Town]
-//                case(11):
-//                    if($answer->getAnswer() === $college->getSetting()){
-//                        $maxScore += $answer->getWeight();
-//                        $collegeScore += $answer->getWeight();
-//                    }else{
-//                        //since they dont match find the distance between responses
-//                        $diff = abs($answer->getAnswer() - $college->getSetting());
-//                        // reduce weight proportioanlly by the distance from students's answer
-//                        $collegeScore += floor($answer->getWeight() / ($diff * 2));
-//                    }
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
+                    break;
 
-        return ((float) ($collegeScore))/$maxScore;
+                /**
+                 *
+                 */
+                case 2:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 3:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 4:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 5:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 6:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 7:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 8:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 9:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 10:
+
+                    break;
+
+                /**
+                 * What kind of area would you like your college to be located at?
+                 * [Urban, Suburban, Rural, Small Town]
+                 */
+                case 11:
+                    $maxScore += $answer->getWeight();
+                    if ($answer->getAnswer() === $college->getSetting()) {
+                        $collegeScore += $answer->getWeight();
+                    } else {
+                        //since they dont match find the distance between responses
+                        $diff = abs(array_search($answer->getAnswer(), $question->getAnswers(), true) -
+                            array_search($college->getSetting(), $question->getAnswers(), true));
+                        // reduce weight proportioanlly by the distance from students's answer
+                        $collegeScore += floor($answer->getWeight() / (2 ** $diff));
+                    }
+                    break;
+
+                /**
+                 *
+                 */
+                case 12:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 13:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 14:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 15:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 16:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 17:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 18:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 19:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 20:
+
+                    break;
+
+                /**
+                 *
+                 */
+                case 21:
+
+                    break;
+
+                default:
+
+                    break;
+            }
+        }
+
+        return ((float)($collegeScore)) / $maxScore;
     }
 
     /**

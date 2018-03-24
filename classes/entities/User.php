@@ -64,6 +64,7 @@ class User extends DataBasedEntity
      */
     private $streetAddress;
 
+
     /**
      * Loads a user from the database.
      *
@@ -93,6 +94,7 @@ class User extends DataBasedEntity
      * @param int $postalCode
      * @param int $phone
      * @param int $gradYear
+	 * @param bool $woman
      * @param string $password
      * @param bool $active
      * @throws Exception
