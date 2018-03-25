@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Mar 21, 2018 at 07:45 PM
+-- Generation Time: Mar 25, 2018 at 10:21 PM
 -- Server version: 5.7.19
 -- PHP Version: 7.1.9
 
@@ -144,15 +144,15 @@ CREATE TABLE IF NOT EXISTS `tblcollege` (
 --
 
 INSERT INTO `tblcollege` (`pkcollegeid`, `nmcollege`, `entype`, `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nphone`, `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, `nwomenratio`, `nact`, `nsat`, `ensetting`) VALUES
-(1, 'Wayne State', 'Public', '656 West Kirby Street ', 'Detroit', 3656, 48202, NULL, 12264, 28151, 11110, 0.81, 1778, 17280, 0.56, NULL, NULL, 'Urban'),
-(2, 'Michigan State University', 'Public', '220 Trowbridge Road', 'East Lansing', 3656, 48824, NULL, 14460, 39405, 13202, 0.71, NULL, 39090, 0.51, 26, NULL, 'Suburban'),
-(3, 'Fordham University', 'Private', '441 East Fordham Road ', 'Bronx', 3669, 10458, NULL, 49645, 49645, 33566, 0.45, 1569, 9258, 0.57, 29, NULL, 'Urban'),
-(4, 'Hocking College', 'Public', '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, NULL, 4390, 8780, NULL, 1, 281, 4094, 0.51, NULL, NULL, 'Rural'),
-(5, 'Kettering University ', 'Private', '1700 University Avenue ', 'Flint', 3656, 48504, NULL, 39790, 39790, 21047, 0.71, 163, 1905, 0.18, NULL, NULL, 'Urban'),
-(6, 'King\'s College ', 'Private', '133 North River Street', 'Wilkes-Barre', 3673, 18711, NULL, 34630, 34630, 24694, 0.7, NULL, 2082, 0.48, NULL, NULL, 'Urban'),
-(7, 'Central Michigan University', 'Public', '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, NULL, 12510, 23670, 13708, 0.72, 1162, 19923, 0.57, 23, NULL, 'Small Town'),
-(8, 'Eastern Michigan University', 'Public', '900 Oakwood Street', 'Ypsilanti', 3656, 48197, NULL, 12120, 27711, 8785, 0.73, 1356, 17541, 0.59, NULL, NULL, 'Suburban'),
-(9, 'University of Michigan', 'Public', '500 S State Street', 'Ann Arbor', 3656, 48109, NULL, 14074, 45082, 24323, 0.28, 3434, 28983, 0.5, NULL, NULL, 'Urban'),
+(1, 'Wayne State', 'Public', '656 West Kirby Street ', 'Detroit', 3656, 48202, 3135772100, 12264, 28151, 11110, 0.81, 1778, 17280, 0.56, NULL, NULL, 'Urban'),
+(2, 'Michigan State University', 'Public', '220 Trowbridge Road', 'East Lansing', 3656, 48824, 5173558332, 14460, 39405, 13202, 0.71, NULL, 39090, 0.51, 26, NULL, 'Suburban'),
+(3, 'Fordham University', 'Private', '441 East Fordham Road ', 'Bronx', 3669, 10458, 7188173706, 49645, 49645, 33566, 0.45, 1569, 9258, 0.57, 29, NULL, 'Urban'),
+(4, 'Hocking College', 'Public', '3301 Hocking Parkway', 'Nelsonville', 3670, 45764, 7407533591, 4390, 8780, NULL, 1, 281, 4094, 0.51, NULL, NULL, 'Rural'),
+(5, 'Kettering University ', 'Private', '1700 University Avenue ', 'Flint', 3656, 48504, 8107629511, 39790, 39790, 21047, 0.71, 163, 1905, 0.18, NULL, NULL, 'Urban'),
+(6, 'King\'s College ', 'Private', '133 North River Street', 'Wilkes-Barre', 3673, 18711, 5702085858, 34630, 34630, 24694, 0.7, NULL, 2082, 0.48, NULL, NULL, 'Urban'),
+(7, 'Central Michigan University', 'Public', '1200 S. Franklin St', 'Mt Pleasant', 3656, 48859, 9897743076, 12510, 23670, 13708, 0.72, 1162, 19923, 0.57, 23, NULL, 'Small Town'),
+(8, 'Eastern Michigan University', 'Public', '900 Oakwood Street', 'Ypsilanti', 3656, 48197, 7344871849, 12120, 27711, 8785, 0.73, 1356, 17541, 0.59, NULL, NULL, 'Suburban'),
+(9, 'University of Michigan', 'Public', '500 S State Street', 'Ann Arbor', 3656, 48109, 7347641817, 14074, 45082, 24323, 0.28, 3434, 28983, 0.5, NULL, NULL, 'Urban'),
 (10, 'Oakland University', 'Public', '201 Meadow Brook Road', 'Rochester', 3656, 48309, 2483703228, 12420, 23873, 13766, 0.8, 1169, 16793, 0.57, 23, NULL, 'Suburban'),
 (11, 'Aquinas College', 'Private', '1700 Fulton St. E ', 'Grand Rapids', 3656, 49506, 6166328900, 31976, 31976, 22824, 0.74, 210, 1551, 0.61, 24, NULL, 'Suburban'),
 (12, 'Northwestern University', 'Private', '633 Clark Street ', 'Evanston', 3648, 60208, 8474917271, 52239, 52239, 45505, 0.09, 1731, 8278, 0.5, NULL, NULL, 'Suburban'),
@@ -1051,6 +1051,7 @@ INSERT INTO `tblfinalcialaid` (`fkcollegeid`, `naverage`, `navefresh`, `naveinte
 (1, 11110, 13659, 9430, 4291, 5273, 7032),
 (2, 13202, 13208, 28099, 4003, 9960, 10183),
 (3, 33566, 34004, 31704, 6396, 15724, 25493),
+(4, NULL, NULL, NULL, NULL, NULL, NULL),
 (5, 21047, 21687, 6203, 4336, 13804, 16951),
 (6, 24694, 25853, 12334, 4760, 14708, 19407),
 (7, 13708, 13990, 5979, 7824, 4908, 6661),
