@@ -175,6 +175,7 @@ class Authenticator
 			$_SESSION["resetFail"] = !$success;
 		} catch (Exception | Error $e) {
 			$_SESSION["localErrors"][] = "Error: Unable to send registration email";
+			var_dump($e);
 			return false;
 		}
 		return true;
