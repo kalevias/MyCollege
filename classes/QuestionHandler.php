@@ -179,8 +179,11 @@ class QuestionHandler
             foreach ($aq as $a) {
                 $answered[] = $a->getQuestion();
             }
+            /**
+             * @var $answered Question[]
+             */
             for ($i = 0; $i < count($answered); $i++) {
-                if ($answered[$i] === $question) {
+                if ($answered[$i]->getPkID() === $question->getPkID()) {
                     return $aq[$i];
                 }
             }

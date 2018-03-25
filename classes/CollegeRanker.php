@@ -413,12 +413,27 @@ class CollegeRanker
                     //Credit is how much a student can expect to pay off during their time at college
                     $totalCredit = 0;
 
+                    //========= ADDING TOTAL DEBITS =============
+
                     if ($college->getProvince()->getPkID() === $student->getProvince()->getPkID()) {
                         $totalDebit += $student->getDesiredCollegeLength()->y * $college->getTuitionIn();
                     } else {
                         $totalDebit += $student->getDesiredCollegeLength()->y * $college->getTuitionOut();
                     }
 
+                    try {
+                        $question = new QuestionMC(3);
+                        if (QuestionHandler::isQuestionAnswered($student, $question)) {
+                            if (QuestionHandler::getStudentAnswer($student, $question)->getAnswer() === "On-Campus Dorm") {
+                                $totalDebit += ($college->getRoomCost() + $college->getBoardCost()) * $student->getDesiredCollegeLength()->y;
+                            } else if (QuestionHandler::getStudentAnswer($student, $question)->getAnswer() === "On-Campus Apartment") {
+                                $totalDebit += $college->getRoomCost() * $student->getDesiredCollegeLength()->y;
+                            }
+                        }
+                    } catch (Exception $e) {
+                    }
+
+                    //========= ADDING TOTAL CREDITS ============
                     $totalCredit += $student->getDesiredCollegeLength()->y * $student->getExpectedFamilyContribution();
 
                     foreach ($college->getScholarships() as $scholarship) {
@@ -434,6 +449,21 @@ class CollegeRanker
                         if ($temp->isStudentEligible($student)) {
                             $totalCredit += $temp->getValue();
                         }
+                    }
+
+                    if($student->getDesiredCollegeEntry() > new DateTime("now")) {
+                        $fresh = is_null($college->getFinAidFreshmen()) ? 0 : $college->getFinAidFreshmen();
+                        $award = is_null($college->getFinAidAwarded()) ? 0 : $college->getFinAidAwarded();
+                        $avail = is_null($college->getFinAid()) ? 1 : $college->getFinAid();
+                        $totalCredit += (int) floor( $fresh * ($award / ($avail * 1.0)));
+                    }
+
+                    if($student->getCountry()->getPkID() !== $college->getCountry()->getPkID()) {
+                        $inter = is_null($college->getFinAidInternaional()) ? 0 : $college->getFinAidInternaional();
+                        $totalCredit += $student->getDesiredCollegeLength()->y * $inter;
+                    } else {
+                        $local = is_null($college->getFinAidAwarded()) ? 0 : $college->getFinAidAwarded();
+                        $totalCredit += ($student->getDesiredCollegeLength()->y - 1) * $local;
                     }
 
                     $totalDebt = $totalCredit - $totalDebit;
