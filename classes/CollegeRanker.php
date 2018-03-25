@@ -12,46 +12,61 @@ class CollegeRanker
     const BASE_WEIGHT = 4;
 
     /**
-     * Returns an in order list of college IDs
+     * Returns the newly calculated student's score for a college, or the scorecard if desired
      * @param Student $student
      * @param College $college
-     * @return float
+     * @param bool $scorecard
+     * @return float|array
      */
-    public static function scoreCollege(Student $student, College $college): float
+    public static function scoreCollege(Student $student, College $college, bool $scorecard = false)
     {
         $maxScore = 0;
         $collegeScore = 0;
+        $scorecardOutput = [];
 
         //Handling basic college information and student information first
         //=======SAT SCORE=======
-        $maxScore += CollegeRanker::BASE_WEIGHT;
+        $max = CollegeRanker::BASE_WEIGHT;
+        $maxScore += $max;
         //206.66 is the national standard deviation in SAT scores
-        $collegeScore += CollegeRanker::calcPreference(CollegeRanker::calcDistance($student->getSAT(), 206.66, $college->getSAT()), CollegeRanker::BASE_WEIGHT);
+        $score = CollegeRanker::calcPreference(CollegeRanker::calcDistance($student->getSAT(), 206.66, $college->getSAT()), CollegeRanker::BASE_WEIGHT);
+        $collegeScore += $score;
+        $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "SAT score similarity"];
 
         //=======ACT SCORE=======
-        $maxScore += CollegeRanker::BASE_WEIGHT;
+        $max = CollegeRanker::BASE_WEIGHT;
+        $maxScore += $max;
         //6.64 is the national standard deviation in ACT scores
-        $collegeScore += CollegeRanker::calcPreference(CollegeRanker::calcDistance($student->getACT(), 6.64, $college->getACT()), CollegeRanker::BASE_WEIGHT);
+        $score = CollegeRanker::calcPreference(CollegeRanker::calcDistance($student->getACT(), 6.64, $college->getACT()), CollegeRanker::BASE_WEIGHT);
+        $collegeScore += $score;
+        $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "ACT score similarity"];
 
         //=======   GPA   =======
         //1.74 is the national standard deviation in GPA scores https://www.nationsreportcard.gov/hsts_2009/course_gpa.aspx
-        //Average college admissions GPA not stored in Database
+        //TODO: Average college admissions GPA not stored in Database
 
         //=======  MAJORS =======
-        $maxScore += CollegeRanker::BASE_WEIGHT * 2;
+        $max = CollegeRanker::BASE_WEIGHT * 2;
+        $maxScore += $max;
         $collegeMajors = [];
         foreach ($college->getMajors() as $major) {
             $collegeMajors[] = $major->getPkID();
         }
-        $collegeScore += ((int)in_array($student->getDesiredMajor()->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT * 2;
+        $score = ((int)in_array($student->getDesiredMajor()->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT * 2;
+        $collegeScore += $score;
+        $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has your desired major, {$student->getDesiredMajor()->getName()}?"];
 
         foreach ($student->getPreferredMajors() as $major) {
-            $maxScore += CollegeRanker::BASE_WEIGHT;
-            $collegeScore += ((int)in_array($major->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT;
+            $max = CollegeRanker::BASE_WEIGHT;
+            $maxScore += $max;
+            $score = ((int)in_array($major->getPkID(), $collegeMajors)) * CollegeRanker::BASE_WEIGHT;
+            $collegeScore += $score;
+            $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has your preferred major, {$major->getName()}?"];
         }
 
         //== Duration of degree =
-        $maxScore += CollegeRanker::BASE_WEIGHT;
+        $max = CollegeRanker::BASE_WEIGHT;
+        $maxScore += $max;
         foreach ($college->getMajors() as $major) {
             $majorMatch = ($major->getPkID() == $student->getDesiredMajor()->getPkID());
             foreach ($student->getPreferredMajors() as $preferredMajor) {
@@ -59,16 +74,24 @@ class CollegeRanker
                 if ($majorMatch) break;
             }
             if ($student->getDesiredCollegeLength()->y <= 2 and $major->isAssociate() and $majorMatch) {
-                $collegeScore += CollegeRanker::BASE_WEIGHT;
+                $score = CollegeRanker::BASE_WEIGHT;
+                $collegeScore += $score;
+                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers an Associate degree for {$major->getName()}"];
                 break;
             } elseif ($student->getDesiredCollegeLength()->y <= 4 and ($major->isAssociate() or $major->isBachelor() or $major->isVocational()) and $majorMatch) {
-                $collegeScore += CollegeRanker::BASE_WEIGHT;
+                $score = CollegeRanker::BASE_WEIGHT;
+                $collegeScore += $score;
+                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers an Associate or Bachelor degree for {$major->getName()}"];
                 break;
             } elseif ($student->getDesiredCollegeLength()->y <= 6 and ($major->isAssociate() or $major->isBachelor() or $major->isVocational() or $major->isMaster()) and $majorMatch) {
-                $collegeScore += CollegeRanker::BASE_WEIGHT;
+                $score = CollegeRanker::BASE_WEIGHT;
+                $collegeScore += $score;
+                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers an Associate, Bachelor, or Master degree for {$major->getName()}"];
                 break;
             } elseif ($student->getDesiredCollegeLength()->y <= 8 and $majorMatch) {
-                $collegeScore += CollegeRanker::BASE_WEIGHT;
+                $score = CollegeRanker::BASE_WEIGHT;
+                $collegeScore += $score;
+                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers a degree for {$major->getName()}"];
                 break;
             }
         }
@@ -105,19 +128,26 @@ class CollegeRanker
                  * ["On-Campus Dorm", "On-Campus Apartment", "Off-Campus"]
                  */
                 case 3:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "On-Campus Dorm":
                             if ($college->hasDorms()) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "Has dorms?"];
                             }
                             if ($college->hasMealPlan()) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "Has a meal plan?"];
                             }
                             break;
                         case "On-Campus Apartment":
                             if ($college->hasApartments()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has on-campus apartments?"];
                             }
                             break;
                         default:
@@ -133,16 +163,21 @@ class CollegeRanker
                  * 1    "Live On Campus"
                  */
                 case 4:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "Roommates":
                             if ($college->hasRoommates() or $college->hasRoommatesChoosable()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers roommates"];
                             }
                             break;
                         case "Live by Myself":
                             if ($college->hasRoommatesChoosable()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Roommates are choosable"];
                             }
                             break;
                         default:
@@ -157,7 +192,8 @@ class CollegeRanker
                  * 7    <null>
                  */
                 case 5:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     $dbc = new DatabaseConnection();
                     $averageAcademia = $dbc->query("select", "SELECT AVG(c) AS ac FROM (SELECT COUNT(fkmajorid) AS c FROM tblmajorcollege GROUP BY fkcollegeid) AS ct")["ac"];
                     $averageSports = $dbc->query("select", "SELECT AVG(c) AS ac FROM (SELECT COUNT(fksportsid) AS c FROM tblcollegesports GROUP BY fkcollegeid) AS ct")["ac"];
@@ -166,18 +202,26 @@ class CollegeRanker
                     switch ($answer->getAnswer()) {
                         case "Academia":
                             if (count($college->getMajors()) > $averageAcademia) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "School focus is academia"];
                             }
                             if ($college->hasLibrary()) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "Has a library"];
                             }
                             break;
                         case "Athletics":
                             if (count($college->getSports()) > $averageSports) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "School focus is athletics"];
                             }
                             if ($college->hasRecCenter()) {
-                                $collegeScore += $answer->getWeight() / 2;
+                                $score = $answer->getWeight() / 2;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / 2, "score" => $score, "desc" => "Has a recreation center"];
                             }
                             break;
                         case "Social Life":
@@ -190,10 +234,14 @@ class CollegeRanker
                             }
 
                             if (count($college->getGreeks()) > $averageSocial) {
-                                $collegeScore += $answer->getWeight() / $outOf;
+                                $score = $answer->getWeight() / $outOf;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / $outOf, "score" => $score, "desc" => "School focus is social life"];
                             }
                             if ($outOf === 2 and $college->hasTv()) {
-                                $collegeScore += $answer->getWeight() / $outOf;
+                                $score = $answer->getWeight() / $outOf;
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max / $outOf, "score" => $score, "desc" => "Has Tv's in the dorms"];
                             }
                             break;
                         default:
@@ -206,14 +254,18 @@ class CollegeRanker
                  * "Yes", "No"
                  */
                 case 6:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === "Yes") {
                         $greeks = $college->getGreeks();
                         foreach ($greeks as $greek) {
                             if (($greek->getType() === Greek::TYPE_SORORITY and $student->isWoman())
                                 or ($greek->getType() === Greek::TYPE_FRATERNITY and $student->isMan())
                                 or ($greek->getType() === Greek::TYPE_COED)) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $type = ($student->isWoman() ? "sorority" : "standard fraternity");
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has at least one co-ed fraternity or $type you can join"];
                                 break;
                             }
                         }
@@ -229,13 +281,16 @@ class CollegeRanker
                  */
                 case 7:
                     //checks to see if the school offers any sports for the student's indicated gender
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === "Yes") {
                         $sports = $college->getSports();
                         foreach ($sports as $sport) {
                             if (($sport->isWomen() and $student->isWoman())
                                 or ($sport->isMen() and $student->isMan())) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has at least one sport you can join"];
                                 break;
                             }
                         }
@@ -250,7 +305,8 @@ class CollegeRanker
                  */
                 case 8:
                     //Checks to see if a college offers radio, drama, newspaper, band, or choral clubs (i.e. not all clubs)
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === "Yes") {
                         $collegeHas = [
                             $college->hasDrama(),
@@ -260,7 +316,9 @@ class CollegeRanker
                             $college->hasChoral()
                         ];
                         if (in_array(true, $collegeHas, true)) {
-                            $collegeScore += $answer->getWeight();
+                            $score = $answer->getWeight();
+                            $collegeScore += $score;
+                            $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has some sort of student clubs"];
                         }
                     } else {
                         $collegeScore += $answer->getWeight();
@@ -282,12 +340,15 @@ class CollegeRanker
                  */
                 case 10:
                     //checks to see if the school offers any majors marked as, "vocational"
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === "Yes") {
                         $majors = $college->getMajors();
                         foreach ($majors as $major) {
                             if ($major->isVocational()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Offers vocational areas of study"];
                                 break;
                             }
                         }
@@ -301,7 +362,8 @@ class CollegeRanker
                  * [Urban, Suburban, Rural, Small Town]
                  */
                 case 11:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === $college->getSetting()) {
                         $collegeScore += $answer->getWeight();
                     } else {
@@ -309,7 +371,9 @@ class CollegeRanker
                         $diff = abs(array_search($answer->getAnswer(), $question->getAnswers(), true) -
                             array_search($college->getSetting(), $question->getAnswers(), true));
                         // reduce weight proportioanlly by the distance from students's answer
-                        $collegeScore += floor($answer->getWeight() / (2 ** $diff));
+                        $score = (int)floor($answer->getWeight() / (2 ** $diff));
+                        $collegeScore += $score;
+                        $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Similarity to your desired college setting"];
                     }
                     break;
 
@@ -318,16 +382,21 @@ class CollegeRanker
                  * "Private", "Public"
                  */
                 case 12:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "Private":
                             if ($college->getType() === College::TYPE_PRIVATE) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a private school"];
                             }
                             break;
                         case "Public":
                             if ($college->getType() === College::TYPE_PUBLIC) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a public school"];
                             }
                             break;
                         default:
@@ -340,26 +409,35 @@ class CollegeRanker
                  * "Small (<= 5000)", "Medium (<= 15000)", "Large (<= 30000)", "Huge (>30000)"
                  */
                 case 13:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "Small (<= 5000)":
                             if ($college->getStudentCount() <= 5000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a small school"];
                             }
                             break;
                         case "Medium (<= 15000)":
                             if ($college->getStudentCount() > 5000 and $college->getStudentCount() <= 15000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a medium size school"];
                             }
                             break;
                         case "Large (<= 30000)":
                             if ($college->getStudentCount() > 15000 and $college->getStudentCount() <= 30000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a large school"];
                             }
                             break;
                         case "Huge (>30000)":
                             if ($college->getStudentCount() > 30000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is a huge school"];
                             }
                             break;
                         default:
@@ -372,16 +450,21 @@ class CollegeRanker
                  * "In-State", "Out-Of-State"
                  */
                 case 14:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "In-State":
                             if ($college->getProvince()->getPkID() === $student->getProvince()->getPkID()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is in the same area as you"];
                             }
                             break;
                         case "Out-Of-State":
                             if ($college->getProvince()->getPkID() !== $student->getProvince()->getPkID()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Is in a different area than you"];
                             }
                             break;
                         default:
@@ -402,7 +485,8 @@ class CollegeRanker
                  * "<=$10,000", "<=$50,000", "<=$100,000", ">100,000"
                  */
                 case 16:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     if ($answer->getAnswer() === ">100,000") {
                         $collegeScore += $answer->getWeight();
                         break;
@@ -451,14 +535,14 @@ class CollegeRanker
                         }
                     }
 
-                    if($student->getDesiredCollegeEntry() > new DateTime("now")) {
+                    if ($student->getDesiredCollegeEntry() > new DateTime("now")) {
                         $fresh = is_null($college->getFinAidFreshmen()) ? 0 : $college->getFinAidFreshmen();
                         $award = is_null($college->getFinAidAwarded()) ? 0 : $college->getFinAidAwarded();
                         $avail = is_null($college->getFinAid()) ? 1 : $college->getFinAid();
-                        $totalCredit += (int) floor( $fresh * ($award / ($avail * 1.0)));
+                        $totalCredit += (int)floor($fresh * ($award / ($avail * 1.0)));
                     }
 
-                    if($student->getCountry()->getPkID() !== $college->getCountry()->getPkID()) {
+                    if ($student->getCountry()->getPkID() !== $college->getCountry()->getPkID()) {
                         $inter = is_null($college->getFinAidInternaional()) ? 0 : $college->getFinAidInternaional();
                         $totalCredit += $student->getDesiredCollegeLength()->y * $inter;
                     } else {
@@ -471,17 +555,23 @@ class CollegeRanker
                     switch ($answer->getAnswer()) {
                         case "<=$10,000":
                             if ($totalDebt <= 10000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         case "<=$50,000":
                             if ($totalDebt <= 50000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         case "<=$100,000":
                             if ($totalDebt <= 100000) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         default:
@@ -505,21 +595,28 @@ class CollegeRanker
                  * "Majority Men", "Majority Women", "Balanced"
                  */
                 case 18:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "Majority Men":
                             if ($college->getWomenRatio() < 0.4) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has more male students than female"];
                             }
                             break;
                         case "Majority Women":
                             if ($college->getWomenRatio() >= 0.6) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has more female students than female"];
                             }
                             break;
                         case "Balanced":
                             if ($college->getWomenRatio() >= 0.4 and $college->getWomenRatio() < 0.6) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has a balanced amount of male and female students"];
                             }
                             break;
                         default:
@@ -542,11 +639,14 @@ class CollegeRanker
                  * "Yes", "No"
                  */
                 case 20:
-                    $maxScore += $answer->getWeight();
+                    $max = $answer->getWeight();
+                    $maxScore += $max;
                     switch ($answer->getAnswer()) {
                         case "Yes":
                             if ($college->hasHealthCenter() or $college->hasCounseling()) {
-                                $collegeScore += $answer->getWeight();
+                                $score = $answer->getWeight();
+                                $collegeScore += $score;
+                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has health or counseling services"];
                             }
                             break;
                         default:
@@ -570,8 +670,11 @@ class CollegeRanker
                     break;
             }
         }
-
-        return ((float)($collegeScore)) / $maxScore;
+        if($scorecard) {
+            return $scorecardOutput;
+        } else {
+            return ((float)($collegeScore)) / $maxScore;
+        }
     }
 
     /**

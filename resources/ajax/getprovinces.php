@@ -8,20 +8,21 @@
 
 include_once "../../autoload.php";
 
-if (isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
+if (isset($_POST["requestType"]) and $_POST["requestType"] === "getscorecard") {
+    $output = [];
     try {
         $country = new Country($_POST["country"], Country::MODE_ISO);
-    } catch (Exception $e) {
-        $_SESSION["localerrors"][] = "Invalid country selected";
-    }
-    $provinces = $country->getProvinces();
-    $output = [];
 
-    foreach ($provinces as $province) {
-        $output[] = [
-            "iso" => $province->getISO(),
-            "name" => $province->getName()
-        ];
+        $provinces = $country->getProvinces();
+
+        foreach ($provinces as $province) {
+            $output[] = [
+                "iso" => $province->getISO(),
+                "name" => $province->getName()
+            ];
+        }
+    } catch (Exception $e) {
+        $_SESSION["localErrors"][] = "Invalid country selected";
     }
     echo json_encode($output);
 }

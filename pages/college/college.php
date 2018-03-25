@@ -30,6 +30,7 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
     <body>
         <img src="/mycollege/files/<?php echo $college->getPkID(); ?>.jpg" id="bg" alt="">
         <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
+        <script src="javascript/college.js"></script>
         <!-- Overlay effect when opening sidebar on small screens -->
         <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
              id="myOverlay"></div>
@@ -39,6 +40,49 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
             <div class="w3-row w3-padding-64">
                 <div class="w3-container">
                     <h1 class="w3-text-teal"><?php echo $college->getName(); ?></h1>
+                </div>
+                <div>
+                    <?php if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                        if (($rating = $college->getRating(Controller::getLoggedInUser())) === false) {
+                            $output = "N/A";
+                        } else {
+                            $output = ((int) ($rating * 100));
+                        }
+                        switch (true) {
+                            case $output <= 12:
+                                $ratingStyle = "1";
+                                break;
+                            case $output <= 25:
+                                $ratingStyle = "2";
+                                break;
+                            case $output <= 37:
+                                $ratingStyle = "3";
+                                break;
+                            case $output <= 50:
+                                $ratingStyle = "4";
+                                break;
+                            case $output <= 62:
+                                $ratingStyle = "5";
+                                break;
+                            case $output <= 75:
+                                $ratingStyle = "6";
+                                break;
+                            case $output <= 87:
+                                $ratingStyle = "7";
+                                break;
+                            case $output <= 100:
+                                $ratingStyle = "8";
+                                break;
+                            default:
+                                $ratingStyle = "na";
+                        }
+                        ?>
+                        <div class="cr-<?php echo $ratingStyle; ?>">
+                            <div class="collegeRating cr-<?php echo $ratingStyle; ?>" title="See Scorecard" data-id="<?php echo $college->getPkID(); ?>">
+                                <?php echo $output; ?>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
                 <div class="w3-container">
                     <table>
