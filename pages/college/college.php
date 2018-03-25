@@ -30,7 +30,6 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
     <body>
         <img src="/mycollege/files/<?php echo $college->getPkID(); ?>.jpg" id="bg" alt="">
         <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
-        <script src="javascript/college.js"></script>
         <!-- Overlay effect when opening sidebar on small screens -->
         <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
              id="myOverlay"></div>
@@ -46,7 +45,7 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                         if (($rating = $college->getRating(Controller::getLoggedInUser())) === false) {
                             $output = "N/A";
                         } else {
-                            $output = ((int) ($rating * 100));
+                            $output = ((int)($rating * 100));
                         }
                         switch (true) {
                             case $output <= 12:
@@ -79,7 +78,9 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                         ?>
                         <div class="cr-<?php echo $ratingStyle; ?>">
                             <div class="collegeRating cr-<?php echo $ratingStyle; ?>" title="See Scorecard" data-id="<?php echo $college->getPkID(); ?>">
-                                <?php echo $output; ?>
+                                <a href="#myModal2" data-toggle="modal" data-target="#myModal2">
+                                    <?php echo $output; ?>
+                                </a>
                             </div>
                         </div>
                     <?php } ?>
@@ -279,5 +280,48 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                 <a class="w3-bar-item w3-button w3-hover-black" href="<?php echo $website->getURL(); ?>"><?php echo $website->getName(); ?></a>
             <?php } ?>
         </nav>
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog cascading-modal" role="document">
+                <div class="modal-content">
+                    <h1>Scorecard</h1>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Max points</th>
+                            <th>Real points</th>
+                            <th>Reason</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $scorecard = CollegeRanker::scoreCollege($controller::getLoggedInUser(), $college, true);
+                        $maxsum = 0;
+                        $scoresum = 0;
+                        foreach ($scorecard as $score) {
+                            $maxsum += $score["max"];
+                            $scoresum += $score["score"];
+                            ?>
+                            <tr>
+                                <td><?php echo $score["max"]; ?></td>
+                                <td><?php echo $score["score"]; ?></td>
+                                <td><?php echo $score["desc"]; ?></td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        <tr>
+                            <td colspan="3">Totals</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $maxsum; ?></td>
+                            <td><?php echo $scoresum; ?></td>
+                            <td><?php echo (int) (($scoresum / ($maxsum * 1.0)) * 100); ?>% - <?php echo (((int) (($scoresum / ($maxsum * 1.0)) * 100)) - ((int) ($college->getRating(Controller::getLoggedInUser()) *100))); ?>% (adjustments) = <?php echo (int) ($college->getRating(Controller::getLoggedInUser()) * 100); ?>%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
