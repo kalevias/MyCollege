@@ -57,6 +57,8 @@ class Student extends User
      */
     private $desiredMajor;
     /**
+     * True for a woman, false for a man
+     *
      * @var bool
      */
     private $gender;
@@ -65,7 +67,7 @@ class Student extends User
      *
      * @var int
      */
-    private $householdIncome;
+    private $expectedFamilyContribution;
     /**
      * If the student's desired Major is, "undecided," then which majors are they interested in? (max length of 3)
      *
@@ -96,7 +98,7 @@ class Student extends User
             $this->setGender($women)
         ];
         if (in_array(false, $result, true)) {
-            throw new Exception("Student->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, ".$province->getISO().", $postalCode, $phone, $gradYear, $password, $active, $women) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+            throw new Exception("Student->__construct12($firstName, $lastName, $email, $altEmail, $streetAddress, $city, " . $province->getISO() . ", $postalCode, $phone, $gradYear, $password, $active, $women) - Unable to construct User object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
         }
     }
 
@@ -131,7 +133,7 @@ class Student extends User
                 $this->setDesiredCollegeLength(new DateInterval("P" . $student["ncollegelength"] . "Y")),
                 $this->setDesiredMajor(new Major($student["fkmajorid"])),
                 $this->setGPA($student["ngpa"]),
-                $this->setHouseholdIncome($student["nhouseincome"]),
+                $this->setExpectedFamilyContribution($student["nhouseincome"]),
                 $this->setSAT($student["nsat"]),
                 $this->setGender($student["isgender"])
             ];
@@ -238,19 +240,19 @@ class Student extends User
         if ($this->isSynced()) {
             return true;
         } else if (parent::updateToDatabase()) {
-        	//Connect to database
-			$dbc = new DatabaseConnection();
-			//Get the prefered majors and set to null if they don't exist
-			$preferredMajors = $this->getPreferredMajors();
-			while (count($preferredMajors) < 3) {
-				$preferredMajors[] = null;
-			}
-			//If the prefered majors exist then get their ids
-			foreach ($preferredMajors as &$preferredMajor) {
-				if (gettype($preferredMajor) == "object") {
-					$preferredMajor = $preferredMajor->getPkID();
-				}
-			}
+            //Connect to database
+            $dbc = new DatabaseConnection();
+            //Get the prefered majors and set to null if they don't exist
+            $preferredMajors = $this->getPreferredMajors();
+            while (count($preferredMajors) < 3) {
+                $preferredMajors[] = null;
+            }
+            //If the prefered majors exist then get their ids
+            foreach ($preferredMajors as &$preferredMajor) {
+                if (gettype($preferredMajor) == "object") {
+                    $preferredMajor = $preferredMajor->getPkID();
+                }
+            }
 
             if ($this->isInDatabase()) {
                 $params = [
@@ -259,14 +261,14 @@ class Student extends User
                     $this->isAP(),
                     $this->getGPA(),
                     $this->getSAT(),
-					is_null($this->getDesiredCollegeEntry()) ? null : (int)($this->getDesiredCollegeEntry()->format("Y")),
-					is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
-					is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
+                    is_null($this->getDesiredCollegeEntry()) ? null : (int)($this->getDesiredCollegeEntry()->format("Y")),
+                    is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
+                    is_null($this->getDesiredMajor()) ? null : $this->getDesiredMajor()->getPkID(),
                     $preferredMajors[0],
                     $preferredMajors[1],
                     $preferredMajors[2],
-                    $this->getHouseholdIncome(),
-                    $this->isGender(),
+                    $this->getExpectedFamilyContribution(),
+                    $this->isWoman(),
                     $this->getPkID()
                 ];
                 $result = $dbc->query("update", "UPDATE tbleduprofile SET nact=?, hadap=?, ngpa=?, nsat=?, 
@@ -284,10 +286,10 @@ class Student extends User
                     $this->getACT(),
                     $this->getSAT(),
                     $this->isAP(),
-                    $this->getHouseholdIncome(),
+                    $this->getExpectedFamilyContribution(),
                     is_null($this->getDesiredCollegeEntry()) ? null : ((int)$this->getDesiredCollegeEntry()->format("Y")),
                     is_null($this->getDesiredCollegeLength()) ? null : $this->getDesiredCollegeLength()->y,
-                    $this->isGender()
+                    $this->isWoman()
                 ];
                 $result = $dbc->query("insert", "INSERT INTO tbleduprofile (fkuserid, fkmajorid, fkmajor1, 
                                                         fkmajor2, fkmajor3, ngpa, nact, nsat, hadap, nhouseincome, 
@@ -296,8 +298,8 @@ class Student extends User
             }
             $this->inDatabase = $result;
 
-            if(!is_null($this->getAnsweredQuestions())) {
-                foreach($this->getAnsweredQuestions() as $answeredQuestion) {
+            if (!is_null($this->getAnsweredQuestions())) {
+                foreach ($this->getAnsweredQuestions() as $answeredQuestion) {
                     $answeredQuestion->removeFromDatabase();
                     $result = ($result and $answeredQuestion->updateToDatabase());
                 }
@@ -358,12 +360,13 @@ class Student extends User
     /**
      * @return DateTime|null
      */
-    public function getDesiredCollegeEntry(){
-    	if(is_null($this->desiredCollegeEntry)){
-    		return (new DateTime())->setTimestamp(0);
-		}else{
-			return $this->desiredCollegeEntry;
-		}
+    public function getDesiredCollegeEntry()
+    {
+        if (is_null($this->desiredCollegeEntry)) {
+            return (new DateTime())->setTimestamp(0);
+        } else {
+            return $this->desiredCollegeEntry;
+        }
     }
 
     /**
@@ -393,9 +396,9 @@ class Student extends User
     /**
      * @return int|null
      */
-    public function getHouseholdIncome()
+    public function getExpectedFamilyContribution()
     {
-        return $this->householdIncome;
+        return $this->expectedFamilyContribution;
     }
 
     /**
@@ -425,7 +428,15 @@ class Student extends User
     /**
      * @return bool
      */
-    public function isGender()
+    public function isMan()
+    {
+        return !$this->gender;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWoman()
     {
         return $this->gender;
     }
@@ -525,18 +536,18 @@ class Student extends User
      */
     public function setGender(bool $women)
     {
-        $this->syncHandler($this->gender, $this->isGender(), $women);
+        $this->syncHandler($this->gender, $this->isWoman(), $women);
         return true;
     }
 
     /**
-     * @param int $householdIncome
+     * @param int $expectedFamilyContribution
      * @return bool
      */
-    public function setHouseholdIncome(int $householdIncome): bool
+    public function setExpectedFamilyContribution(int $expectedFamilyContribution): bool
     {
-        if ($householdIncome >= 0) {
-            $this->syncHandler($this->householdIncome, $this->getHouseholdIncome(), $householdIncome);
+        if ($expectedFamilyContribution >= 0) {
+            $this->syncHandler($this->expectedFamilyContribution, $this->getExpectedFamilyContribution(), $expectedFamilyContribution);
             return true;
         }
         return false;
@@ -548,6 +559,7 @@ class Student extends User
      */
     public function setSAT(int $sat): bool
     {
+        //TODO: add support for old SAT scores
         if ($sat <= 1600 and $sat >= 400) {
             $this->syncHandler($this->SAT, $this->getSat(), $sat);
             return true;

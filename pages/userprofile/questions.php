@@ -78,7 +78,6 @@ if (isset($_SESSION["nextQuestion"])) {
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
                     <h2>College Preferences</h2>
-                    <h6>Answer questions to improve college matching accuracy</h6>
                 </div>
             </div>
             <div class="row">
@@ -89,6 +88,7 @@ if (isset($_SESSION["nextQuestion"])) {
                     <form class="form-horizontal">
                         <div id="current-question">
                             <div class="container-fluid">
+                                <h6>Answer questions to improve college matching accuracy</h6>
                                 <hr style="margin-top:0">
                                 <div class="row">
                                     <div class="col-sm-2">

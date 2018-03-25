@@ -30,6 +30,7 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
     <body>
         <img src="/mycollege/files/<?php echo $college->getPkID(); ?>.jpg" id="bg" alt="">
         <?php include $controller->getHomeDir() . Controller::MODULE_DIR . "/pageassembly/header/header.php"; ?>
+        <script src="javascript/college.js"></script>
         <!-- Overlay effect when opening sidebar on small screens -->
         <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
              id="myOverlay"></div>
@@ -39,6 +40,49 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
             <div class="w3-row w3-padding-64">
                 <div class="w3-container">
                     <h1 class="w3-text-teal"><?php echo $college->getName(); ?></h1>
+                </div>
+                <div>
+                    <?php if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                        if (($rating = $college->getRating(Controller::getLoggedInUser())) === false) {
+                            $output = "N/A";
+                        } else {
+                            $output = ((int) ($rating * 100));
+                        }
+                        switch (true) {
+                            case $output <= 12:
+                                $ratingStyle = "1";
+                                break;
+                            case $output <= 25:
+                                $ratingStyle = "2";
+                                break;
+                            case $output <= 37:
+                                $ratingStyle = "3";
+                                break;
+                            case $output <= 50:
+                                $ratingStyle = "4";
+                                break;
+                            case $output <= 62:
+                                $ratingStyle = "5";
+                                break;
+                            case $output <= 75:
+                                $ratingStyle = "6";
+                                break;
+                            case $output <= 87:
+                                $ratingStyle = "7";
+                                break;
+                            case $output <= 100:
+                                $ratingStyle = "8";
+                                break;
+                            default:
+                                $ratingStyle = "na";
+                        }
+                        ?>
+                        <div class="cr-<?php echo $ratingStyle; ?>">
+                            <div class="collegeRating cr-<?php echo $ratingStyle; ?>" title="See Scorecard" data-id="<?php echo $college->getPkID(); ?>">
+                                <?php echo $output; ?>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
                 <div class="w3-container">
                     <table>
@@ -57,9 +101,9 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                             </td>
                             <td>Students: <?php echo $college->getStudentCount(); ?></td>
                             <td><i class="fa fa-money fa-lg"></i> In-State:
-                                $<?php echo $college->getTuitionIn(); ?><br>
+                                $<?php echo $college->getTuitionIn(); ?> / year<br>
                                 <i class="fa fa-money fa-lg"></i> Out of State:
-                                $<?php echo $college->getTuitionOut(); ?>
+                                $<?php echo $college->getTuitionOut(); ?> / year
                             </td>
                         </tr>
                         <tr>
@@ -67,6 +111,71 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                             <td><i class="fa fa-medkit fa-lg"></i>
                                 Mean Financial Aid: $<?php echo $college->getFinAid(); ?></td>
                             <td>Professors: <?php echo $college->getProfCount(); ?></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <div class="w3-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th colspan="3">Campus Services</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Health services:
+                                <i class="fa <?php echo($college->hasHealthCenter() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td>Counseling services:
+                                <i class="fa <?php echo($college->hasCounseling() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td>Legal services:
+                                <i class="fa <?php echo($college->hasLegal() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Library:
+                                <i class="fa <?php echo($college->hasLibrary() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td>Recreation center:
+                                <i class="fa <?php echo($college->hasRecCenter() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <hr style="border-top: none;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th colspan="3">Housing</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>On-campus dorms:
+                                <i class="fa <?php echo($college->hasDorms() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td>On-campus apartments:
+                                <i class="fa <?php echo($college->hasApartments() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td>Meal plan:
+                                <i class="fa <?php echo($college->hasMealPlan() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Choose roommates:
+                                <i class="fa <?php echo($college->hasRoommatesChoosable() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                            </td>
+                            <td><?php if (!is_null($college->getRoomCost()) or !is_null($college->getBoardCost())) { ?>
+                                    Room & board cost: $
+                                    <?php echo $college->getRoomCost() + $college->getBoardCost();
+                                } ?>
+                            </td>
+                            <td>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -121,34 +230,34 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                         <div class="col-md-12 text-center">
                             <h3>Sports</h3>
                             <?php if (count($college->getSports()) >= 1) { ?>
-                            <table class="table-condensed">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Gender</th>
-                                    <th>Club?</th>
-                                    <th>Team?</th>
-                                    <th>Scholarships?</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($college->getSports() as $sport) { ?>
+                                <table class="table-condensed">
+                                    <thead>
                                     <tr>
-                                        <td><?php echo $sport->getName(); ?></td>
-                                        <td><?php echo($sport->isWomen() ? "Women" : "Men"); ?></td>
-                                        <td>
-                                            <i class="fa <?php echo($sport->isClub() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
-                                        </td>
-                                        <td>
-                                            <i class="fa <?php echo($sport->isTeam() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
-                                        </td>
-                                        <td>
-                                            <i class="fa <?php echo($sport->isScholarship() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
-                                        </td>
+                                        <th>Name</th>
+                                        <th>Gender</th>
+                                        <th>Club?</th>
+                                        <th>Team?</th>
+                                        <th>Scholarships?</th>
                                     </tr>
-                                <?php } ?>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($college->getSports() as $sport) { ?>
+                                        <tr>
+                                            <td><?php echo $sport->getName(); ?></td>
+                                            <td><?php echo($sport->isWomen() ? "Women" : "Men"); ?></td>
+                                            <td>
+                                                <i class="fa <?php echo($sport->isClub() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                                            </td>
+                                            <td>
+                                                <i class="fa <?php echo($sport->isTeam() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                                            </td>
+                                            <td>
+                                                <i class="fa <?php echo($sport->isScholarship() ? "fa-check-square-o" : "fa-square-o"); ?>"></i>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
                             <?php } else { ?>
                                 No sports found
                             <?php } ?>
@@ -165,6 +274,7 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                 <i class="fa fa-remove"></i>
             </a>
             <h4 class="w3-bar-item"><b>Helpful Links</b></h4>
+            <a class="w3-bar-item w3-button w3-hover-black scholarshipLink" href="<?php echo $controller->getHomeDir() . Controller::MODULE_DIR . "scholarships/scholarships.php?c=" . $college->getPkID(); ?>"><?php echo "Scholarships"; ?></a>
             <?php foreach ($college->getWebsites() as $website) { ?>
                 <a class="w3-bar-item w3-button w3-hover-black" href="<?php echo $website->getURL(); ?>"><?php echo $website->getName(); ?></a>
             <?php } ?>

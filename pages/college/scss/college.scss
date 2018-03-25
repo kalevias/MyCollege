@@ -2,6 +2,11 @@ html, body, h1, h2, h3, h4, h5, h6 {
   font-family: "Roboto", sans-serif;
 }
 
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 .w3-sidebar {
   z-index: 3;
   width: 250px;
@@ -74,4 +79,69 @@ table {
       padding: 4px 12px;
     }
   }
+}
+
+.scholarshipLink {
+  color: #00cccc !important;
+  border-bottom: 1px solid #ccc !important;
+}
+
+.collegeRating {
+  width: 100%;
+  font-size: 24pt;
+  border: 3px solid #fff;
+  padding: 8px 0;
+  margin: 24px auto;
+  margin-bottom: 27px;
+  text-align: center;
+  font-family: 'Rammetto One', cursive;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.cr-na {
+  background-color: #6f000e;
+  color: #fff;
+}
+
+.cr-1 {
+  background-color: #bb0011;
+  color: #fff;
+}
+
+.cr-2 {
+  background-color: #ff9b00;
+  color: #fff;
+}
+
+.cr-3 {
+  background-color: #ffff00;
+  color: #fff;
+}
+
+.cr-4 {
+  background-color: #9bc321;
+  color: #fff;
+}
+
+.cr-5 {
+  background-color: #5d882f;
+  color: #fff;
+}
+
+.cr-6 {
+  background-color: #009ed1;
+  color: #fff;
+}
+
+.cr-7 {
+  background-color: #9a6ab5;
+  color: #fff;
+}
+
+.cr-8 {
+  background-color: #86379e;
+  color: #fff;
 }

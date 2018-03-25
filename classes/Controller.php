@@ -815,7 +815,7 @@ class Controller
                             "setACT",
                             "setSAT",
                             "setAP",
-                            "setHouseholdIncome",
+                            "setExpectedFamilyContribution",
                             "setDesiredCollegeEntry",
                             "setDesiredCollegeLength",
                             "setDesiredMajor"
