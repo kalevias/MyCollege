@@ -43,7 +43,7 @@ $(document).on("click", "#updateEduProfile", function () {
             value: params.income,
             validationType: "int",
             alertLevel: "warning",
-            alertMessage: "household income must be an integer"
+            alertMessage: "expected family contribution must be an integer"
         },
         {
             name: "desired college entry year",

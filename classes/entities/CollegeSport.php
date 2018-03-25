@@ -11,7 +11,11 @@ class CollegeSport extends Sport
     /**
      * @var bool
      */
-    private $women;
+    private $club;
+    /**
+     * @var bool
+     */
+    private $scholarship;
     /**
      * @var bool
      */
@@ -19,11 +23,7 @@ class CollegeSport extends Sport
     /**
      * @var bool
      */
-    private $club;
-    /**
-     * @var bool
-     */
-    private $scholarship;
+    private $women;
 
     /**
      * CollegeSport constructor.
@@ -36,7 +36,7 @@ class CollegeSport extends Sport
     {
         parent::__construct($pkID);
         $dbc = new DatabaseConnection();
-        if($college->isInDatabase()) {
+        if ($college->isInDatabase()) {
             $params = ["iii", $pkID, $college->getPkID(), $women];
             $sport = $dbc->query("select", "SELECT * FROM tblcollegesports WHERE fksportsid = ? AND fkcollegeid = ? AND iswomen=?", $params);
             if ($sport) {
@@ -47,13 +47,13 @@ class CollegeSport extends Sport
                     $this->setScholarship($sport["isscholarship"])
                 ];
                 if (in_array(false, $result, true)) {
-                    throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) - Unable to construct CollegeSport object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
+                    throw new Exception("CollegeSport->__construct($pkID," . $college->getName() . ",$women) - Unable to construct CollegeSport object; variable assignment failure - (" . implode(" ", array_keys($result, false, true)) . ")");
                 }
             } else {
-                throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) - CollegeSport not found");
+                throw new Exception("CollegeSport->__construct($pkID," . $college->getName() . ",$women) - CollegeSport not found");
             }
         } else {
-            throw new Exception("CollegeSport->__construct($pkID,".$college->getName().",$women) -  College not stored in database; unable to query for sport");
+            throw new Exception("CollegeSport->__construct($pkID," . $college->getName() . ",$women) -  College not stored in database; unable to query for sport");
         }
 
     }
@@ -61,19 +61,25 @@ class CollegeSport extends Sport
     /**
      * @return bool
      */
-    public function isWomen(): bool
+    public function isClub(): bool
     {
-        return $this->women;
+        return $this->club;
     }
 
     /**
-     * @param bool $women
      * @return bool
      */
-    private function setWomen(bool $women): bool
+    public function isMen(): bool
     {
-        $this->women = $women;
-        return true;
+        return !$this->women;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isScholarship(): bool
+    {
+        return $this->scholarship;
     }
 
     /**
@@ -85,21 +91,11 @@ class CollegeSport extends Sport
     }
 
     /**
-     * @param bool $team
      * @return bool
      */
-    private function setTeam(bool $team): bool
+    public function isWomen(): bool
     {
-        $this->team = $team;
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isClub(): bool
-    {
-        return $this->club;
+        return $this->women;
     }
 
     /**
@@ -113,20 +109,32 @@ class CollegeSport extends Sport
     }
 
     /**
-     * @return bool
-     */
-    public function isScholarship(): bool
-    {
-        return $this->scholarship;
-    }
-
-    /**
      * @param bool $scholarship
      * @return bool
      */
     private function setScholarship(bool $scholarship): bool
     {
         $this->scholarship = $scholarship;
+        return true;
+    }
+
+    /**
+     * @param bool $team
+     * @return bool
+     */
+    private function setTeam(bool $team): bool
+    {
+        $this->team = $team;
+        return true;
+    }
+
+    /**
+     * @param bool $women
+     * @return bool
+     */
+    private function setWomen(bool $women): bool
+    {
+        $this->women = $women;
         return true;
     }
 
