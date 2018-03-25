@@ -12,12 +12,7 @@
             <a href="profile.php">Contact Information</a>
         </li>
         <?php
-        try {
-            $isStudent = $controller::getLoggedInUser()->hasPermission(new Permission(Permission::PERMISSION_STUDENT));
-        } catch (Exception $e) {
-            $isStudent = false;
-        }
-        if ($isStudent) {
+        if ($controller->userHasAccess([Permission::PERMISSION_STUDENT])) {
             ?>
             <li>
                 <a href="eduprofile.php">Education</a>

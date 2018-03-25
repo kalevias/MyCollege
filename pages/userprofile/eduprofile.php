@@ -97,7 +97,7 @@ $student = Controller::getLoggedInUser();
                                         <div class="input-group-addon">
                                             <i class="fa fa-money"></i>
                                         </div>
-                                        <input id="income" type="number" value="<?php echo Controller::getLoggedInUser()->getHouseholdIncome(); ?>" placeholder="Household Income" class="form-control input-md">
+                                        <input id="income" type="number" value="<?php echo Controller::getLoggedInUser()->getExpectedFamilyContribution(); ?>" placeholder="Expected Family Contribution (FAFSA)" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
@@ -175,6 +175,7 @@ $student = Controller::getLoggedInUser();
                                         </select>
                                     </div>
                                 </div>
+                                (max 3)
                             </div>
                             <div class="form-group">
                                 <div>

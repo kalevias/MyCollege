@@ -80,9 +80,9 @@ abstract class Question
 
     /**
      * @param Dependency $dependency
-     * @return bool
+     * @return bool|int
      */
-    private function addDependency(Dependency $dependency): bool
+    private function addDependency(Dependency $dependency)
     {
         return array_push($this->dependencies, $dependency);
     }

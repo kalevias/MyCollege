@@ -28,7 +28,7 @@ class Dependency
     public function __construct(Question $question, int $parentID)
     {
         $dbc = new DatabaseConnection();
-        $params = ["i", $question->getPkID(), $parentID];
+        $params = ["ii", $question->getPkID(), $parentID];
         $answer = $dbc->query("select", "SELECT jsanswer FROM tblquestionorder WHERE fkquestionid = ? AND fkqparent = ?", $params);
         if ($answer) {
             $result = [

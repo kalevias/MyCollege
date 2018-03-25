@@ -1,7 +1,6 @@
 <?php
 
 include "../../autoload.php";
-
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
 $controller->processREQUEST();
@@ -56,6 +55,10 @@ $controller->checkPermissions(!$controller->userHasAccess()); //checks to see if
             <input id="postalCode" type="text" placeholder="Postal code">
             <input id="phoneNumber" type="text" placeholder="Phone number" data-clevermask="(000) 000-0000">
             <input id="gradYear" type="number" min="1900" max="2100" placeholder="Graduation year" data-clevermask="0000">
+            <select id="gender" class="chosen-ones">
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
             <input id="password" type="password" title="Password must contain at least 6 characters, including UPPER/lowercase and numbers" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" placeholder="Password">
             <input id="confirmPassword" type="password" placeholder="Confirm password">
             <input id="registerButton" type="submit" value="Sign Up">
