@@ -40,6 +40,51 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                 <div class="w3-container">
                     <h1 class="w3-text-teal"><?php echo $college->getName(); ?></h1>
                 </div>
+                <div>
+                    <?php if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                        if (($rating = $college->getRating(Controller::getLoggedInUser())) === false) {
+                            $output = "N/A";
+                        } else {
+                            $output = ((int)($rating * 100));
+                        }
+                        switch (true) {
+                            case $output <= 12:
+                                $ratingStyle = "1";
+                                break;
+                            case $output <= 25:
+                                $ratingStyle = "2";
+                                break;
+                            case $output <= 37:
+                                $ratingStyle = "3";
+                                break;
+                            case $output <= 50:
+                                $ratingStyle = "4";
+                                break;
+                            case $output <= 62:
+                                $ratingStyle = "5";
+                                break;
+                            case $output <= 75:
+                                $ratingStyle = "6";
+                                break;
+                            case $output <= 87:
+                                $ratingStyle = "7";
+                                break;
+                            case $output <= 100:
+                                $ratingStyle = "8";
+                                break;
+                            default:
+                                $ratingStyle = "na";
+                        }
+                        ?>
+                        <div class="cr-<?php echo $ratingStyle; ?>">
+                            <div class="collegeRating cr-<?php echo $ratingStyle; ?>" title="See Scorecard" data-id="<?php echo $college->getPkID(); ?>">
+                                <a href="#myModal2" data-toggle="modal" data-target="#myModal2">
+                                    <?php echo $output; ?>
+                                </a>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
                 <div class="w3-container">
                     <table>
                         <tbody>
@@ -235,5 +280,48 @@ if (isset($_GET["c"]) and is_numeric($_GET["c"])) {
                 <a class="w3-bar-item w3-button w3-hover-black" href="<?php echo $website->getURL(); ?>"><?php echo $website->getName(); ?></a>
             <?php } ?>
         </nav>
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog cascading-modal" role="document">
+                <div class="modal-content">
+                    <h1>Scorecard</h1>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Max points</th>
+                            <th>Real points</th>
+                            <th>Reason</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $scorecard = CollegeRanker::scoreCollege($controller::getLoggedInUser(), $college, true);
+                        $maxsum = 0;
+                        $scoresum = 0;
+                        foreach ($scorecard as $score) {
+                            $maxsum += $score["max"];
+                            $scoresum += $score["score"];
+                            ?>
+                            <tr>
+                                <td><?php echo $score["max"]; ?></td>
+                                <td><?php echo $score["score"]; ?></td>
+                                <td><?php echo $score["desc"]; ?></td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        <tr>
+                            <td colspan="3">Totals</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $maxsum; ?></td>
+                            <td><?php echo $scoresum; ?></td>
+                            <td><?php echo (int) (($scoresum / ($maxsum * 1.0)) * 100); ?>% - <?php echo (((int) (($scoresum / ($maxsum * 1.0)) * 100)) - ((int) ($college->getRating(Controller::getLoggedInUser()) *100))); ?>% (adjustments) = <?php echo (int) ($college->getRating(Controller::getLoggedInUser()) * 100); ?>%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
