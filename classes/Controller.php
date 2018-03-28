@@ -519,7 +519,6 @@ class Controller
             case "sc":
                 try {
                     $dist = isset($this->scrubbed["dist"]) ? $this->scrubbed["dist"] : 500;
-                    //TODO: finish implementation of tuition filter to consider in-state vs. out-of-state based on user address
                     $params = [
                         "siiidd",
                         isset($this->scrubbed["q"]) ? "%" . $this->scrubbed["q"] . "%" : "%%",
@@ -561,7 +560,11 @@ class Controller
                         foreach ($schoolIDs as $schoolID) {
                             $college = new College($schoolID["pkcollegeid"]);
                             if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student" and
-								CollegeRanker::CollegeInRange(Controller::getLoggedInUser(), $college, $dist)) {
+								//filter out colleges that are not in range
+								CollegeRanker::CollegeInRange(Controller::getLoggedInUser(), $college, $dist) and
+								//filter out colleges that are greater than the desired tuition
+								$college->getConditionalTuition(Controller::getLoggedInUser()) <= $input["tuition"]){
+
                                 $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
                             } else {
                                 $schools[] = [$college, 0];
