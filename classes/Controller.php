@@ -518,7 +518,6 @@ class Controller
              */
             case "sc":
                 try {
-                    //TODO: finish implementation of "distance from home" filter
                     $dist = isset($this->scrubbed["dist"]) ? $this->scrubbed["dist"] : 500;
                     //TODO: finish implementation of tuition filter to consider in-state vs. out-of-state based on user address
                     $params = [
@@ -561,7 +560,8 @@ class Controller
                     if ($schoolIDs) {
                         foreach ($schoolIDs as $schoolID) {
                             $college = new College($schoolID["pkcollegeid"]);
-                            if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                            if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student" and
+								CollegeRanker::CollegeInRange(Controller::getLoggedInUser(), $college, $dist)) {
                                 $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
                             } else {
                                 $schools[] = [$college, 0];

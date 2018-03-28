@@ -231,7 +231,7 @@ class College extends DataBasedEntity
                 $this->setPhone($college["nphone"]),//must occur after setProvince
                 $this->setTuitionIn($college["ninstate"]),
                 $this->setTuitionOut($college["noutstate"]),
-                $this->setFinAid($college["nfinancialave"]),
+                $this->setFinAid($finaid["naverage"]),
                 $this->setAcceptRate($college["nacceptrate"]),
                 $this->setProfCount($college["nprof"]),
                 $this->setStudentCount($college["nsize"]),
@@ -567,6 +567,10 @@ class College extends DataBasedEntity
     {
         return $this->province;
     }
+
+	public function getFormattedAddress(){
+		return $this->getStreetAddress() . ", " . $this->getCity() . ", " . $this->getProvince()->getName() . ", " . $this->getProvince()->getCountry();
+	}
 
     /**
      * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if
@@ -925,7 +929,7 @@ class College extends DataBasedEntity
         $dbc = new DatabaseConnection();
         if ($this->isInDatabase()) {
             $params = [
-                "ssssisiiiidiidiisi",
+                "ssssisiiidiidiisi",
                 $this->getName(),
                 $this->getType(),
                 $this->getStreetAddress(),
@@ -935,7 +939,6 @@ class College extends DataBasedEntity
                 $this->getPhone(),
                 $this->getTuitionIn(),
                 $this->getTuitionOut(),
-                $this->getFinAid(),
                 $this->getAcceptRate(),
                 $this->getProfCount(),
                 $this->getStudentCount(),
@@ -947,7 +950,7 @@ class College extends DataBasedEntity
             ];
             $result = $dbc->query("update", "UPDATE `tblcollege` SET 
                                   `nmcollege`=?,`entype`=?,`txstreetaddress`=?,`txcity`=?,`fkprovinceid`=?,`nzip`=?,
-                                  `nphone`=?,`ninstate`=?,`noutstate`=?,`nfinancialave`=?,`nacceptrate`=?,
+                                  `nphone`=?,`ninstate`=?,`noutstate`=?,`nacceptrate`=?,
                                   `nprof`=?,`nsize`=?,`nwomenratio`=?,`nact`=?,`nsat`=?,`ensetting`=?
                                   WHERE pkcollegeid = ?", $params);
 
@@ -966,7 +969,7 @@ class College extends DataBasedEntity
             $this->synced = $result;
         } else {
             $params = [
-                "ssssisiiiidiidiis",
+                "ssssisiiidiidiis",
                 $this->getName(),
                 $this->getType(),
                 $this->getStreetAddress(),
@@ -976,7 +979,6 @@ class College extends DataBasedEntity
                 $this->getPhone(),
                 $this->getTuitionIn(),
                 $this->getTuitionOut(),
-                $this->getFinAid(),
                 $this->getAcceptRate(),
                 $this->getProfCount(),
                 $this->getStudentCount(),
@@ -987,9 +989,9 @@ class College extends DataBasedEntity
             ];
             $result = $dbc->query("insert", "INSERT INTO `tblcollege`(`pkcollegeid`, `nmcollege`, `entype`, 
                                           `txstreetaddress`, `txcity`, `fkprovinceid`, `nzip`, `nphone`, 
-                                          `ninstate`, `noutstate`, `nfinancialave`, `nacceptrate`, `nprof`, `nsize`, 
+                                          `ninstate`, `noutstate`, `nacceptrate`, `nprof`, `nsize`, 
                                           `nwomenratio`, `nact`, `nsat`, `ensetting`)
-                                          VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
+                                          VALUES  (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", $params);
 
             $result2 = $dbc->query("select", "SELECT LAST_INSERT_ID() AS lii");
             $this->setPkID($result2["lii"]);
