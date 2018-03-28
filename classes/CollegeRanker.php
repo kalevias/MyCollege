@@ -768,4 +768,12 @@ class CollegeRanker
     		return false;
 		}
 	}
+
+	public static function CollegeInState(Student $student, College $college){
+		if($student->getProvince() === $college->getProvince()){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

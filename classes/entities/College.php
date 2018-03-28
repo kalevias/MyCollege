@@ -670,6 +670,19 @@ class College extends DataBasedEntity
         return $this->tuitionOut;
     }
 
+	/**
+	 * Returns tuition depending on if the student is in state or out
+	 * @param Student $student
+	 * @return mixed
+	 */
+    public function getConditionalTuition(Student $student){
+    	if($student->getProvince() === $this->getProvince()){
+    		return getTuitionIn();
+		}else{
+			return getTuitionOut();
+		}
+	}
+
     /**
      * @return string|null
      */
