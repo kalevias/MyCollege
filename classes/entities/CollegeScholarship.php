@@ -141,7 +141,7 @@ class CollegeScholarship extends Scholarship
         $dbc = new DatabaseConnection();
         $params = ["i", $this->getPkID()];
         $college = $dbc->query("select", "SELECT fkcollegeid FROM tblcollegescholarship WHERE pkcscholarship = ?", $params);
-        return new College($college);
+        return new College($college["fkcollegeid"]);
     }
 
     /**

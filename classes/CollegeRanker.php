@@ -502,7 +502,8 @@ class CollegeRanker
                     $max = $answer->getWeight();
                     $maxScore += $max;
                     if ($answer->getAnswer() === ">100,000") {
-                        $collegeScore += $answer->getWeight();
+                        $score = $answer->getWeight();
+                        $collegeScore += $score;
                         break;
                     }
 
@@ -564,35 +565,32 @@ class CollegeRanker
                         $totalCredit += ($student->getDesiredCollegeLength()->y - 1) * $local;
                     }
 
-                    $totalDebt = $totalCredit - $totalDebit;
+                    $totalDebt = max(0, $totalDebit - $totalCredit);
 
                     switch ($answer->getAnswer()) {
                         case "<=$10,000":
                             if ($totalDebt <= 10000) {
                                 $score = $answer->getWeight();
                                 $collegeScore += $score;
-                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         case "<=$50,000":
                             if ($totalDebt <= 50000) {
                                 $score = $answer->getWeight();
                                 $collegeScore += $score;
-                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         case "<=$100,000":
                             if ($totalDebt <= 100000) {
                                 $score = $answer->getWeight();
                                 $collegeScore += $score;
-                                $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                             }
                             break;
                         default:
                             //Short circuited earlier in case statement
                             break;
                     }
-
+                    $scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Estimated debt upon graduation: $$totalDebt"];
                     break;
 
                 /**
