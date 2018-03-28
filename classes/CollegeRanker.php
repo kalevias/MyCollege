@@ -119,7 +119,6 @@ class CollegeRanker
                  * 14    "In-State"
                  */
                 case 2:
-                    //TODO: API integration
                     //requires integration with Bing maps to calculate travel time from user home address to college address
 					$route = getCollegeRoute($student, $college);
 					//Get the travel duration in seconds and multiple by 60 to get the minutes
@@ -721,7 +720,13 @@ class CollegeRanker
         return $weight - min(2 ** ((int)floor($distance)) - 1, $weight);
     }
 
-    private static function getCollegeRoute($student, $college){
+	/**
+	 * Returns an XML Route object that holds data on a route between a student's home and a given college
+	 * @param Student $student
+	 * @param College $college
+	 * @return SimpleXMLElement
+	 */
+    public static function getCollegeRoute(Student $student, College $college){
 		//Access Bing API key
 		$key = "AgpC1HACg90Wqx0xEXYMvAFHP_vrA4tCx4g1Lwp76XXzxZ7ZEnUxcQOH44XjExo2";
 		//get origin
@@ -734,7 +739,7 @@ class CollegeRanker
 		//Important Bing API variables
 		$optimize = "time";
 		$routePathOutput = "Points";
-		$distanceUnit = "km";
+		$distanceUnit = "Mile";
 		$travelMode = "Driving";
 		// URL of Bing Maps REST Services Routes API;
 		$baseURL = "http://dev.virtualearth.net/REST/v1/Routes";
@@ -747,5 +752,22 @@ class CollegeRanker
 		$response = new SimpleXMLElement($output);
 		//Return the route xml object
 		return $response->ResourceSets->ResourceSet->Resources->Route;
+	}
+
+	/**
+	 * Returns true if a student lives within range of the given college
+	 * @param Student $student
+	 * @param College $college
+	 * @param int $maxRange
+	 * @return bool
+	 */
+	public static function CollegeInRange(Student $student, College $college, int $maxRange){
+    	$route = getCollegeRoute($student, $college);
+    	$distance = $route->TravelDistance;
+    	if($maxRange - $distance){
+    		return true;
+		}else{
+    		return false;
+		}
 	}
 }
