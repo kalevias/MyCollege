@@ -121,7 +121,22 @@ class CollegeRanker
                 case 2:
                     //TODO: API integration
                     //requires integration with Bing maps to calculate travel time from user home address to college address
-                    break;
+					$route = getCollegeRoute($student, $college);
+					//Get the travel duration in seconds and multiple by 60 to get the minutes
+					$durationMinutes = $route->TravelDuration * 60;
+					//The deserired duration of the student that they answered
+					$desiredDuration = $answer->getAnswer();
+					//Find the difference than use that
+					$timeDiff = $desiredDuration - $durationMinutes;
+					if($timeDiff >= 0){
+						//return max score
+						$max = $desiredDuration / 10;
+					}else{
+						// for every step from the student choice divide the score by half
+						$score = (2 ** $max) - (2 ** (round($durationMinutes, -1) / 10));
+					}
+					$scorecardOutput[] = ["max" => $max, "score" => $score, "desc" => "Has dorms?"];
+					break;
 
                 /**
                  * Where would you like to live when going to college?
@@ -705,4 +720,32 @@ class CollegeRanker
     {
         return $weight - min(2 ** ((int)floor($distance)) - 1, $weight);
     }
+
+    private static function getCollegeRoute($student, $college){
+		//Access Bing API key
+		$key = "AgpC1HACg90Wqx0xEXYMvAFHP_vrA4tCx4g1Lwp76XXzxZ7ZEnUxcQOH44XjExo2";
+		//get origin
+		$origin = $student->getFormattedAddress();
+		//get destiantion
+		$destination = $college->getFormattedAddress();
+		//Format origin and dest for URL
+		$origin = str_ireplace(" ", "%20", $origin);
+		$destination = str_ireplace(" ", "%20", $destination);
+		//Important Bing API variables
+		$optimize = "time";
+		$routePathOutput = "Points";
+		$distanceUnit = "km";
+		$travelMode = "Driving";
+		// URL of Bing Maps REST Services Routes API;
+		$baseURL = "http://dev.virtualearth.net/REST/v1/Routes";
+		//Final URL
+		$routeURL = $baseURL . "/" . $travelMode . "?wp.0=" . $origin . "&wp.1=" . $destination .
+			"&optimize=" . $optimize . "&routePathOutput=" . $routePathOutput .
+			"&distanceUnit=" . $distanceUnit . "&output=xml&key=" . $key;
+		// Get output from Routes API and convert to XML element using php_xml
+		$output = file_get_contents($routeURL);
+		$response = new SimpleXMLElement($output);
+		//Return the route xml object
+		return $response->ResourceSets->ResourceSet->Resources->Route;
+	}
 }

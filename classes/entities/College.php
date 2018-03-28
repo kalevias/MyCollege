@@ -568,6 +568,10 @@ class College extends DataBasedEntity
         return $this->province;
     }
 
+	public function getFormattedAddress(){
+		return $this->getStreetAddress() . ", " . $this->getCity() . ", " . $this->getProvince()->getName() . ", " . $this->getProvince()->getCountry();
+	}
+
     /**
      * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if
      * none existed already.
