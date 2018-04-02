@@ -321,7 +321,7 @@ class DatabaseConnection
     }
 
     /**
-     * TODO: Finish commit implementation (rollback)
+     * Rollback the database to a previous state
      * @return bool
      * @throws Exception
      */
@@ -337,7 +337,7 @@ class DatabaseConnection
     }
 
     /**
-     * TODO: Finish commit implementation (startTransaction)
+     * Start a transaction and disable the autocommit
      * @return bool
      * @throws Exception
      */
