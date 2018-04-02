@@ -168,6 +168,19 @@ class CollegeWebsite extends DataBasedEntity{
 	 * @return bool
 	 */
 	public function updateToDatabase(): bool{
-		// TODO: Implement updateToDatabase() method.
+		if ($this->isSynced()) {
+			return true;
+		}
+		$dbc = new DatabaseConnection();
+		$params = ["sis", $this->getURL(), $this->getCollegeID(), $this->getName()];
+		$result = $dbc->query("update", "UPDATE tblcollegesite SET txlink = ? WHERE (fkcollegeid = ? AND txname = ?)", $params);
+		if($result){
+			$this->inDatabase = false;
+			$this->synced = false;
+			return true;
+		}else{
+			return false;
+		}
+
 	}
 }
