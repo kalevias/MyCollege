@@ -7,8 +7,7 @@
  */
 
 //TODO: class currently only set up to pull data from database, but it should be extended from DataBasedEntity eventually
-class CollegeWebsite
-{
+class CollegeWebsite extends DataBasedEntity{
     /**
      * @var string
      */
@@ -61,10 +60,17 @@ class CollegeWebsite
     /**
      * @return College
      */
-    public function getCollege(): College
-    {
+    public function getCollege(): College{
         return $this->college;
     }
+
+	/**
+	 * Returns the primary ID of the college that owns this website address
+	 * @return int
+	 */
+    public function getCollegeID(): int{
+    	return $this->getCollege()->getPkID();
+	}
 
     /**
      * @return string
@@ -112,4 +118,56 @@ class CollegeWebsite
         }
     }
 
+	/**
+	 * Removes the current object from the database.
+	 * Returns true if the update was completed successfully, false otherwise.
+	 *
+	 * @return bool
+	 */
+	public function removeFromDatabase() : bool{
+		if($this->isInDatabase()){
+			$dbc = new DatabaseConnection();
+			$params = ["is", $this->getCollegeID(), $this->getName()];
+			$result = $dbc->query("delete", "DELETE FROM tblcollegesite WHERE (fkcollegeid = ? AND txsite = ?)", $params);
+			if($result){
+				$this->inDatabase = false;
+				$this->synced = false;
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * Loads the current object with data from the database to which pkID pertains.
+	 *
+	 * @return bool
+	 */
+	public function updateFromDatabase(): bool{
+		if($this->isSynced()){
+			return true;
+		}elseif($this->isInDatabase() and !$this->isSynced()){
+			try{
+				$this->__construct($this->getCollegeID(), $this->getName());
+			}catch(Exception $e){
+				return false;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * Saves the current object to the database. After execution of this function, inDatabase and synced should both be
+	 * true.
+	 *
+	 * @return bool
+	 */
+	public function updateToDatabase(): bool{
+		// TODO: Implement updateToDatabase() method.
+	}
 }
