@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Mar 28, 2018 at 06:53 PM
+-- Generation Time: Apr 03, 2018 at 05:13 PM
 -- Server version: 5.7.19
 -- PHP Version: 7.1.9
 
@@ -1513,10 +1513,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (35, 5),
 (50, 5),
 (65, 5),
-(69, 5),
-(88, 5),
-(69, 5),
-(88, 5),
 (94, 5),
 (97, 5),
 (100, 5),
@@ -1576,7 +1572,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (110, 8),
 (113, 8),
 (121, 9),
-(6, 9),
 (125, 9),
 (126, 9),
 (130, 9),
@@ -1596,7 +1591,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (208, 9),
 (210, 9),
 (1, 9),
-(6, 9),
 (11, 9),
 (13, 9),
 (14, 9),
@@ -1685,8 +1679,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (69, 12),
 (72, 12),
 (77, 12),
-(85, 12),
-(85, 12),
 (94, 12),
 (97, 12),
 (99, 12),
@@ -1724,8 +1716,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (1, 13),
 (7, 13),
 (10, 13),
-(11, 13),
-(11, 13),
 (14, 13),
 (18, 13),
 (19, 13),
@@ -1741,7 +1731,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (48, 13),
 (50, 13),
 (60, 13),
-(61, 13),
 (65, 13),
 (69, 13),
 (72, 13),
@@ -1755,7 +1744,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (97, 13),
 (99, 13),
 (100, 13),
-(61, 13),
 (102, 13),
 (104, 13),
 (110, 13),
@@ -1835,8 +1823,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (210, 2),
 (7, 2),
 (9, 2),
-(11, 2),
-(11, 2),
 (13, 2),
 (19, 2),
 (27, 2),
@@ -1889,7 +1875,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (187, 19),
 (192, 19),
 (13, 20),
-(27, 20),
 (42, 20),
 (52, 20),
 (58, 20),
@@ -1909,7 +1894,6 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (130, 20),
 (131, 20),
 (141, 20),
-(27, 20),
 (143, 20),
 (146, 20),
 (158, 20),
@@ -1982,7 +1966,15 @@ INSERT INTO `tblgreekcollege` (`fkgreekid`, `fkcollegeid`) VALUES
 (187, 21),
 (210, 21),
 (90, 9),
-(124, 9);
+(124, 9),
+(6, 9),
+(11, 2),
+(69, 5),
+(88, 5),
+(85, 12),
+(11, 13),
+(61, 13),
+(27, 20);
 
 -- --------------------------------------------------------
 
