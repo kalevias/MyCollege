@@ -457,6 +457,20 @@ class College extends DataBasedEntity
     }
 
     /**
+     * Returns tuition depending on if the student is in state or out
+     * @param Student $student
+     * @return mixed
+     */
+    public function getConditionalTuition(Student $student)
+    {
+        if ($student->getProvince()->getPkID() === $this->getProvince()->getPkID()) {
+            return $this->getTuitionIn();
+        } else {
+            return $this->getTuitionOut();
+        }
+    }
+
+    /**
      * @return Country
      */
     public function getCountry(): Country
@@ -510,6 +524,11 @@ class College extends DataBasedEntity
     public function getFinAidLoan(): ?int
     {
         return $this->finAidLoan;
+    }
+
+    public function getFormattedAddress()
+    {
+        return $this->getStreetAddress() . ", " . $this->getCity() . ", " . $this->getPostalCode() . " " . $this->getProvince()->getName() . ", " . $this->getCountry()->getName();
     }
 
     /**
@@ -567,10 +586,6 @@ class College extends DataBasedEntity
     {
         return $this->province;
     }
-
-	public function getFormattedAddress(){
-		return $this->getStreetAddress() . ", " . $this->getCity() . ", " . $this->getProvince()->getName() . ", " . $this->getProvince()->getCountry();
-	}
 
     /**
      * Gets an existing rating of this college for a student, or calculates a new rating and saves it to the database if

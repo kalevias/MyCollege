@@ -308,7 +308,7 @@ class User extends DataBasedEntity
     }
 
     public function getFormattedAddress(){
-    	return $this->getStreetAddress() . ", " . $this->getCity() . ", " . $this->getProvince()->getName() . ", " . $this->getProvince()->getCountry();
+    	return $this->getStreetAddress() . ", " . $this->getCity() . " " . $this->getPostalCode() . ", " . $this->getProvince()->getName() . ", " . $this->getCountry()->getName();
 	}
 
     /**
