@@ -33,7 +33,7 @@ $resetFail = isset($_SESSION["resetFail"]) ? $_SESSION["resetFail"] : false;
                 <h1>Login</h1>
                 <form action="#" method="POST">
                     <input type="password" placeholder="New Password" name="password">
-                    <input type="confirmPassword" placeholder="Confirm New Password" name="confirmPassword">
+                    <input type="password" placeholder="Confirm New Password" name="confirmPassword">
                     <input type="hidden" value="resetPassword" name="requestType">
                     <input type="submit" value="Enter">
                 </form>

@@ -1,26 +1,15 @@
-* {
-  box-sizing: border-box;
-}
-
-h1 {
-  text-align: left;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  padding: 10px;
-  background: #f1f1f1;
-}
-
 /* Header/Blog Title */
-.header {
-  padding: 30px;
+.scholarshipHeader {
   text-align: center;
   background: white;
+  height: 500px;
+  padding: 30px;
 }
 
-.header h1 {
+.scholarshipHeader h1 {
   font-size: 50px;
+  color: white;
+  filter: drop-shadow(2px 2px 2px #000);
 }
 
 /* Style the top navigation bar */
@@ -45,68 +34,15 @@ body {
   color: black;
 }
 
-/* Create two unequal columns that floats next to each other */
-/* Left column */
-.leftcolumn {
-  float: left;
-  width: 75%;
-}
-
-/* Right column */
-.rightcolumn {
-  float: left;
-  width: 25%;
-  background-color: #f1f1f1;
-  padding-left: 20px;
-}
-
-/* Fake image */
-.fakeimg {
-  background-color: #aaa;
-  width: 100%;
+#scholarshipsList {
+  background-color: #ccc;
   padding: 20px;
+  padding-bottom: 0;
 }
 
 /* Add a card effect for articles */
-.card {
+.scholarship {
   background-color: white;
   padding: 20px;
-  margin-top: 20px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Footer */
-.footer {
-  padding: 20px;
-  text-align: center;
-  background: #ddd;
-  margin-top: 20px;
-}
-
-/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 800px) {
-  .leftcolumn, .rightcolumn {
-    width: 100%;
-    padding: 0;
-  }
-}
-
-/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
-@media screen and (max-width: 400px) {
-  .topnav a {
-    float: none;
-    width: 100%;
-  }
-}
-
-.carousel-caption {
-  top: 0;
-  left: 25px;
-  bottom: auto;
+  margin-bottom: 20px;
 }

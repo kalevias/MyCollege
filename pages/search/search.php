@@ -3,7 +3,7 @@ include "../../autoload.php";
 
 $controller = $_SESSION["controller"] = new Controller("MyCollege");
 $controller->initModuleDir();
-$controller->processREQUEST("sc");
+$controller->processREQUEST("searchCollege");
 
 $query = $controller->getLastGETRequest()["input"]["query"];
 $size = $controller->getLastGETRequest()["input"]["size"];
@@ -101,10 +101,10 @@ $isStudent = Controller::isUserLoggedIn() and get_class(Controller::getLoggedInU
                         <h1 class="page-header">Results</h1>
                         <?php
                         /**
-                         * @var $schools College[]
+                         * @var $school College
                          */
                         if ($schools) {
-                            $styles = " background-size: cover; background-repeat: no-repeat; background-position: center;";
+                            $styles = " background-size: cover; background-repeat: no-repeat; background-position: center top;";
                             foreach ($schools as [$school, $rating]) { ?>
                                 <div class="row">
                                     <div class="placeholders col-lg-<?php echo($isStudent ? 11 : 12); ?>" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.6) 100%), url('<?php echo $controller->getHomeDir() . "files/" . $school->getPkID() . ".jpg"; ?>');<?php echo $styles; ?>">

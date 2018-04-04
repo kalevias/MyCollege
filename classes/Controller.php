@@ -473,10 +473,10 @@ class Controller
         switch ($getRT) {
             /**
              * Required GET variables for this case:
-             *    getRT : "rp"
+             *    getRT : "resetPassword"
              *  tokenID : string
              */
-            case "rp":
+            case "resetPassword":
                 {
                     //reset the password
                     if (isset($this->scrubbed["tokenID"])) {
@@ -508,7 +508,7 @@ class Controller
                 }
             /**
              * Required GET variables for this case:
-             * getRT : "sc"
+             * getRT : "searchCollege"
              *     q : string
              *     s : int
              *     t : int
@@ -516,7 +516,7 @@ class Controller
              *  dist : int
              *   dif : float
              */
-            case "sc":
+            case "searchCollege":
                 try {
                     $dist = isset($this->scrubbed["dist"]) ? $this->scrubbed["dist"] : 999999;
                     $params = [
@@ -559,20 +559,58 @@ class Controller
                     if ($schoolIDs) {
                         foreach ($schoolIDs as $schoolID) {
                             $college = new College($schoolID["pkcollegeid"]);
-                            if (CollegeRanker::CollegeInRange(Controller::getLoggedInUser(), $college, $dist) and
-                                //filter out colleges that are greater than the desired tuition
-                                $college->getConditionalTuition(Controller::getLoggedInUser()) <= $input["tuition"]) {
-                                if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                            if (Controller::isUserLoggedIn() and get_class(Controller::getLoggedInUser()) == "Student") {
+                                if (CollegeRanker::CollegeInRange(Controller::getLoggedInUser(), $college, $dist) and
+                                    $college->getConditionalTuition(Controller::getLoggedInUser()) <= $input["tuition"]) {
                                     $schools[] = [$college, $college->getRating(Controller::getLoggedInUser())];
-                                } else {
-                                    $schools[] = [$college, 0];
                                 }
+                            } else {
+                                $schools[] = [$college, 0];
                             }
-
                         }
                     }
                     $this->setLastGETRequest($input, $schools);
                 } catch (Error | Exception $e) {
+                    $_SESSION["localErrors"][] = $e;
+                }
+                break;
+            case "filterScholarships":
+                try {
+                    $params = [];
+                    $query = "SELECT * FROM (
+                                SELECT pkcscholarship AS pkID, fkcollegeid AS whatIsIt
+                                FROM tblcollegescholarship s
+                                UNION
+                                SELECT pkoscholarship AS pkID, FALSE AS whatIsIt
+                                FROM tblotherscholarship o) AS r";
+                    if (isset($this->scrubbed["c"])) {
+                        $params[0] = (isset($params[0]) ? $params[0] . "i" : "i");
+                        $params[] = (int)$this->scrubbed["c"];
+                        $input["college"] = $this->scrubbed["c"];
+                        $query .= " WHERE whatIsIt = ? OR whatIsIt = FALSE";
+                    }
+                    if (count($params) == 0) {
+                        $rawIds = $this->dbc->query("select multiple", $query);
+                    } else {
+                        $rawIds = $this->dbc->query("select multiple", $query, $params);
+                    }
+                    $input = [
+                        "college" => (isset($this->scrubbed["c"]) ? (int)$this->scrubbed["c"] : null)
+                    ];
+
+                    $scholarships = [];
+                    if ($rawIds) {
+                        foreach ($rawIds as $id) {
+                            if ($id["whatIsIt"]) {
+                                $scholarship = new CollegeScholarship($id["pkID"]);
+                            } else {
+                                $scholarship = new ScholarshipOther($id["pkID"]);
+                            }
+                            $scholarships[] = $scholarship;
+                        }
+                    }
+                    $this->setLastGETRequest($input, $scholarships);
+                } catch (Exception | Error $e) {
                     $_SESSION["localErrors"][] = $e;
                 }
                 break;
