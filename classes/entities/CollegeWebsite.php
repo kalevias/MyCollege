@@ -5,8 +5,6 @@
  * Date: 3/10/2018
  * Time: 11:01 AM
  */
-
-//TODO: class currently only set up to pull data from database, but it should be extended from DataBasedEntity eventually
 class CollegeWebsite extends DataBasedEntity{
     /**
      * @var string
