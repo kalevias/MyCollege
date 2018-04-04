@@ -23,7 +23,7 @@ $college = is_null($controller->getLastGETRequest()["input"]["college"]) ? null 
             <div class="row">
                 <div class="col-md-12">
                     <?php
-                        $styles = " background-size: cover; background-repeat: no-repeat; background-position: center 35%;";
+                        $styles = " background-size: cover; background-repeat: no-repeat; background-position: center 35%; background-attachment: fixed;";
                         $file = is_null($college) ? "12" : $controller->getHomeDir() . "files/" . $college->getPkID();
                     ?>
                     <div class="scholarshipHeader" style="background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0) 100%), url('<?php echo "$file.jpg"; ?>');<?php echo $styles; ?>">
