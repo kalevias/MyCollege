@@ -15,7 +15,7 @@ class Mailman
     function __construct()
     {
         //load email credentials into a multidimensional array
-        $cred = parse_ini_file(SECURE_DIR, true);
+        $cred = parse_ini_file(SECURE_DIR . "config.ini", true);
         $emailAddress = $cred["Email Settings"]["emailAddress"];
         $emailPassword = $cred["Email Settings"]["emailPassword"];
         //Set up PHP mailer and initialize error variable
@@ -57,7 +57,7 @@ class Mailman
     function registrationEmail($toAddress){
     	$subject = "Welcome to MyCollege!";
     	$body = "Link here";
-    	return sendEmail($toAddress, $subject, $body);
+    	return $this->sendEmail($toAddress, $subject, $body);
 	}
 
 }

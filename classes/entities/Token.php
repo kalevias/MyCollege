@@ -101,7 +101,7 @@ class Token extends DataBasedEntity{
      * @param User|null $user
      * @throws Exception
      */
-    public function __construct2(string $purpose, mixed $data, DateTime $expiration = null, User $user = null)
+    public function __construct2(string $purpose, $data, DateTime $expiration = null, User $user = null)
     {
         if (!isset($user)) {
             if (Controller::isUserLoggedIn()) {

@@ -8,7 +8,7 @@
 
 include_once "../../autoload.php";
 
-if (isset($_POST["requestType"]) and $_POST["requestType"] === "getscorecard") {
+if (isset($_POST["requestType"]) and $_POST["requestType"] === "getprovinces") {
     $output = [];
     try {
         $country = new Country($_POST["country"], Country::MODE_ISO);

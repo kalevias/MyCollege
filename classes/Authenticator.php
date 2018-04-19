@@ -153,7 +153,6 @@ class Authenticator
 
     public static function sendRegistrationEmail($email){
 		try{
-
 			//check if user exists
 			$user = User::load($email);
 			if($user == null){
@@ -161,7 +160,8 @@ class Authenticator
 				$_SESSION["localNotifications"][] = "User with the given e-mail address is not found";
 			}
 			//Create a token representing a temporary link to reset password
-			$token = new Token("loginFirstTime", null, $user);
+			$token = new Token("loginFirstTime", null, null, $user);
+			$token->updateToDatabase();
 			//send email to user
 			$mailman = new Mailman();
 			//create email body
